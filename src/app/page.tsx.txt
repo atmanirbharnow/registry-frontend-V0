@@ -1,0 +1,16 @@
+export default function HomePage() {
+  return (
+    <main style={{ padding: "2rem" }}>
+      <h1>Earth Carbon Registry</h1>
+      <p>
+        A public registry for verified low-carbon actions and carbon-credit
+        preparedness.
+      </p>
+      <p>
+        This platform tracks emissions reduction, readiness, and impact — not
+        instant carbon credits.
+      </p>
+    </main>
+  );
+}
+
