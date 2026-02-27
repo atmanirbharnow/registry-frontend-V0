@@ -2,9 +2,9 @@
 
 import React from "react";
 import CloseButtonIcon from "./svg/CloseButtonIcon";
-import DropDownIcon from "./svg/DropDownIcon";
 import { useActionModal, ACTION_TYPES } from "../hooks/useActionModal";
 import LocationAutocomplete from "./LocationAutocomplete";
+import CustomDropdown from "./ui/CustomDropdown";
 
 interface LocationData {
   address: string;
@@ -72,36 +72,14 @@ const ActionModal: React.FC<ActionModalProps> = ({
               >
                 Action Type
               </label>
-              <div className='relative'>
-                <select
-                  id='actionType'
-                  name='actionType'
-                  className={`w-full px-5 py-4 rounded-xl border bg-gray-50/50 focus:bg-white transition-all duration-200 outline-none appearance-none font-medium text-gray-700 cursor-pointer ${
-                    formik.touched.actionType && formik.errors.actionType
-                      ? "border-red-400 focus:border-red-400"
-                      : "border-gray-100 focus:border-blue-400"
-                  }`}
-                  value={formik.values.actionType}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                >
-                  <option value='' disabled className='text-gray-400'>
-                    Select an action
-                  </option>
-                  {ACTION_TYPES.map((type) => (
-                    <option
-                      key={type.value}
-                      value={type.value}
-                      className='text-gray-700'
-                    >
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
-                <div className='absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-300'>
-                  <DropDownIcon />
-                </div>
-              </div>
+              <CustomDropdown
+                size="lg"
+                value={formik.values.actionType}
+                onChange={(val) => formik.setFieldValue("actionType", val)}
+                options={ACTION_TYPES.map((type) => ({ value: type.value, label: type.label }))}
+                placeholder="Select an action"
+                className={formik.touched.actionType && formik.errors.actionType ? "ring-1 ring-red-400 rounded-xl" : ""}
+              />
               {formik.touched.actionType && formik.errors.actionType && (
                 <div className='text-red-500 text-xs ml-1'>
                   {formik.errors.actionType}
@@ -121,11 +99,10 @@ const ActionModal: React.FC<ActionModalProps> = ({
                   id='quantity'
                   name='quantity'
                   type='number'
-                  className={`w-full px-5 py-4 pr-32 rounded-xl border bg-gray-50/50 focus:bg-white transition-all duration-200 outline-none font-medium text-gray-700 placeholder:text-gray-300 ${
-                    formik.touched.quantity && formik.errors.quantity
+                  className={`w-full px-5 py-4 pr-32 rounded-xl border bg-gray-50/50 focus:bg-white transition-all duration-200 outline-none font-medium text-gray-700 placeholder:text-gray-300 ${formik.touched.quantity && formik.errors.quantity
                       ? "border-red-400 focus:border-red-400"
                       : "border-gray-100 focus:border-blue-400"
-                  }`}
+                    }`}
                   value={formik.values.quantity}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -173,11 +150,10 @@ const ActionModal: React.FC<ActionModalProps> = ({
               <button
                 type='submit'
                 disabled={isSubmitting}
-                className={`py-3 px-6 rounded-xl font-semibold text-white shadow-sm transition-all duration-200 text-sm flex items-center justify-center gap-2 ${
-                  isSubmitting
+                className={`py-3 px-6 rounded-xl font-semibold text-white shadow-sm transition-all duration-200 text-sm flex items-center justify-center gap-2 ${isSubmitting
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-[rgb(32,38,130)] hover:bg-[rgb(25,30,110)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
-                }`}
+                  }`}
               >
                 {isSubmitting ? (
                   <>
