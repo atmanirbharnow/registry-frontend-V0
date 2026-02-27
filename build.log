@@ -1,0 +1,48 @@
+
+> registry-frontend@1.0.0 build
+> next build
+
+   ▲ Next.js 14.1.0
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/20) ...
+   Generating static pages (5/20) 
+   Generating static pages (10/20) 
+   Generating static pages (15/20) 
+ ✓ Generating static pages (20/20) 
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    1.85 kB         225 kB
+├ ○ /_not-found                          882 B          85.1 kB
+├ ○ /about                               149 B          84.4 kB
+├ ○ /admin                               5.81 kB         222 kB
+├ λ /api/actions/submit                  0 B                0 B
+├ λ /api/admin/backfill-registry-ids     0 B                0 B
+├ λ /api/eligibility/evaluate            0 B                0 B
+├ λ /api/internal/seed                   0 B                0 B
+├ λ /api/payment/create                  0 B                0 B
+├ λ /api/payment/verify                  0 B                0 B
+├ λ /api/storage-proxy                   0 B                0 B
+├ ○ /how-it-works                        149 B          84.4 kB
+├ ○ /impact                              149 B          84.4 kB
+├ ○ /pricing                             149 B          84.4 kB
+├ ○ /profile                             12 kB           283 kB
+├ ○ /register                            8.61 kB         272 kB
+├ ○ /register/success                    3.44 kB         217 kB
+├ ○ /signin                              2.6 kB          225 kB
+└ λ /verify/[id]                         4.83 kB         228 kB
++ First Load JS shared by all            84.2 kB
+  ├ chunks/69-14b93a029a0b2d03.js        28.9 kB
+  ├ chunks/fd9d1056-ac812d78e66eeadc.js  53.4 kB
+  └ other shared chunks (total)          1.96 kB
+
+
+○  (Static)   prerendered as static content
+λ  (Dynamic)  server-rendered on demand using Node.js
+
