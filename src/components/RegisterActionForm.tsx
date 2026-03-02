@@ -44,10 +44,11 @@ const validationSchema = Yup.object().shape({
     consentGiven: Yup.boolean().oneOf([true], "You must verify this data is correct"),
 });
 
-export default function RegisterActionForm({ isSimulationMode }: { isSimulationMode: boolean }) {
+export default function RegisterActionForm() {
     const { user } = useAuth();
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
+    const [isSimulationMode, setIsSimulationMode] = useState(false);
     const [meterPhotos, setMeterPhotos] = useState<string[]>(["", "", ""]);
     const [sitePhoto, setSitePhoto] = useState<string | null>(null);
 
@@ -151,6 +152,7 @@ export default function RegisterActionForm({ isSimulationMode }: { isSimulationM
                 const orderData = await orderRes.json();
 
                 if (orderData.simulated) {
+                    setIsSimulationMode(true);
                     await processPaymentVerification(
                         {
                             razorpay_order_id: orderData.orderId,

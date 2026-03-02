@@ -15,6 +15,7 @@ import {
 } from "firebase/auth";
 import { toast } from "react-toastify";
 import { auth, googleProvider } from "@/lib/firebaseConfig";
+import { getUserProfile } from "@/lib/firestoreService";
 
 interface AuthContextType {
   user: User | null;
@@ -32,20 +33,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
-      (user) => {
-        setUser(user);
-        // Set cookie when user is authenticated
-        if (user) {
+      async (firebaseUser) => {
+        setUser(firebaseUser);
+        if (firebaseUser) {
+          let role = "user";
+          try {
+            const profile = await getUserProfile(firebaseUser.uid);
+            if (profile?.role) {
+              role = profile.role;
+            }
+          } catch {
+            // profile fetch failed, default to user role
+          }
           const sessionData = JSON.stringify({
-            uid: user.uid,
-            email: user.email,
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            role,
           });
           document.cookie = `session=${encodeURIComponent(sessionData)}; path=/; max-age=${7 * 24 * 60 * 60}`;
         }
         setLoading(false);
       },
       (error) => {
-        // Auth state listener error callback
         console.error("Auth listener error:", error);
         setLoading(false);
       },
@@ -57,24 +66,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error: any) {
-      if (error.code === "auth/popup-closed-by-user") {
-        console.log("Login popup closed by user");
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string; message?: string };
+      if (firebaseError.code === "auth/popup-closed-by-user") {
         return;
       }
       console.error("Login failed:", error);
-      toast.error(error.message || "Failed to sign in with Google");
+      toast.error(firebaseError.message || "Failed to sign in with Google");
     }
   };
 
   const logout = async () => {
     try {
-      // Clear session cookie
       document.cookie = "session=; path=/; max-age=0";
       await signOut(auth);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Logout failed:", error);
-      toast.error(error.message || "Failed to log out");
+      const message = error instanceof Error ? error.message : "Failed to log out";
+      toast.error(message);
     }
   };
 

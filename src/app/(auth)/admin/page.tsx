@@ -15,11 +15,10 @@ export default function AdminPage() {
     const [activeTab, setActiveTab] = useState<"actions" | "users">("actions");
 
     useEffect(() => {
-        // MOCK AUTH BYPASS FOR UI TESTING
-        // if (!loading && profile && profile.role !== "admin") {
-        //     toast.error("Access denied — Admin only");
-        //     router.replace("/profile");
-        // }
+        if (!loading && profile && profile.role !== "admin") {
+            toast.error("Access denied — Admin only");
+            router.replace("/profile");
+        }
     }, [loading, profile, router]);
 
     if (loading) {
@@ -30,7 +29,7 @@ export default function AdminPage() {
         );
     }
 
-    // if (!profile || profile.role !== "admin") return null;
+    if (!profile || profile.role !== "admin") return null;
 
     return (
         <main className="min-h-[calc(100vh-82px)] bg-gray-50 px-4 sm:px-6 lg:px-8 py-6">

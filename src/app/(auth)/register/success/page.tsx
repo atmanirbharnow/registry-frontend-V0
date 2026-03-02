@@ -64,7 +64,10 @@ export default function RegisterSuccessPage() {
             <div className="max-w-xl mx-auto text-center space-y-8">
                 <div className="space-y-4">
                     <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                        <span className="text-4xl">✅</span>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
                     </div>
 
                     <h1 className="text-3xl font-black text-gray-800">

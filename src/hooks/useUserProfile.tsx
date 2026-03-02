@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getUserProfile, createUserProfile } from "@/lib/firestoreService";
 import { UserProfile } from "@/types/user";
 import { useAuth } from "@/context/AuthContext";
-import { serverTimestamp } from "firebase/firestore";
+
 
 export function useUserProfile() {
     const { user, loading: authLoading } = useAuth();

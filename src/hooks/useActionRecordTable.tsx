@@ -1,42 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebaseConfig";
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  deleteDoc,
-  doc,
-  Timestamp,
-} from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
-import { toast } from "react-toastify";
-
-export interface ActionRecord {
-  id: string;
-  actionType: string;
-  quantity: number;
-  unit: string;
-  address: string;
-  createdAt: Timestamp;
-}
+import { getUserActions, deleteAction } from "@/lib/firestoreService";
+import { Action } from "@/types/action";
 
 export const useActionRecordTable = () => {
   const { user, loading: authLoading } = useAuth();
-  const [actions, setActions] = useState<ActionRecord[]>([]);
+  const [actions, setActions] = useState<Action[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    // If auth is still loading, wait.
     if (authLoading) return;
 
-    // If auth finished but no user, stop loading (show empty or restricted).
     if (!user) {
       setLoading(false);
       return;
@@ -44,49 +23,23 @@ export const useActionRecordTable = () => {
 
     setLoading(true);
 
-    const q = query(
-      collection(db, "actions"),
-      where("userId", "==", user.uid),
-    );
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const fetchedActions = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as ActionRecord[];
-
-        // Sort client-side to avoid compound index requirement
-        fetchedActions.sort((a, b) => {
-          const timeA = a.createdAt?.toMillis() || 0;
-          const timeB = b.createdAt?.toMillis() || 0;
-          return timeB - timeA; // Descending order
-        });
-
-        setActions(fetchedActions);
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error fetching actions:", error);
-        setLoading(false);
-      },
-    );
+    const unsubscribe = getUserActions(user.uid, (fetchedActions) => {
+      setActions(fetchedActions);
+      setLoading(false);
+    });
 
     return () => unsubscribe();
   }, [user, authLoading]);
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteDoc(doc(db, "actions", id));
-      toast.success("Action deleted successfully.");
+      await deleteAction(id);
     } catch (error) {
       console.error("Error deleting document: ", error);
-      toast.error("Failed to delete action.");
+      throw error;
     }
   };
 
-  // Pagination Logic
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = actions.slice(indexOfFirstItem, indexOfLastItem);

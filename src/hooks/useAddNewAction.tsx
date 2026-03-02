@@ -1,15 +1,9 @@
 "use client";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { db } from "@/lib/firebaseConfig";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  doc,
-  updateDoc,
-} from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
+import { createAction, updateAction } from "@/lib/firestoreService";
+import { Action } from "@/types/action";
 
 interface ActionData {
   actionType: string;
@@ -22,9 +16,6 @@ interface ActionData {
 
 interface EditingAction extends ActionData {
   id: string;
-  createdAt?: any;
-  userId?: string;
-  userEmail?: string;
 }
 
 export const useAddNewAction = () => {
@@ -57,19 +48,16 @@ export const useAddNewAction = () => {
 
     try {
       if (editingAction && editingAction.id) {
-        const docRef = doc(db, "actions", editingAction.id);
-        await updateDoc(docRef, {
+        await updateAction(editingAction.id, {
           actionType: data.actionType,
           quantity: Number(data.quantity),
           unit: data.unit,
           address: data.address,
           lat: data.lat || null,
           lng: data.lng || null,
-          updatedAt: serverTimestamp(),
-        });
-        console.log("Action updated with ID:", editingAction.id);
+        } as Partial<Action>);
       } else {
-        await addDoc(collection(db, "actions"), {
+        await createAction({
           actionType: data.actionType,
           quantity: Number(data.quantity),
           unit: data.unit,
@@ -77,15 +65,35 @@ export const useAddNewAction = () => {
           lat: data.lat || null,
           lng: data.lng || null,
           userId: user.uid,
-          userEmail: user.email,
-          createdAt: serverTimestamp(),
+          userEmail: user.email || "",
+          registryId: "",
+          institutionId: null,
+          actorType: "individual",
+          actorName: "",
+          contactPerson: "",
+          phone: "",
+          email: user.email || "",
+          status: "pending",
+          co2eKg: null,
+          atmanirbharPercent: null,
+          sha256Hash: "",
+          meterPhotos: [],
+          sitePhoto: null,
+          commissioningDate: null,
+          baselineData: null,
+          generationData: null,
+          localPercent: null,
+          indigenousPercent: null,
+          communityPercent: null,
+          jobsCreated: null,
+          razorpayOrderId: null,
+          razorpayPaymentId: null,
         });
       }
 
       setIsSubmitting(false);
       handleCloseModal();
 
-      // Show success toast after brief delay
       setTimeout(() => {
         toast.success(
           editingAction
@@ -93,16 +101,14 @@ export const useAddNewAction = () => {
             : "Action submitted successfully!",
         );
       }, 100);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsSubmitting(false);
-      console.error("Error submitting action: ", error);
+      const message = error instanceof Error ? error.message : "Please try again.";
 
-      if (error.message && error.message.includes("offline")) {
+      if (message.includes("offline")) {
         toast.error("Network Error: Please check your internet connection.");
       } else {
-        toast.error(
-          `Failed to submit action: ${error.message || "Please try again."}`,
-        );
+        toast.error(`Failed to submit action: ${message}`);
       }
       throw error;
     }

@@ -5,9 +5,9 @@ import { toast } from "react-toastify";
 import Spinner from "./ui/Spinner";
 import StatusBadge from "./ui/StatusBadge";
 import CustomDropdown from "./ui/CustomDropdown";
-import { ACTION_LABELS, ACTION_STATUS_OPTIONS, PAYMENT_AMOUNT_DISPLAY } from "@/lib/constants";
+import { ACTION_LABELS, ACTION_STATUS_OPTIONS, ACTION_TYPES } from "@/lib/constants";
 import { Action, ActionStatus } from "@/types/action";
-import { getAllActionsRealtime, updateActionStatus } from "@/lib/firestoreService";
+import { getAllActionsRealtime, updateActionStatus, getAllActions } from "@/lib/firestoreService";
 
 export default function AdminActionTable() {
     const [actions, setActions] = useState<Action[]>([]);
@@ -17,34 +17,12 @@ export default function AdminActionTable() {
     const [typeFilter, setTypeFilter] = useState<string>("all");
 
     useEffect(() => {
-        setLoading(false);
-        setActions([{
-            id: "mock1",
-            registryId: "ECF-0001",
-            actionType: "solar",
-            status: "pending",
-            actorName: "Test Actor",
-            co2eKg: 100,
-            userEmail: "test@example.com",
-            createdAt: { toDate: () => new Date() } as any,
-            quantity: 5,
-            unit: "kW",
-            address: "123 Test St",
-            userId: "u1"
-        }, {
-            id: "mock2",
-            registryId: "ECF-0002",
-            actionType: "biogas",
-            status: "verified",
-            actorName: "Test Actor 2",
-            co2eKg: 200,
-            userEmail: "test2@example.com",
-            createdAt: { toDate: () => new Date() } as any,
-            quantity: 10,
-            unit: "m3",
-            address: "456 Test St",
-            userId: "u2"
-        }]);
+        const unsubscribe = getAllActionsRealtime((fetchedActions) => {
+            setActions(fetchedActions);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, []);
 
     const stats = useMemo(() => {
@@ -52,7 +30,7 @@ export default function AdminActionTable() {
         const verified = actions.filter((a) => a.status === "verified").length;
         const pending = actions.filter((a) => a.status === "pending").length;
         const totalCo2e = actions.reduce((sum, a) => sum + (a.co2eKg || 0), 0);
-        const totalRevenue = total * 199;
+        const totalRevenue = actions.filter((a) => a.registryId).length * 199;
         return { total, verified, pending, totalCo2e, totalRevenue };
     }, [actions]);
 
@@ -64,22 +42,15 @@ export default function AdminActionTable() {
         });
     }, [actions, statusFilter, typeFilter]);
 
-    const uniqueTypes = useMemo(() => {
-        const types = new Set(actions.map((a) => a.actionType));
-        return Array.from(types);
-    }, [actions]);
-
     const handleStatusChange = async (actionId: string, newStatus: ActionStatus) => {
         setUpdatingId(actionId);
-        // Optimistic update
         setActions((prev) => prev.map((a) => (a.id === actionId ? { ...a, status: newStatus } : a)));
         try {
             await updateActionStatus(actionId, newStatus);
             toast.success(`Status updated to ${newStatus}`);
         } catch {
-            // Revert on error
             toast.error("Failed to update status.");
-            const allActions = await import("@/lib/firestoreService").then(m => m.getAllActions());
+            const allActions = await getAllActions();
             setActions(allActions);
         } finally {
             setUpdatingId(null);
@@ -128,7 +99,7 @@ export default function AdminActionTable() {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = `ecr-actions-${new Date().toISOString().split("T")[0]}.csv`;
+        link.download = `ecf-actions-${new Date().toISOString().split("T")[0]}.csv`;
         link.click();
         URL.revokeObjectURL(url);
     };
@@ -164,7 +135,7 @@ export default function AdminActionTable() {
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total CO₂e</p>
-                    <p className="text-3xl font-black text-[rgb(32,38,130)] mt-1">{stats.totalCo2e.toFixed(1)} <span className="text-sm font-bold text-gray-400">kg</span></p>
+                    <p className="text-3xl font-black text-[rgb(32,38,130)] mt-1">{stats.totalCo2e.toLocaleString("en-IN", { maximumFractionDigits: 2 })} <span className="text-sm font-bold text-gray-400">kg</span></p>
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Revenue</p>
@@ -192,7 +163,7 @@ export default function AdminActionTable() {
                         onChange={setTypeFilter}
                         options={[
                             { value: "all", label: "All Action Types" },
-                            ...uniqueTypes.map((type) => ({ value: type, label: ACTION_LABELS[type] || type }))
+                            ...ACTION_TYPES.map((type) => ({ value: type.value, label: type.label }))
                         ]}
                         className="w-56"
                     />
@@ -266,7 +237,7 @@ export default function AdminActionTable() {
                                             {ACTION_LABELS[action.actionType] || action.actionType}
                                         </td>
                                         <td className="py-4 px-6 text-sm text-gray-500">
-                                            {action.actorName || "—"}
+                                            {action.actorName || <span className="text-gray-300">N/A</span>}
                                         </td>
                                         <td className="py-4 px-6 text-sm font-medium">
                                             {action.co2eKg != null ? (
@@ -276,7 +247,7 @@ export default function AdminActionTable() {
                                             )}
                                         </td>
                                         <td className="py-4 px-6 text-sm text-gray-400">
-                                            {action.userEmail || "—"}
+                                            {action.userEmail || <span className="text-gray-300">N/A</span>}
                                         </td>
                                         <td className="py-4 px-6 text-sm text-gray-400 whitespace-nowrap">
                                             {formatDate(action.createdAt)}

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 
-export async function GET() {
+export async function POST() {
     try {
         const actionsRef = adminDb.collection("actions");
         const snapshot = await actionsRef.get();

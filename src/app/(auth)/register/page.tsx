@@ -4,8 +4,6 @@ import React from "react";
 import RegisterActionForm from "@/components/RegisterActionForm";
 
 export default function RegisterPage() {
-    const isSimulationMode = process.env.RAZORPAY_SIMULATION_MODE === "true";
-
     return (
         <div className="min-h-[calc(100vh-82px)] bg-gray-50 px-4 md:px-8 py-8">
             <div className="max-w-3xl mx-auto space-y-6">
@@ -18,7 +16,7 @@ export default function RegisterPage() {
                     </p>
                 </div>
 
-                <RegisterActionForm isSimulationMode={isSimulationMode} />
+                <RegisterActionForm />
             </div>
         </div>
     );
