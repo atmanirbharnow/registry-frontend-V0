@@ -5,12 +5,12 @@ import { useSearchParams } from "next/navigation";
 import { getActionByRegistryId } from "@/lib/firestoreService";
 import { ACTION_LABELS } from "@/lib/constants";
 import { Action } from "@/types/action";
-import QRCode from "@/components/QRCode";
+import DigitalCertificateCard from "@/components/DigitalCertificateCard";
 import Button from "@/components/ui/Button";
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://earthcarbonregistry.com";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
 
 export default function RegisterSuccessPage() {
     const searchParams = useSearchParams();
@@ -28,12 +28,11 @@ export default function RegisterSuccessPage() {
                 const data = await getActionByRegistryId(registryId);
                 setAction(data);
             } catch {
-                // action not found
+                // not found
             } finally {
                 setLoading(false);
             }
         }
-
         fetchAction();
     }, [registryId]);
 
@@ -62,7 +61,13 @@ export default function RegisterSuccessPage() {
     }
 
     const verifyUrl = `${APP_URL}/verify/${action.registryId}`;
-    const shareText = `I just registered a carbon action on Earth Carbon Registry! Registry ID: ${action.registryId}`;
+    const tco2e = action.co2eKg != null ? (action.co2eKg / 1000).toFixed(2) : null;
+    const atmanirbhar = action.atmanirbharPercent != null ? action.atmanirbharPercent.toFixed(0) : null;
+    const year = new Date().getFullYear();
+
+    const shareText = tco2e && atmanirbhar
+        ? `I just verified a low-carbon action with Earth Carbon Registry!\nReduced: ${tco2e} tCO2e\n${atmanirbhar}% Atmanirbhar | ${year}\n${ACTION_LABELS[action.actionType] || action.actionType}\nVerify: ${verifyUrl}`
+        : `Verified carbon action on Earth Carbon Registry!\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`;
 
     return (
         <div className="min-h-[calc(100vh-82px)] bg-gray-50 px-4 md:px-8 py-12">
@@ -74,7 +79,6 @@ export default function RegisterSuccessPage() {
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
                     </div>
-
                     <h1 className="text-3xl font-black text-gray-800">
                         Action Registered!
                     </h1>
@@ -83,62 +87,21 @@ export default function RegisterSuccessPage() {
                     </p>
                 </div>
 
-                <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-8 space-y-4">
-                    <div>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                            Registry ID
-                        </p>
-                        <p className="text-3xl font-black text-[rgb(32,38,130)] font-mono mt-1">
-                            {action.registryId}
-                        </p>
-                    </div>
+                <DigitalCertificateCard action={action} />
 
-                    <div className="border-t border-gray-100 pt-4 space-y-2">
-                        <div className="flex justify-between">
-                            <span className="text-sm text-gray-400">Action Type</span>
-                            <span className="text-sm font-medium text-gray-700">
-                                {ACTION_LABELS[action.actionType] || action.actionType}
-                            </span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-sm text-gray-400">Quantity</span>
-                            <span className="text-sm font-medium text-gray-700">
-                                {action.quantity} {action.unit}
-                            </span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-sm text-gray-400">CO₂e</span>
-                            <span className="text-sm font-medium text-gray-700">
-                                {action.co2eKg != null ? `${action.co2eKg.toFixed(3)} kg` : "—"}
-                            </span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-sm text-gray-400">Status</span>
-                            <span className="text-sm font-semibold text-yellow-600">
-                                Pending Verification
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex justify-center">
-                    <QRCode registryId={action.registryId} size={180} />
-                </div>
-
-                {/* Social Share Buttons */}
                 <div className="space-y-3">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                         Share Your Action
                     </p>
                     <div className="flex justify-center gap-3 flex-wrap">
                         <a
-                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(verifyUrl)}`}
+                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2.5 bg-black text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center gap-2"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                            Share on X
+                            X
                         </a>
                         <a
                             href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(verifyUrl)}&title=${encodeURIComponent(shareText)}`}
@@ -150,7 +113,7 @@ export default function RegisterSuccessPage() {
                             LinkedIn
                         </a>
                         <a
-                            href={`https://wa.me/?text=${encodeURIComponent(shareText + " " + verifyUrl)}`}
+                            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2.5 bg-[#25D366] text-white text-xs font-bold rounded-xl hover:bg-[#128C7E] transition-colors inline-flex items-center gap-2"
@@ -168,21 +131,17 @@ export default function RegisterSuccessPage() {
                             Facebook
                         </a>
                         <a
-                            href={`https://www.instagram.com/`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            href="#"
                             onClick={(e) => {
                                 e.preventDefault();
-                                navigator.clipboard.writeText(shareText + " " + verifyUrl);
-                                const btn = e.currentTarget;
-                                const original = btn.innerHTML;
-                                btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg> Copied!`;
-                                setTimeout(() => { btn.innerHTML = original; }, 2000);
+                                navigator.clipboard.writeText(shareText);
+                                const span = e.currentTarget.querySelector("span");
+                                if (span) { span.textContent = "Copied!"; setTimeout(() => { span.textContent = "Instagram"; }, 2000); }
                             }}
                             className="px-4 py-2.5 bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity inline-flex items-center gap-2"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
-                            Instagram
+                            <span>Instagram</span>
                         </a>
                     </div>
                 </div>

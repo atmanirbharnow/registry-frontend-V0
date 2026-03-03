@@ -8,7 +8,13 @@ function getAdminApp(): App {
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 
-    if (privateKey && clientEmail && projectId) {
+    const hasValidCredentials =
+        privateKey &&
+        clientEmail &&
+        projectId &&
+        privateKey.includes("BEGIN PRIVATE KEY");
+
+    if (hasValidCredentials) {
         return initializeApp({
             credential: cert({
                 projectId,

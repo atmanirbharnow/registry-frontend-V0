@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initializeApp, getApps, cert } from "firebase-admin/app";
-import { getStorage } from "firebase-admin/storage";
 
-function getAdminApp() {
-    if (getApps().length > 0) return getApps()[0];
-
-    return initializeApp({
-        credential: cert({
-            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL || "",
-            privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
-        }),
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    });
-}
+const hasAdminCredentials = !!(
+    process.env.FIREBASE_PRIVATE_KEY &&
+    process.env.FIREBASE_CLIENT_EMAIL &&
+    process.env.FIREBASE_PRIVATE_KEY.includes("BEGIN PRIVATE KEY")
+);
 
 export async function POST(request: NextRequest) {
     try {
@@ -36,27 +27,27 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        try {
-            getAdminApp();
-        } catch {
+        if (!hasAdminCredentials) {
             const bytes = await file.arrayBuffer();
             const buffer = Buffer.from(bytes);
             const base64 = buffer.toString("base64");
             const mimeType = file.type || "application/octet-stream";
             const dataUrl = `data:${mimeType};base64,${base64}`;
-
             return NextResponse.json({ url: dataUrl, simulated: true });
         }
 
-        const app = getAdminApp();
-        const bucket = getStorage(app).bucket();
+        const { getStorage } = await import("firebase-admin/storage");
+        const { adminDb } = await import("@/lib/firebaseAdmin");
+        void adminDb;
+
+        const { getApps } = await import("firebase-admin/app");
+        const app = getApps()[0];
+        const bucket = getStorage(app).bucket(bucketName);
         const fileBuffer = Buffer.from(await file.arrayBuffer());
         const fileRef = bucket.file(path);
 
         await fileRef.save(fileBuffer, {
-            metadata: {
-                contentType: file.type,
-            },
+            metadata: { contentType: file.type },
         });
 
         await fileRef.makePublic();

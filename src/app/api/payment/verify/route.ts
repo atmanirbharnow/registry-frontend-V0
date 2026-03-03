@@ -6,16 +6,12 @@ import { calculateAtmanirbhar } from "@/lib/atmanirbharCalculation";
 
 const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!;
-const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY!;
 const DATABASE_ID = "asia-pacific";
 const BASE_URL = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents`;
 
-// Check if Admin SDK credentials are available
 const hasAdminCredentials = !!(
     process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL
 );
-
-// ── Admin SDK methods (used on Firebase App Hosting where credentials are auto-injected) ──
 
 async function incrementCounterAdmin(): Promise<number> {
     const { adminDb } = await import("@/lib/firebaseAdmin");
@@ -34,8 +30,6 @@ async function createActionDocAdmin(data: Record<string, unknown>): Promise<stri
     const docRef = await adminDb.collection("actions").add(data);
     return docRef.id;
 }
-
-// ── REST API methods (fallback for local testing without Admin SDK) ──
 
 function toFirestoreValue(value: unknown): Record<string, unknown> {
     if (value === null || value === undefined) return { nullValue: null };
@@ -57,8 +51,6 @@ function toFirestoreDoc(data: Record<string, unknown>) {
 }
 
 async function incrementCounterREST(bearerToken: string): Promise<number> {
-    // Use Firestore's atomic commit with fieldTransform.increment
-    // This is the REST equivalent of FieldValue.increment(1) — race-safe
     const commitUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents:commit`;
     const docPath = `projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents/meta/registryCounter`;
 
@@ -91,7 +83,6 @@ async function incrementCounterREST(bearerToken: string): Promise<number> {
     }
 
     const commitData = await commitRes.json();
-    // The transform result contains the value AFTER the increment
     const newValue =
         commitData.writeResults?.[0]?.transformResults?.[0]?.integerValue;
     if (newValue == null) {
@@ -118,13 +109,10 @@ async function createActionDocREST(data: Record<string, unknown>, bearerToken: s
     return nameParts[nameParts.length - 1];
 }
 
-// ── Pick the right implementation ──
-
 async function incrementCounter(bearerToken?: string): Promise<number> {
     if (hasAdminCredentials) {
         return incrementCounterAdmin();
     }
-    console.warn("[verify] No Admin SDK credentials — using REST API fallback (not race-safe)");
     return incrementCounterREST(bearerToken!);
 }
 
@@ -135,10 +123,19 @@ async function createActionDoc(data: Record<string, unknown>, bearerToken?: stri
     return createActionDocREST(data, bearerToken!);
 }
 
-// ── Route handler ──
-
 export async function POST(request: NextRequest) {
     try {
+        if (
+            !isSimulation &&
+            (!process.env.RAZORPAY_KEY_SECRET ||
+                process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.startsWith("rzp_test_"))
+        ) {
+            return NextResponse.json(
+                { error: "Payment configuration error. Please contact support." },
+                { status: 500 }
+            );
+        }
+
         const body = await request.json();
         const {
             razorpay_order_id,

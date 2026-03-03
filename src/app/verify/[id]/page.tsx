@@ -10,6 +10,8 @@ import QRCode from "@/components/QRCode";
 import Spinner from "@/components/ui/Spinner";
 import PublicShell from "@/components/PublicShell";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
+
 export default function VerifyPage() {
     const params = useParams();
     const registryId = params.id as string;
@@ -33,7 +35,6 @@ export default function VerifyPage() {
                 setLoading(false);
             }
         }
-
         if (registryId) {
             fetchAction();
         }
@@ -82,6 +83,15 @@ export default function VerifyPage() {
         });
     };
 
+    const tco2e = action.co2eKg != null ? (action.co2eKg / 1000).toFixed(2) : null;
+    const atmanirbhar = action.atmanirbharPercent != null ? action.atmanirbharPercent.toFixed(0) : null;
+    const year = new Date().getFullYear();
+    const verifyUrl = `${APP_URL}/verify/${action.registryId}`;
+
+    const shareText = tco2e && atmanirbhar
+        ? `Verified low-carbon action on Earth Carbon Registry!\nReduced: ${tco2e} tCO2e\n${atmanirbhar}% Atmanirbhar | ${year}\nVerify: ${verifyUrl}`
+        : `Verified carbon action on Earth Carbon Registry!\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`;
+
     return (
         <PublicShell>
             <div className="max-w-3xl mx-auto space-y-8">
@@ -119,21 +129,20 @@ export default function VerifyPage() {
                             CO₂e Reduction
                         </h3>
                         <p className="text-3xl font-black text-gray-800">
-                            {action.co2eKg != null ? (
-                                `${action.co2eKg.toFixed(3)} kg`
+                            {tco2e != null ? (
+                                <>{tco2e} <span className="text-lg font-bold text-gray-500">tCO₂e</span></>
                             ) : (
                                 <span className="text-gray-400">N/A</span>
                             )}
                         </p>
                     </div>
-
                     <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
                             Atmanirbhar Score
                         </h3>
                         <p className="text-3xl font-black text-gray-800">
-                            {action.atmanirbharPercent != null
-                                ? `${action.atmanirbharPercent.toFixed(1)}%`
+                            {atmanirbhar != null
+                                ? <>{atmanirbhar}<span className="text-lg font-bold text-gray-500">%</span></>
                                 : "Pending"}
                         </p>
                     </div>
@@ -155,14 +164,13 @@ export default function VerifyPage() {
                     <QRCode registryId={action.registryId} size={180} />
                 </div>
 
-                {/* Social Share Buttons */}
                 <div className="space-y-3 text-center">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
                         Share This Action
                     </p>
                     <div className="flex justify-center gap-3 flex-wrap">
                         <a
-                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Verified carbon action on Earth Carbon Registry! ID: ${action.registryId}`)}&url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+                            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2.5 bg-black text-white text-xs font-bold rounded-xl hover:bg-gray-800 transition-colors inline-flex items-center gap-2"
@@ -171,7 +179,7 @@ export default function VerifyPage() {
                             X
                         </a>
                         <a
-                            href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}&title=${encodeURIComponent(`Carbon Action ${action.registryId} - Earth Carbon Registry`)}`}
+                            href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(verifyUrl)}&title=${encodeURIComponent(shareText)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2.5 bg-[#0A66C2] text-white text-xs font-bold rounded-xl hover:bg-[#004182] transition-colors inline-flex items-center gap-2"
@@ -180,7 +188,7 @@ export default function VerifyPage() {
                             LinkedIn
                         </a>
                         <a
-                            href={`https://wa.me/?text=${encodeURIComponent(`Carbon Action ${action.registryId} verified on Earth Carbon Registry! ${typeof window !== "undefined" ? window.location.href : ""}`)}`}
+                            href={`https://wa.me/?text=${encodeURIComponent(shareText)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2.5 bg-[#25D366] text-white text-xs font-bold rounded-xl hover:bg-[#128C7E] transition-colors inline-flex items-center gap-2"
@@ -189,7 +197,7 @@ export default function VerifyPage() {
                             WhatsApp
                         </a>
                         <a
-                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(typeof window !== "undefined" ? window.location.href : "")}`}
+                            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(verifyUrl)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="px-4 py-2.5 bg-[#1877F2] text-white text-xs font-bold rounded-xl hover:bg-[#0C5DC7] transition-colors inline-flex items-center gap-2"
@@ -201,10 +209,8 @@ export default function VerifyPage() {
                             href="#"
                             onClick={(e) => {
                                 e.preventDefault();
-                                const text = `Carbon Action ${action.registryId} verified on Earth Carbon Registry! ${window.location.href}`;
-                                navigator.clipboard.writeText(text);
-                                const btn = e.currentTarget;
-                                const span = btn.querySelector("span");
+                                navigator.clipboard.writeText(shareText);
+                                const span = e.currentTarget.querySelector("span");
                                 if (span) { span.textContent = "Copied!"; setTimeout(() => { span.textContent = "Instagram"; }, 2000); }
                             }}
                             className="px-4 py-2.5 bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white text-xs font-bold rounded-xl hover:opacity-90 transition-opacity inline-flex items-center gap-2"

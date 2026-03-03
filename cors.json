@@ -3,7 +3,7 @@
         "origin": [
             "http://localhost:3000",
             "https://registryearthcarbon.org",
-            "https://registry-frontend--earthcarbonregistry-1e6ba.asia-southeast1.hosted.app/"
+            "https://registry-frontend-dev--earthcarbonregistry-1e6ba.asia-southeast1.hosted.app"
         ],
         "method": [
             "GET",
