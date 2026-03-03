@@ -10,17 +10,40 @@ const API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY!;
 const DATABASE_ID = "asia-pacific";
 const BASE_URL = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents`;
 
+// Check if Admin SDK credentials are available
+const hasAdminCredentials = !!(
+    process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL
+);
+
+// ── Admin SDK methods (used on Firebase App Hosting where credentials are auto-injected) ──
+
+async function incrementCounterAdmin(): Promise<number> {
+    const { adminDb } = await import("@/lib/firebaseAdmin");
+    const counterRef = adminDb.collection("meta").doc("registryCounter");
+    return adminDb.runTransaction(async (tx) => {
+        const snap = await tx.get(counterRef);
+        const current = snap.exists ? (snap.data()?.count ?? 0) : 0;
+        const next = current + 1;
+        tx.set(counterRef, { count: next }, { merge: true });
+        return next;
+    });
+}
+
+async function createActionDocAdmin(data: Record<string, unknown>): Promise<string> {
+    const { adminDb } = await import("@/lib/firebaseAdmin");
+    const docRef = await adminDb.collection("actions").add(data);
+    return docRef.id;
+}
+
+// ── REST API methods (fallback for local testing without Admin SDK) ──
+
 function toFirestoreValue(value: unknown): Record<string, unknown> {
     if (value === null || value === undefined) return { nullValue: null };
     if (typeof value === "string") return { stringValue: value };
     if (typeof value === "number") return { doubleValue: value };
     if (typeof value === "boolean") return { booleanValue: value };
     if (Array.isArray(value)) {
-        return {
-            arrayValue: {
-                values: value.map(toFirestoreValue),
-            },
-        };
+        return { arrayValue: { values: value.map(toFirestoreValue) } };
     }
     return { stringValue: String(value) };
 }
@@ -33,48 +56,86 @@ function toFirestoreDoc(data: Record<string, unknown>) {
     return { fields };
 }
 
-async function incrementCounter(): Promise<number> {
-    const docUrl = `${BASE_URL}/meta/registryCounter?key=${API_KEY}`;
+async function incrementCounterREST(bearerToken: string): Promise<number> {
+    // Use Firestore's atomic commit with fieldTransform.increment
+    // This is the REST equivalent of FieldValue.increment(1) — race-safe
+    const commitUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents:commit`;
+    const docPath = `projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents/meta/registryCounter`;
 
-    const getRes = await fetch(docUrl);
-    let current = 0;
-    if (getRes.ok) {
-        const data = await getRes.json();
-        current = data.fields?.count?.integerValue
-            ? Number(data.fields.count.integerValue)
-            : 0;
-    }
-
-    const next = current + 1;
-
-    await fetch(
-        `${BASE_URL}/meta/registryCounter?key=${API_KEY}&updateMask.fieldPaths=count`,
-        {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ fields: { count: { integerValue: String(next) } } }),
-        }
-    );
-
-    return next;
-}
-
-async function createActionDoc(data: Record<string, unknown>): Promise<string> {
-    const res = await fetch(`${BASE_URL}/actions?key=${API_KEY}`, {
+    const commitRes = await fetch(commitUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(toFirestoreDoc(data)),
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+        },
+        body: JSON.stringify({
+            writes: [
+                {
+                    transform: {
+                        document: docPath,
+                        fieldTransforms: [
+                            {
+                                fieldPath: "count",
+                                increment: { integerValue: "1" },
+                            },
+                        ],
+                    },
+                },
+            ],
+        }),
     });
 
+    if (!commitRes.ok) {
+        const err = await commitRes.json();
+        throw new Error(err.error?.message || "Counter increment failed");
+    }
+
+    const commitData = await commitRes.json();
+    // The transform result contains the value AFTER the increment
+    const newValue =
+        commitData.writeResults?.[0]?.transformResults?.[0]?.integerValue;
+    if (newValue == null) {
+        throw new Error("Counter increment returned no value");
+    }
+    return Number(newValue);
+}
+
+async function createActionDocREST(data: Record<string, unknown>, bearerToken: string): Promise<string> {
+    const res = await fetch(`${BASE_URL}/actions`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+        },
+        body: JSON.stringify(toFirestoreDoc(data)),
+    });
     if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error?.message || "Firestore write failed");
     }
-
     const result = await res.json();
     const nameParts = result.name?.split("/") || [];
     return nameParts[nameParts.length - 1];
 }
+
+// ── Pick the right implementation ──
+
+async function incrementCounter(bearerToken?: string): Promise<number> {
+    if (hasAdminCredentials) {
+        return incrementCounterAdmin();
+    }
+    console.warn("[verify] No Admin SDK credentials — using REST API fallback (not race-safe)");
+    return incrementCounterREST(bearerToken!);
+}
+
+async function createActionDoc(data: Record<string, unknown>, bearerToken?: string): Promise<string> {
+    if (hasAdminCredentials) {
+        return createActionDocAdmin(data);
+    }
+    return createActionDocREST(data, bearerToken!);
+}
+
+// ── Route handler ──
 
 export async function POST(request: NextRequest) {
     try {
@@ -83,6 +144,7 @@ export async function POST(request: NextRequest) {
             razorpay_order_id,
             razorpay_payment_id,
             razorpay_signature,
+            userIdToken,
             formData,
         } = body;
 
@@ -107,7 +169,7 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        const counterNext = await incrementCounter();
+        const counterNext = await incrementCounter(userIdToken);
         const registryId = `ECF-${String(counterNext).padStart(4, "0")}`;
         const now = new Date().toISOString();
 
@@ -124,7 +186,7 @@ export async function POST(request: NextRequest) {
             jobsCreated: Number(formData.jobsCreated) || 0,
         });
 
-        const sha256Hash = await generateActionHash({
+        const sha256Hash = generateActionHash({
             registryId,
             actionType: formData.actionType,
             quantity: Number(formData.quantity),
@@ -168,7 +230,7 @@ export async function POST(request: NextRequest) {
             createdAt: now,
         };
 
-        const actionId = await createActionDoc(actionData);
+        const actionId = await createActionDoc(actionData, userIdToken);
 
         return NextResponse.json({
             registryId,

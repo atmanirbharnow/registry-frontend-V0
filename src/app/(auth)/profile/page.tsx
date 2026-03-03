@@ -46,9 +46,15 @@ export default function ProfilePage() {
     const isAdmin = profile?.role === "admin";
     const hasInstitution = institutions.length > 0;
 
-    const formatDate = (timestamp: { toDate?: () => Date } | undefined) => {
-        if (!timestamp?.toDate) return "N/A";
-        return timestamp.toDate().toLocaleString("en-IN", {
+    const formatDate = (timestamp: { toDate?: () => Date } | string | undefined) => {
+        if (!timestamp) return "N/A";
+        const date = typeof timestamp === "string"
+            ? new Date(timestamp)
+            : timestamp?.toDate?.()
+                ? timestamp.toDate()
+                : null;
+        if (!date || isNaN(date.getTime())) return "N/A";
+        return date.toLocaleString("en-IN", {
             year: "numeric",
             month: "short",
             day: "numeric",
@@ -180,6 +186,7 @@ export default function ProfilePage() {
                                                 <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
                                                 <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
                                                 <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Signature</th>
+                                                <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">View</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-50">
@@ -238,6 +245,25 @@ export default function ProfilePage() {
                                                             </a>
                                                         ) : (
                                                             <span className="text-gray-300">N/A</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="py-3.5 px-5 text-sm">
+                                                        {action.registryId ? (
+                                                            <a
+                                                                href={`/verify/${action.registryId}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center gap-1.5 text-[rgb(32,38,130)] font-medium hover:underline text-xs"
+                                                            >
+                                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                                                    <polyline points="15 3 21 3 21 9" />
+                                                                    <line x1="10" y1="14" x2="21" y2="3" />
+                                                                </svg>
+                                                                Verify
+                                                            </a>
+                                                        ) : (
+                                                            <span className="text-gray-300">—</span>
                                                         )}
                                                     </td>
                                                 </tr>

@@ -14,3 +14,11 @@ env:
     value: 1:217692090833:web:c85f69525a395d5c2870f0
   - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
     value: AIzaSyBSlKAndSNex1AJqW4DF6zl428eCfWT2UA
+  - variable: NEXT_PUBLIC_RAZORPAY_KEY_ID
+    value: rzp_test_SKkW64Jgz2iFpX
+  - variable: RAZORPAY_KEY_SECRET
+    value: 423xQ1m3IWksbltNxpeppnKR
+  - variable: RAZORPAY_SIMULATION_MODE
+    value: "false"
+  - variable: NEXT_PUBLIC_APP_URL
+    value: https://earthcarbonregistry.com

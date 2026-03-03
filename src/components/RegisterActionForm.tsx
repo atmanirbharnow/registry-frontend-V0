@@ -73,11 +73,15 @@ export default function RegisterActionForm() {
         values: typeof formik.values
     ) => {
         try {
+            // Get the user's Firebase ID token for server-side auth
+            const idToken = await user?.getIdToken();
+
             const verifyRes = await fetch("/api/payment/verify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     ...paymentDetails,
+                    userIdToken: idToken,
                     formData: {
                         ...values,
                         quantity: Number(values.quantity),

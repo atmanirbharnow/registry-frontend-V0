@@ -1,11 +1,7 @@
-export async function generateSHA256Hash(
-    canonicalString: string
-): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(canonicalString);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+import crypto from "crypto";
+
+export function generateSHA256Hash(canonicalString: string): string {
+    return crypto.createHash("sha256").update(canonicalString).digest("hex");
 }
 
 export function buildCanonicalString(fields: {
@@ -28,7 +24,7 @@ export function buildCanonicalString(fields: {
     ].join("|");
 }
 
-export async function generateActionHash(fields: {
+export function generateActionHash(fields: {
     registryId: string;
     actionType: string;
     quantity: number;
@@ -36,7 +32,7 @@ export async function generateActionHash(fields: {
     address: string;
     userId: string;
     createdAt: string;
-}): Promise<string> {
+}): string {
     const canonical = buildCanonicalString(fields);
     return generateSHA256Hash(canonical);
 }

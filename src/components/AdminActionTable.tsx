@@ -105,8 +105,15 @@ export default function AdminActionTable() {
     };
 
     const formatDate = (timestamp: Action["createdAt"]) => {
-        if (!timestamp?.toDate) return "N/A";
-        return timestamp.toDate().toLocaleString("en-IN", {
+        if (!timestamp) return "N/A";
+        // Handle Firestore Timestamp object
+        const date = typeof timestamp === "string"
+            ? new Date(timestamp)
+            : timestamp?.toDate?.()
+                ? timestamp.toDate()
+                : null;
+        if (!date || isNaN(date.getTime())) return "N/A";
+        return date.toLocaleString("en-IN", {
             year: "numeric",
             month: "short",
             day: "numeric",
