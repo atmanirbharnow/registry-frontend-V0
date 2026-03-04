@@ -94,9 +94,6 @@ export default function RegisterSuccessPage() {
                         <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Registry ID</p>
                         <p className="text-2xl font-black text-gray-800 font-mono">{action.registryId}</p>
                     </div>
-                    <div className="flex justify-center">
-                        <QRCode registryId={action.registryId} size={150} />
-                    </div>
                 </div>
 
                 {/* Certificate card with calculated values */}

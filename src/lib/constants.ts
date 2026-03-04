@@ -51,6 +51,28 @@ export const PIPELINE_STATUS_OPTIONS = [
   { value: "pipeline", label: "In Pipeline" },
 ] as const;
 
+export const ACTION_PILLAR_MAP: Record<string, "energy" | "water" | "waste" | "other"> = {
+  // Energy
+  solar_rooftop: "energy",
+  refrigerator_upgrade: "energy",
+  geyser_temp_reduction: "energy",
+  led_replacement: "energy",
+  swh: "energy",
+
+  // Water
+  rwh: "water",
+  waterless_urinal: "water",
+  wastewater_recycling: "water",
+
+  // Waste
+  biogas: "waste",
+  composting: "waste",
+  plastic_recycling: "waste",
+
+  // Other
+  tree_plantation: "other",
+};
+
 export const PAYMENT_AMOUNT_PAISE = 19900;
 export const PAYMENT_AMOUNT_DISPLAY = "₹199";
 

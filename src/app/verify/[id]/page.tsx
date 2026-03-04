@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { getActionByRegistryId } from "@/lib/firestoreService";
+import { getActionByRegistryId, getActionsByUserId } from "@/lib/firestoreService";
 import { ACTION_LABELS } from "@/lib/constants";
 import { Action } from "@/types/action";
+import { calculatePortfolioMetrics, PortfolioMetrics } from "@/lib/portfolioCalculator";
 import VerificationBadge from "@/components/VerificationBadge";
 import QRCode from "@/components/QRCode";
 import Spinner from "@/components/ui/Spinner";
 import PublicShell from "@/components/PublicShell";
+import PerformanceBreakdownModal from "@/components/PerformanceBreakdownModal";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
 
@@ -16,6 +18,8 @@ export default function VerifyPage() {
     const params = useParams();
     const registryId = params.id as string;
     const [action, setAction] = useState<Action | null>(null);
+    const [portfolio, setPortfolio] = useState<PortfolioMetrics | null>(null);
+    const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
 
@@ -26,6 +30,16 @@ export default function VerifyPage() {
                 const data = await getActionByRegistryId(registryId);
                 if (data) {
                     setAction(data);
+                    if (data.userId) {
+                        try {
+                            const userActions = await getActionsByUserId(data.userId);
+                            if (userActions.length > 0) {
+                                setPortfolio(calculatePortfolioMetrics(userActions));
+                            }
+                        } catch (err) {
+                            console.error("Failed to fetch user portfolio", err);
+                        }
+                    }
                 } else {
                     setNotFound(true);
                 }
@@ -148,31 +162,77 @@ export default function VerifyPage() {
                 )}
 
                 {action.status === "verified" && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-green-50 rounded-[2rem] border border-green-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
-                                CO₂e Reduction
-                            </h3>
-                            <p className="text-3xl font-black text-green-600">
-                                {tco2e != null ? (
-                                    <>{tco2e} <span className="text-lg font-bold text-green-500">tCO₂e</span></>
-                                ) : (
-                                    <span className="text-gray-400">N/A</span>
-                                )}
-                            </p>
+                    <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-green-50 rounded-[2rem] border border-green-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                                    Action CO₂e Reduction
+                                </h3>
+                                <p className="text-3xl font-black text-green-600">
+                                    {tco2e != null ? (
+                                        <>{tco2e} <span className="text-lg font-bold text-green-500">tCO₂e</span></>
+                                    ) : (
+                                        <span className="text-gray-400">N/A</span>
+                                    )}
+                                </p>
+                            </div>
+                            <div className="bg-blue-50 rounded-[2rem] border border-blue-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                                    Action Atmanirbhar Score
+                                </h3>
+                                <p className="text-3xl font-black text-blue-600">
+                                    {atmanirbhar != null
+                                        ? <>{atmanirbhar}<span className="text-lg font-bold text-blue-500">%</span></>
+                                        : <span className="text-gray-400">N/A</span>}
+                                </p>
+                                <p className="text-xs text-blue-500">{year}</p>
+                            </div>
                         </div>
-                        <div className="bg-blue-50 rounded-[2rem] border border-blue-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
-                                Atmanirbhar Score
-                            </h3>
-                            <p className="text-3xl font-black text-blue-600">
-                                {atmanirbhar != null
-                                    ? <>{atmanirbhar}<span className="text-lg font-bold text-blue-500">%</span></>
-                                    : <span className="text-gray-400">N/A</span>}
-                            </p>
-                            <p className="text-xs text-blue-500">{year}</p>
-                        </div>
-                    </div>
+
+                        {/* Holistic Portfolio Overview */}
+                        {portfolio && (
+                            <div className="mt-8 bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] rounded-[2rem] shadow-2xl overflow-hidden relative">
+                                <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M22 12A10 10 0 1 1 12 2a10 10 0 0 1 10 10z" />
+                                        <path d="M12 2v20" />
+                                        <path d="M2 12h20" />
+                                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                    </svg>
+                                </div>
+                                <div className="px-8 py-6 border-b border-blue-800/50 flex justify-between items-center relative z-10">
+                                    <h2 className="text-sm font-bold text-blue-200 uppercase tracking-wider">
+                                        Digital Climate Signature (Total Portfolio)
+                                    </h2>
+                                </div>
+                                <div className="px-8 py-6 relative z-10">
+                                    <p className="text-blue-100 mb-6 text-sm">
+                                        This user's holistic impact across Energy, Water, and Waste resource pillars.
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <button
+                                            onClick={() => setIsBreakdownModalOpen(true)}
+                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-green-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer"
+                                        >
+                                            <div className="text-xs font-bold text-blue-200 uppercase tracking-wider mb-1">Total Impact</div>
+                                            <div className="text-2xl font-black text-white group-hover:text-green-300 transition-colors">-{portfolio.totalTCO2e.toFixed(3)}</div>
+                                            <div className="text-xs font-bold text-green-400">Total tCO₂e Reduced <span className="text-white/50 inline-block ml-1">→</span></div>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setIsBreakdownModalOpen(true)}
+                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-cyan-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer"
+                                        >
+                                            <div className="text-xs font-bold text-blue-200 uppercase tracking-wider mb-1">Total Atmanirbhar</div>
+                                            <div className="text-2xl font-black text-white group-hover:text-cyan-300 transition-colors">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
+                                            <div className="text-xs font-bold text-cyan-400">Resource Independence <span className="text-white/50 inline-block ml-1">→</span></div>
+                                        </button>
+                                    </div>
+                                    <p className="text-center text-xs text-blue-300/60 mt-4">* Click metrics to view 3-pillar breakdown</p>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
@@ -186,6 +246,7 @@ export default function VerifyPage() {
                         This hash proves the data has not been tampered with since submission.
                     </p>
                 </div>
+
 
                 <div className="flex justify-center">
                     <QRCode registryId={action.registryId} size={180} />
@@ -257,7 +318,12 @@ export default function VerifyPage() {
                     </div>
                 </div>
             </div>
-        </PublicShell>
+            <PerformanceBreakdownModal
+                isOpen={isBreakdownModalOpen}
+                onClose={() => setIsBreakdownModalOpen(false)}
+                portfolio={portfolio}
+            />
+        </PublicShell >
     );
 }
 

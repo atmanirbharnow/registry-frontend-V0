@@ -15,6 +15,8 @@ import Button from "@/components/ui/Button";
 import { ACTION_LABELS } from "@/lib/constants";
 import { useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
+import { calculatePortfolioMetrics } from "@/lib/portfolioCalculator";
+import PerformanceBreakdownModal from "@/components/PerformanceBreakdownModal";
 
 export default function ProfilePage() {
     const { user } = useAuth();
@@ -22,6 +24,11 @@ export default function ProfilePage() {
     const { institutions, loading: instLoading } = useInstitutions(user?.uid);
     const { actions, loading: actionsLoading } = useActionRecordTable();
     const searchParams = useSearchParams();
+    const [isBreakdownModalOpen, setIsBreakdownModalOpen] = React.useState(false);
+
+    const portfolio = React.useMemo(() => {
+        return actions.length > 0 ? calculatePortfolioMetrics(actions) : null;
+    }, [actions]);
 
     useEffect(() => {
         if (searchParams.get("access_denied") === "true") {
@@ -140,6 +147,56 @@ export default function ProfilePage() {
                             <div className="flex items-center gap-3 opacity-40">
                                 <div className="w-8 h-8 rounded-full bg-gray-300 text-white flex items-center justify-center text-sm font-bold">2</div>
                                 <span className="text-sm font-semibold text-gray-400">Register Actions</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {portfolio && portfolio.totalTCO2e > 0 && (
+                        <div className="mb-6 bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-5 sm:px-8 py-5 sm:py-6">
+                            <h2 className="text-xs sm:text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 sm:mb-5">Your Digital Climate Signature</h2>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <button
+                                    onClick={() => setIsBreakdownModalOpen(true)}
+                                    className="group bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] hover:opacity-95 transition-opacity rounded-2xl p-4 sm:p-5 text-left cursor-pointer shadow-md flex flex-col justify-between min-h-[110px]"
+                                >
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="p-1.5 bg-white/10 rounded text-green-400">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
+                                        </div>
+                                        <div className="text-[10px] font-bold text-blue-200 uppercase tracking-wider">Total Impact</div>
+                                    </div>
+                                    <div className="flex items-end justify-between w-full">
+                                        <div>
+                                            <div className="text-2xl sm:text-3xl font-black text-white group-hover:text-green-300 transition-colors leading-none mb-0.5">-{portfolio.totalTCO2e.toFixed(3)}</div>
+                                            <div className="text-[10px] font-bold text-green-400">Total tCO₂e Reduced</div>
+                                        </div>
+                                        <div className="text-white/20 group-hover:text-white/60 group-hover:translate-x-1 transition-all pb-1">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={() => setIsBreakdownModalOpen(true)}
+                                    className="group bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] hover:opacity-95 transition-opacity rounded-2xl p-4 sm:p-5 text-left cursor-pointer shadow-md flex flex-col justify-between min-h-[110px]"
+                                >
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="p-1.5 bg-white/10 rounded text-cyan-400">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                                        </div>
+                                        <div className="text-[10px] font-bold text-blue-200 uppercase tracking-wider">Atmanirbhar</div>
+                                    </div>
+                                    <div className="flex items-end justify-between w-full">
+                                        <div>
+                                            <div className="text-2xl sm:text-3xl font-black text-white group-hover:text-cyan-300 transition-colors leading-none mb-0.5">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
+                                            <div className="text-[10px] font-bold text-cyan-400">Resource Independence</div>
+                                        </div>
+                                        <div className="text-white/20 group-hover:text-white/60 group-hover:translate-x-1 transition-all pb-1">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                                        </div>
+                                    </div>
+                                </button>
                             </div>
                         </div>
                     )}
@@ -276,6 +333,11 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
+            <PerformanceBreakdownModal
+                isOpen={isBreakdownModalOpen}
+                onClose={() => setIsBreakdownModalOpen(false)}
+                portfolio={portfolio}
+            />
         </>
     );
 }
