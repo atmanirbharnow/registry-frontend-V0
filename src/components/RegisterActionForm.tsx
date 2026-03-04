@@ -15,6 +15,7 @@ import Card from "./ui/Card";
 import { useAuth } from "@/context/AuthContext";
 import { PAYMENT_AMOUNT_DISPLAY } from "@/lib/constants";
 
+
 declare global {
     interface Window {
         Razorpay: new (options: Record<string, unknown>) => { open: () => void };
@@ -42,6 +43,7 @@ const validationSchema = Yup.object().shape({
     communityPercent: Yup.number().min(0).max(100).typeError("Must be a number"),
     jobsCreated: Yup.number().min(0).typeError("Must be a number"),
     consentGiven: Yup.boolean().oneOf([true], "You must verify this data is correct"),
+    disclaimerAccepted: Yup.boolean().oneOf([true], "You must accept the disclaimer to proceed"),
 });
 
 export default function RegisterActionForm() {
@@ -126,13 +128,12 @@ export default function RegisterActionForm() {
             phone: "",
             email: "",
             commissioningDate: "",
-            baselineData: "",
-            generationData: "",
             localPercent: "",
             indigenousPercent: "",
             communityPercent: "",
             jobsCreated: "",
             consentGiven: false,
+            disclaimerAccepted: false,
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -283,26 +284,10 @@ export default function RegisterActionForm() {
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                     />
-
-                    <Input
-                        label="Baseline Data"
-                        name="baselineData"
-                        value={formik.values.baselineData}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Baseline measurement data"
-                    />
-
-                    <Input
-                        label="Generation Data (kWh)"
-                        name="generationData"
-                        value={formik.values.generationData}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Generation measurement data"
-                    />
                 </div>
             </Card>
+
+
 
             <Card header={<h3 className="text-lg font-semibold text-gray-800">Actor Information</h3>}>
                 <ActorDetailsSection
@@ -344,7 +329,12 @@ export default function RegisterActionForm() {
                 />
             </Card>
 
-            <Card header={<h3 className="text-lg font-semibold text-gray-800">Atmanirbhar Assessment</h3>}>
+            <Card header={
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-800">Atmanirbhar Assessment</h3>
+                    <p className="text-xs text-gray-500 mt-1">Optional — help us measure self-reliance impact</p>
+                </div>
+            }>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input
                         label="Local Sourcing %"
@@ -408,6 +398,24 @@ export default function RegisterActionForm() {
                         <p className="text-red-500 text-xs ml-1">{formik.errors.consentGiven}</p>
                     )}
 
+                    <label className="flex items-start gap-3 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            name="disclaimerAccepted"
+                            checked={formik.values.disclaimerAccepted}
+                            onChange={formik.handleChange}
+                            className="mt-1 w-5 h-5 accent-[rgb(32,38,130)] cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-600">
+                            I understand that the carbon reduction (tCO₂e) and Atmanirbhar
+                            values displayed are <strong>estimates</strong> based on my submitted data.
+                            Earth Carbon Foundation verifies all actions in good faith.
+                        </span>
+                    </label>
+                    {formik.touched.disclaimerAccepted && formik.errors.disclaimerAccepted && (
+                        <p className="text-red-500 text-xs ml-1">{formik.errors.disclaimerAccepted}</p>
+                    )}
+
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
                         <div>
                             <p className="text-sm text-gray-500">Registration Fee</p>
@@ -419,6 +427,6 @@ export default function RegisterActionForm() {
                     </div>
                 </div>
             </Card>
-        </form>
+        </form >
     );
 }

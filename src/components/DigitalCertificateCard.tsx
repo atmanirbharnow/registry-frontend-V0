@@ -37,12 +37,22 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                 <h2 className="text-base sm:text-lg font-black text-gray-800 uppercase tracking-tight mb-2 sm:mb-3">
                     Earth Carbon Registry
                 </h2>
-                <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-green-100 rounded-full">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-700">
-                        <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    <span className="text-xs sm:text-sm font-bold text-green-700">VERIFIED</span>
-                </div>
+                {action.status === "verified" ? (
+                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-green-100 rounded-full">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-700">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <span className="text-xs sm:text-sm font-bold text-green-700">VERIFIED</span>
+                    </div>
+                ) : (
+                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-yellow-100 rounded-full">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-yellow-700">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span className="text-xs sm:text-sm font-bold text-yellow-700">REGISTERED</span>
+                    </div>
+                )}
             </div>
 
             <div className="flex justify-center mb-4 sm:mb-6">
@@ -55,15 +65,27 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                 </h3>
 
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                    <div className="bg-green-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center">
+                    <div className="bg-green-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Carbon Reduced</div>
-                        <div className="text-xl sm:text-2xl font-black text-green-600">-{tco2e}</div>
-                        <div className="text-[10px] sm:text-xs font-bold text-green-600">tCO₂e</div>
+                        {action.status === "verified" ? (
+                            <>
+                                <div className="text-xl sm:text-2xl font-black text-green-600">-{tco2e}</div>
+                                <div className="text-[10px] sm:text-xs font-bold text-green-600">tCO₂e</div>
+                            </>
+                        ) : (
+                            <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
+                        )}
                     </div>
-                    <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center">
+                    <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Atmanirbhar</div>
-                        <div className="text-xl sm:text-2xl font-black text-blue-600">{atmanirbhar}%</div>
-                        <div className="text-[10px] sm:text-xs font-bold text-blue-600">{year}</div>
+                        {action.status === "verified" ? (
+                            <>
+                                <div className="text-xl sm:text-2xl font-black text-blue-600">{atmanirbhar}%</div>
+                                <div className="text-[10px] sm:text-xs font-bold text-blue-600">{year}</div>
+                            </>
+                        ) : (
+                            <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
+                        )}
                     </div>
                 </div>
 
@@ -97,6 +119,13 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                 >
                     registryearthcarbon.org/verify/{action.registryId}
                 </Link>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-gray-100">
+                <p className="text-[10px] sm:text-xs text-gray-400 text-center">
+                    Estimated impact based on user-submitted data.
+                    Earth Carbon Foundation verifies all actions in good faith.
+                </p>
             </div>
         </div>
     );

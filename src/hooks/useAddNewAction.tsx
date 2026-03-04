@@ -80,8 +80,6 @@ export const useAddNewAction = () => {
           meterPhotos: [],
           sitePhoto: null,
           commissioningDate: null,
-          baselineData: null,
-          generationData: null,
           localPercent: null,
           indigenousPercent: null,
           communityPercent: null,

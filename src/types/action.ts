@@ -27,14 +27,18 @@ export interface Action {
     meterPhotos: string[];
     sitePhoto: string | null;
     commissioningDate: string | null;
-    baselineData: string | null;
-    generationData: string | null;
     localPercent: number | null;
     indigenousPercent: number | null;
     communityPercent: number | null;
     jobsCreated: number | null;
     razorpayOrderId: string | null;
     razorpayPaymentId: string | null;
+    verifiedAt?: string | null;
+    verifiedBy?: string | null;
+    adminNotes?: string | null;
+    calculationVersion?: string | null;
+    calculationMethodology?: string | null;
+    emissionFactorUsed?: string | null;
     createdAt: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -54,11 +58,10 @@ export interface ActionFormData {
     meterPhotos: string[];
     sitePhoto: string | null;
     commissioningDate: string;
-    baselineData: string;
-    generationData: string;
     localPercent: number | string;
     indigenousPercent: number | string;
     communityPercent: number | string;
     jobsCreated: number | string;
     consentGiven: boolean;
+    disclaimerAccepted: boolean;
 }

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyRazorpaySignature } from "@/lib/razorpay";
 import { generateActionHash } from "@/lib/hashUtils";
-import { calculateCo2e } from "@/lib/co2eCalculation";
-import { calculateAtmanirbhar } from "@/lib/atmanirbharCalculation";
+import { calculateImpactPhase2 } from "@/lib/calculationEngine";
 
 const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!;
@@ -169,19 +168,18 @@ export async function POST(request: NextRequest) {
         const counterNext = await incrementCounter(userIdToken);
         const registryId = `ECF-${String(counterNext).padStart(4, "0")}`;
         const now = new Date().toISOString();
-
-        const co2eKg = calculateCo2e(
-            formData.actionType,
-            Number(formData.quantity),
-            1
-        );
-
-        const atmanirbharPercent = calculateAtmanirbhar({
-            localPercent: Number(formData.localPercent) || 0,
-            indigenousPercent: Number(formData.indigenousPercent) || 0,
-            communityPercent: Number(formData.communityPercent) || 0,
-            jobsCreated: Number(formData.jobsCreated) || 0,
+        const impact = calculateImpactPhase2({
+            actionType: formData.actionType,
+            quantity: Number(formData.quantity),
+            unit: formData.unit,
+            localPercent: formData.localPercent ? Number(formData.localPercent) : undefined,
+            indigenousPercent: formData.indigenousPercent ? Number(formData.indigenousPercent) : undefined,
+            communityPercent: formData.communityPercent ? Number(formData.communityPercent) : undefined,
+            jobsCreated: formData.jobsCreated ? Number(formData.jobsCreated) : undefined,
         });
+
+        const co2eKg = impact.tCO2e * 1000;
+        const atmanirbharPercent = impact.atmanirbharScore;
 
         const sha256Hash = generateActionHash({
             registryId,
@@ -216,14 +214,15 @@ export async function POST(request: NextRequest) {
             meterPhotos: (formData.meterPhotos || []).filter(Boolean),
             sitePhoto: formData.sitePhoto || null,
             commissioningDate: formData.commissioningDate || null,
-            baselineData: formData.baselineData || null,
-            generationData: formData.generationData || null,
             localPercent: Number(formData.localPercent) || null,
             indigenousPercent: Number(formData.indigenousPercent) || null,
             communityPercent: Number(formData.communityPercent) || null,
             jobsCreated: Number(formData.jobsCreated) || null,
             razorpayOrderId: razorpay_order_id,
             razorpayPaymentId: razorpay_payment_id,
+            calculationVersion: impact.calculationVersion,
+            calculationMethodology: impact.methodology,
+            emissionFactorUsed: impact.emissionFactorUsed || null,
             createdAt: now,
         };
 

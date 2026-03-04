@@ -1,12 +1,19 @@
 export const ACTION_TYPES = [
+  // From client's emission factors table
   { value: "solar_rooftop", label: "Solar Rooftop", unit: "kW" },
+  { value: "refrigerator_upgrade", label: "Refrigerator Upgrade (2→5 Star)", unit: "units" },
+  { value: "geyser_temp_reduction", label: "Geyser Temperature Reduction (60→40°C)", unit: "units" },
+  { value: "led_replacement", label: "LED vs ICL Bulb (100W→5W)", unit: "bulbs" },
+  { value: "rwh", label: "Rainwater Harvesting", unit: "kL" },
+  { value: "biogas", label: "Biogas Plant (2m³)", unit: "plants" },
+  { value: "composting", label: "Composting", unit: "kg waste" },
+  { value: "plastic_recycling", label: "Plastic Recycling", unit: "kg" },
+
+  // Legacy types (kept for backward compatibility)
   { value: "swh", label: "Solar Water Heater", unit: "liters" },
-  { value: "rwh", label: "Rainwater Harvesting", unit: "m³" },
-  { value: "waterless_urinal", label: "Waterless Urinal", unit: "No." },
-  { value: "wastewater_recycling", label: "Wastewater Recycling", unit: "m3" },
-  { value: "biogas", label: "Biogas (Food Waste)", unit: "kg" },
-  { value: "led_replacement", label: "LED Replacement", unit: "No." },
-  { value: "tree_plantation", label: "Tree Plantation", unit: "No. of Trees" },
+  { value: "waterless_urinal", label: "Waterless Urinal", unit: "units" },
+  { value: "wastewater_recycling", label: "Wastewater Recycling", unit: "kL/day" },
+  { value: "tree_plantation", label: "Tree Plantation", unit: "trees" },
 ];
 
 export const ACTION_LABELS: Record<string, string> = ACTION_TYPES.reduce(

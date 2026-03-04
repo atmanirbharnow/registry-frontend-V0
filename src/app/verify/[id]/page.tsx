@@ -120,33 +120,60 @@ export default function VerifyPage() {
                         )}
                         <DetailRow label="Actor Type" value={action.actorType} />
                         <DetailRow label="Submitted" value={formatDate(action.createdAt)} />
+                        {action.localPercent != null && (
+                            <DetailRow label="Local Sourcing" value={`${action.localPercent}%`} />
+                        )}
+                        {action.indigenousPercent != null && (
+                            <DetailRow label="Indigenous Technology" value={`${action.indigenousPercent}%`} />
+                        )}
+                        {action.communityPercent != null && (
+                            <DetailRow label="Community Ownership" value={`${action.communityPercent}%`} />
+                        )}
+                        {action.jobsCreated != null && (
+                            <DetailRow label="Jobs Created" value={`${action.jobsCreated} jobs`} />
+                        )}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
-                            CO₂e Reduction
-                        </h3>
-                        <p className="text-3xl font-black text-gray-800">
-                            {tco2e != null ? (
-                                <>{tco2e} <span className="text-lg font-bold text-gray-500">tCO₂e</span></>
-                            ) : (
-                                <span className="text-gray-400">N/A</span>
-                            )}
+                {action.status === "pending" && (
+                    <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200 flex items-center gap-3">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-yellow-600 flex-shrink-0">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <p className="text-sm text-yellow-800">
+                            <strong>Under Review</strong> — This action is awaiting verification. Estimated values will shown below once admin verifies it.
                         </p>
                     </div>
-                    <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
-                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
-                            Atmanirbhar Score
-                        </h3>
-                        <p className="text-3xl font-black text-gray-800">
-                            {atmanirbhar != null
-                                ? <>{atmanirbhar}<span className="text-lg font-bold text-gray-500">%</span></>
-                                : "Pending"}
-                        </p>
+                )}
+
+                {action.status === "verified" && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-green-50 rounded-[2rem] border border-green-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                                CO₂e Reduction
+                            </h3>
+                            <p className="text-3xl font-black text-green-600">
+                                {tco2e != null ? (
+                                    <>{tco2e} <span className="text-lg font-bold text-green-500">tCO₂e</span></>
+                                ) : (
+                                    <span className="text-gray-400">N/A</span>
+                                )}
+                            </p>
+                        </div>
+                        <div className="bg-blue-50 rounded-[2rem] border border-blue-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                                Atmanirbhar Score
+                            </h3>
+                            <p className="text-3xl font-black text-blue-600">
+                                {atmanirbhar != null
+                                    ? <>{atmanirbhar}<span className="text-lg font-bold text-blue-500">%</span></>
+                                    : <span className="text-gray-400">N/A</span>}
+                            </p>
+                            <p className="text-xs text-blue-500">{year}</p>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
@@ -162,6 +189,15 @@ export default function VerifyPage() {
 
                 <div className="flex justify-center">
                     <QRCode registryId={action.registryId} size={180} />
+                </div>
+
+                {/* Extended Disclaimer */}
+                <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5">
+                    <p className="text-sm text-gray-600">
+                        The values shown above are estimated based on user-submitted data.
+                        Earth Carbon Foundation verifies all registered actions in good faith.
+                        Actual impact may vary depending on real-world conditions.
+                    </p>
                 </div>
 
                 <div className="space-y-3 text-center">
