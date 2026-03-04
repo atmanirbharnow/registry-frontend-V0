@@ -9,8 +9,9 @@ import Input from "./ui/Input";
 import Button from "./ui/Button";
 import { ACTION_LABELS, ACTION_STATUS_OPTIONS, ACTION_TYPES } from "@/lib/constants";
 import { Action, ActionStatus } from "@/types/action";
-import { getAllActionsRealtime, updateActionStatus, getAllActions } from "@/lib/firestoreService";
+import { getAllActionsRealtime, updateActionStatus, getAllActions, getActionsByUserId } from "@/lib/firestoreService";
 import { useAuth } from "@/context/AuthContext";
+import { calculatePortfolioMetrics, PortfolioMetrics } from "@/lib/portfolioCalculator";
 
 export default function AdminActionTable() {
     const { user } = useAuth();
@@ -24,6 +25,8 @@ export default function AdminActionTable() {
     const [selectedAction, setSelectedAction] = useState<Action | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [valuesApproved, setValuesApproved] = useState(false);
+    const [userPortfolio, setUserPortfolio] = useState<PortfolioMetrics | null>(null);
+    const [fetchingPortfolio, setFetchingPortfolio] = useState(false);
     const [verifyForm, setVerifyForm] = useState({
         co2eTonnes: "",
         atmanirbharPercent: "",
@@ -73,8 +76,11 @@ export default function AdminActionTable() {
         }
     };
 
-    const openVerifyModal = (action: Action) => {
+    const openVerifyModal = async (action: Action) => {
         setSelectedAction(action);
+        setIsEditMode(false);
+        setValuesApproved(false);
+        setUserPortfolio(null);
         setVerifyForm({
             co2eTonnes: action.co2eKg != null ? (action.co2eKg / 1000).toString() : "",
             atmanirbharPercent: action.atmanirbharPercent != null ? action.atmanirbharPercent.toString() : "",
@@ -82,6 +88,20 @@ export default function AdminActionTable() {
             adminNotes: action.adminNotes || ""
         });
         setVerifyModalOpen(true);
+
+        if (action.userId) {
+            setFetchingPortfolio(true);
+            try {
+                const userActions = await getActionsByUserId(action.userId);
+                if (userActions.length > 0) {
+                    setUserPortfolio(calculatePortfolioMetrics(userActions));
+                }
+            } catch (err) {
+                console.error("Error fetching user portfolio:", err);
+            } finally {
+                setFetchingPortfolio(false);
+            }
+        }
     };
 
     const handleAdminVerification = async (e: React.FormEvent) => {
@@ -391,6 +411,32 @@ export default function AdminActionTable() {
                                         </span>
                                     </div>
                                 )}
+                            </div>
+
+                            {/* User Portfolio Context */}
+                            <div className="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100/50">
+                                <h3 className="text-xs font-bold text-indigo-800 uppercase tracking-wider mb-2 flex items-center justify-between">
+                                    <span>Current Portfolio Context</span>
+                                    {fetchingPortfolio && <span className="animate-pulse text-indigo-400 text-[10px]">Loading...</span>}
+                                </h3>
+                                {userPortfolio ? (
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                            <div className="text-[10px] font-bold text-orange-500 uppercase">Energy</div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.energy.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                        </div>
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                            <div className="text-[10px] font-bold text-cyan-500 uppercase">Water</div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.water.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                        </div>
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                            <div className="text-[10px] font-bold text-emerald-500 uppercase">Waste</div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.waste.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                        </div>
+                                    </div>
+                                ) : !fetchingPortfolio ? (
+                                    <p className="text-xs text-gray-400 italic text-center py-2">No prior verified actions</p>
+                                ) : null}
                             </div>
 
                             <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100/50">

@@ -11,6 +11,7 @@ import QRCode from "@/components/QRCode";
 import Spinner from "@/components/ui/Spinner";
 import PublicShell from "@/components/PublicShell";
 import PerformanceBreakdownModal from "@/components/PerformanceBreakdownModal";
+import Link from "next/link";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
 
@@ -210,25 +211,48 @@ export default function VerifyPage() {
                                         This user's holistic impact across Energy, Water, and Waste resource pillars.
                                     </p>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <button
-                                            onClick={() => setIsBreakdownModalOpen(true)}
-                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-green-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer"
+                                        <Link
+                                            href={`/portfolio/${action.userId}`}
+                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-green-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer block"
                                         >
                                             <div className="text-xs font-bold text-blue-200 uppercase tracking-wider mb-1">Total Impact</div>
                                             <div className="text-2xl font-black text-white group-hover:text-green-300 transition-colors">-{portfolio.totalTCO2e.toFixed(3)}</div>
                                             <div className="text-xs font-bold text-green-400">Total tCO₂e Reduced <span className="text-white/50 inline-block ml-1">→</span></div>
-                                        </button>
+                                        </Link>
 
-                                        <button
-                                            onClick={() => setIsBreakdownModalOpen(true)}
-                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-cyan-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer"
+                                        <Link
+                                            href={`/portfolio/${action.userId}`}
+                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-cyan-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer block"
                                         >
                                             <div className="text-xs font-bold text-blue-200 uppercase tracking-wider mb-1">Total Atmanirbhar</div>
                                             <div className="text-2xl font-black text-white group-hover:text-cyan-300 transition-colors">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
                                             <div className="text-xs font-bold text-cyan-400">Resource Independence <span className="text-white/50 inline-block ml-1">→</span></div>
-                                        </button>
+                                        </Link>
                                     </div>
-                                    <p className="text-center text-xs text-blue-300/60 mt-4">* Click metrics to view 3-pillar breakdown</p>
+
+                                    {/* 3 Pillar Mini Badges */}
+                                    <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-5">
+                                        <div className="flex items-center gap-2 bg-gradient-to-br from-orange-400/10 to-orange-500/5 border border-orange-400/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                                            <span className="text-orange-400 font-bold">Energy:</span>
+                                            <span className="text-white">-{portfolio.energy.tCO2e.toFixed(1)}t</span>
+                                            <span className="text-orange-300 font-mono">|</span>
+                                            <span className="text-white">{portfolio.energy.atmanirbharAvg.toFixed(0)}%</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 bg-gradient-to-br from-cyan-400/10 to-cyan-500/5 border border-cyan-400/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                                            <span className="text-cyan-400 font-bold">Water:</span>
+                                            <span className="text-white">-{portfolio.water.tCO2e.toFixed(1)}t</span>
+                                            <span className="text-cyan-300 font-mono">|</span>
+                                            <span className="text-white">{portfolio.water.atmanirbharAvg.toFixed(0)}%</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 bg-gradient-to-br from-emerald-400/10 to-emerald-500/5 border border-emerald-400/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                                            <span className="text-emerald-400 font-bold">Waste:</span>
+                                            <span className="text-white">-{portfolio.waste.tCO2e.toFixed(1)}t</span>
+                                            <span className="text-emerald-300 font-mono">|</span>
+                                            <span className="text-white">{portfolio.waste.atmanirbharAvg.toFixed(0)}%</span>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-center text-xs text-blue-300/60 mt-4">* Click metrics to view full 3-pillar breakdown</p>
                                 </div>
                             </div>
                         )}
