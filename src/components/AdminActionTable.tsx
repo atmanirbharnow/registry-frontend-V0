@@ -231,7 +231,7 @@ export default function AdminActionTable() {
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total CO₂e</p>
-                    <p className="text-3xl font-black text-[rgb(32,38,130)] mt-1">{stats.totalCo2e.toLocaleString("en-IN", { maximumFractionDigits: 2 })} <span className="text-sm font-bold text-gray-400">kg</span></p>
+                    <p className="text-3xl font-black text-[rgb(32,38,130)] mt-1">{(stats.totalCo2e / 1000).toLocaleString("en-IN", { maximumFractionDigits: 3 })} <span className="text-sm font-bold text-gray-400">tCO₂e</span></p>
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Revenue</p>
@@ -386,15 +386,15 @@ export default function AdminActionTable() {
             {/* Verification Modal */}
             {verifyModalOpen && selectedAction && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 py-6 sm:p-6 overflow-hidden">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-full flex flex-col">
-                        <div className="px-5 sm:px-6 py-4 border-b border-gray-100 shrink-0">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-full flex flex-col">
+                        <div className="px-4 sm:px-5 py-3 border-b border-gray-100 shrink-0">
                             <h2 className="text-lg font-black text-gray-800 uppercase tracking-tight">Verify Action</h2>
                             <p className="text-sm font-medium text-gray-500 mt-1">
                                 {selectedAction.registryId} — {ACTION_LABELS[selectedAction.actionType] || selectedAction.actionType}
                             </p>
                         </div>
 
-                        <form onSubmit={handleAdminVerification} className="px-5 sm:px-6 py-5 space-y-5 overflow-y-auto grow">
+                        <form onSubmit={handleAdminVerification} className="px-4 sm:px-5 py-4 space-y-4 overflow-y-auto grow">
                             <div className="bg-gray-50/80 rounded-xl p-4 space-y-2 text-sm border border-gray-100">
                                 <p><span className="font-bold text-gray-400 uppercase tracking-wider text-[11px] mr-2">Quantity:</span>{" "}
                                     <span className="font-semibold text-gray-800">{selectedAction.quantity} {selectedAction.unit}</span></p>
@@ -442,7 +442,7 @@ export default function AdminActionTable() {
                             <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100/50">
                                 <h3 className="text-xs font-bold text-[rgb(32,38,130)] uppercase tracking-wider mb-3">Calculated Impact</h3>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <div className="bg-white p-3 rounded-xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-blue-50">
                                         <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">CO₂e Reduced (tonnes)</label>
                                         {isEditMode ? (
@@ -478,7 +478,7 @@ export default function AdminActionTable() {
                                         )}
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3 mt-4">
+                                <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                     {isEditMode ? (
                                         <button
                                             type="button"

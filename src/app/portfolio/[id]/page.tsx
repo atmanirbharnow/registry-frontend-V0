@@ -10,6 +10,9 @@ import PublicShell from "@/components/PublicShell";
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import { calculateEnergySavings } from "@/lib/savings/energy";
+import { calculateWaterSavings } from "@/lib/savings/water";
+import { calculateWasteSavings } from "@/lib/savings/waste";
 
 export default function PublicPortfolioPage() {
     const params = useParams();
@@ -67,15 +70,53 @@ export default function PublicPortfolioPage() {
     }
 
     const renderPillar = (title: string, colorClass: string, bgClass: string, textClass: string, pillar: any) => {
+        let savingsData = null;
+        let testId = "";
+
+        if (pillar.actions.length > 0) {
+            if (title === "Energy") {
+                // Approximate kWh based on co2e for now until actions explicitly store kWh
+                // Standard emission factor roughly ~0.82 kg/kWh in India
+                const kwhSaved = (pillar.tCO2e * 1000) / 0.82;
+                savingsData = calculateEnergySavings(kwhSaved);
+                testId = "energy-savings-display";
+            } else if (title === "Water") {
+                // Approximate liters saved based on some generic factor 
+                // Assumes 1 tCO2e of water treatment ~ 100,000 liters
+                const litersSaved = (pillar.tCO2e * 100000);
+                savingsData = calculateWaterSavings(litersSaved);
+                testId = "water-savings-display";
+            } else if (title === "Waste") {
+                // Approximate kg diverted
+                const kgDiverted = (pillar.tCO2e * 1000) / 2.5; // generic factor
+                savingsData = calculateWasteSavings(kgDiverted, 'organic');
+                testId = "waste-savings-display";
+            }
+        }
+
         return (
             <div className={`rounded-xl p-5 sm:p-6 border ${colorClass} ${bgClass} mb-4 shadow-sm`}>
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className={`font-black uppercase tracking-wider text-sm sm:text-base ${textClass}`}>
+                <div className="flex justify-between items-start mb-4">
+                    <h3 className={`font-black uppercase tracking-wider text-sm sm:text-base ${textClass} mt-1`}>
                         {title} Performance
                     </h3>
                     <div className="text-right">
                         <div className="font-black text-gray-800 text-sm sm:text-base">-{pillar.tCO2e.toFixed(3)} tCO₂e</div>
                         <div className={`font-bold text-xs sm:text-sm ${textClass}`}>{pillar.atmanirbharAvg.toFixed(1)}% Self-Reliance</div>
+                        {savingsData && (
+                            <div
+                                data-testid={testId}
+                                className="mt-1 cursor-default group relative inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50/80 px-2 py-0.5 rounded-full border border-indigo-100"
+                            >
+                                ₹ {Number(savingsData.amount).toLocaleString("en-IN")} INR Saved
+
+                                {/* Custom Tooltip Overlay */}
+                                <div className="absolute top-full right-0 mt-2 w-48 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-50 text-left bg-gray-900 text-white text-[10px] p-2 rounded-lg font-normal shadow-xl whitespace-normal pointer-events-none">
+                                    {savingsData.note}
+                                    <div className="absolute -top-1 right-3 w-2 h-2 bg-gray-900 rotate-45"></div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -130,6 +130,19 @@ export default function ProfilePage() {
                                                     ))}
                                             </div>
                                         )}
+
+                                    <div className="mt-4 pt-4 border-t border-gray-100 flex flex-col gap-1.5 w-full sm:w-64">
+                                        <label htmlFor="user-state" className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                                            Base State <span className="text-[10px] normal-case font-normal text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full cursor-help" title="Currently locked to Gujarat for the pilot phase. This calculates your regional financial energy/water savings.">?</span>
+                                        </label>
+                                        <select
+                                            id="user-state"
+                                            disabled
+                                            className="w-full bg-gray-50 border border-gray-200 text-gray-600 rounded-lg px-3 py-2 text-sm appearance-none cursor-not-allowed"
+                                        >
+                                            <option value="Gujarat">Gujarat</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -332,7 +345,7 @@ export default function ProfilePage() {
                         )}
                     </div>
                 </div>
-            </div>
+            </div >
             <PerformanceBreakdownModal
                 isOpen={isBreakdownModalOpen}
                 onClose={() => setIsBreakdownModalOpen(false)}

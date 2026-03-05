@@ -147,6 +147,7 @@ export default function PhotoUploadSection({
                                 type="file"
                                 accept="image/*"
                                 className="hidden"
+                                aria-label="Upload meter photo"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0];
                                     if (file) handleMeterUpload(index, file);
@@ -202,6 +203,7 @@ export default function PhotoUploadSection({
                         type="file"
                         accept="image/*"
                         className="hidden"
+                        aria-label="Upload site photo"
                         onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) handleSiteUpload(file);
