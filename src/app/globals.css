@@ -71,3 +71,10 @@ body {
   padding-left: 10px !important;
   padding-right: 10px !important;
 }
+
+/* Ensure all buttons have pointer cursor globally */
+@layer base {
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}
