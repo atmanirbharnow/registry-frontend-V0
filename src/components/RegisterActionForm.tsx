@@ -55,15 +55,19 @@ export default function RegisterActionForm() {
     const [sitePhoto, setSitePhoto] = useState<string | null>(null);
 
     useEffect(() => {
-        const script = document.createElement("script");
-        script.src = "https://checkout.razorpay.com/v1/checkout.js";
-        script.async = true;
-        document.body.appendChild(script);
-        return () => {
-            if (document.body.contains(script)) {
-                document.body.removeChild(script);
-            }
-        };
+        // Only add the script if it doesn't already exist.
+        // CRITICAL: Do NOT remove this script on cleanup — removing it destroys
+        // window.Razorpay and breaks the payment handler callback on deployment.
+        const existing = document.querySelector(
+            'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+        );
+        if (!existing) {
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            document.body.appendChild(script);
+        }
+        // No cleanup — intentional. Removing the script destroys window.Razorpay.
     }, []);
 
     const processPaymentVerification = async (
@@ -199,12 +203,26 @@ export default function RegisterActionForm() {
                     theme: { color: "rgb(32,38,130)" },
                     modal: {
                         ondismiss: () => {
+                            console.log("[payment] Razorpay modal dismissed (no payment)");
                             setSubmitting(false);
                         },
+                        escape: false,
+                        animation: true,
                     },
                 };
 
                 const razorpay = new window.Razorpay(options);
+
+                // Listen for payment failure events to help diagnose issues
+                razorpay.on("payment.failed", (resp: Record<string, unknown>) => {
+                    console.error("[payment] payment.failed event:", resp);
+                    const err = resp?.error as Record<string, unknown> | undefined;
+                    toast.error(
+                        `Payment failed: ${err?.description || err?.reason || "Unknown error"}`
+                    );
+                    setSubmitting(false);
+                });
+
                 razorpay.open();
             } catch (err) {
                 const message = err instanceof Error ? err.message : "Failed to initiate payment";
