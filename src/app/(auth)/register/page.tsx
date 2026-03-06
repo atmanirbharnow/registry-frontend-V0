@@ -12,7 +12,7 @@ export default function RegisterPage() {
                         Register New Action
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        Fill in the details below to register your carbon action. A ₹199 registration fee applies.
+                        Fill in the details below to register your carbon action. A ₹1 registration fee applies.
                     </p>
                 </div>
 

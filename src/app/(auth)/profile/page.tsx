@@ -131,6 +131,18 @@ export default function ProfilePage() {
                                             </div>
                                         )}
                                 </div>
+
+                                <div className="flex flex-col gap-1.5 w-full sm:w-48 mt-4 sm:mt-0">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider cursor-help" title="Currently locked to Gujarat for the pilot phase. This calculates your regional financial energy/water savings.">
+                                        Base State
+                                    </label>
+                                    <div
+                                        className="w-full bg-gray-50 border border-gray-200 text-gray-500 rounded-lg px-3 py-2 text-sm cursor-help font-medium"
+                                        title="Currently locked to Gujarat for the pilot phase. This calculates your regional financial energy/water savings."
+                                    >
+                                        Gujarat
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

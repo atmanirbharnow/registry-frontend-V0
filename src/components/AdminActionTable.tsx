@@ -49,7 +49,7 @@ export default function AdminActionTable() {
         const verified = actions.filter((a) => a.status === "verified").length;
         const pending = actions.filter((a) => a.status === "pending").length;
         const totalCo2e = actions.reduce((sum, a) => sum + (a.co2eKg || 0), 0);
-        const totalRevenue = actions.filter((a) => a.registryId).length * 199;
+        const totalRevenue = actions.filter((a) => a.registryId).length * 1;
         return { total, verified, pending, totalCo2e, totalRevenue };
     }, [actions]);
 

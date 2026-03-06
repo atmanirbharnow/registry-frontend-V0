@@ -73,8 +73,8 @@ export const ACTION_PILLAR_MAP: Record<string, "energy" | "water" | "waste" | "o
   tree_plantation: "other",
 };
 
-export const PAYMENT_AMOUNT_PAISE = 19900;
-export const PAYMENT_AMOUNT_DISPLAY = "₹199";
+export const PAYMENT_AMOUNT_PAISE = 100;
+export const PAYMENT_AMOUNT_DISPLAY = "₹1";
 
 export const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
