@@ -3,14 +3,19 @@ import { verifyRazorpaySignature } from "@/lib/razorpay";
 import { generateActionHash } from "@/lib/hashUtils";
 import { calculateImpactPhase2 } from "@/lib/calculationEngine";
 
-const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
-const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!;
 const DATABASE_ID = "asia-pacific";
-const BASE_URL = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents`;
 
-const hasAdminCredentials = !!(
-    process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL
-);
+function getProjectId() {
+    return process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!;
+}
+
+function getBaseUrl() {
+    return `https://firestore.googleapis.com/v1/projects/${getProjectId()}/databases/${DATABASE_ID}/documents`;
+}
+
+function checkAdminCredentials() {
+    return !!(process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL);
+}
 
 async function incrementCounterAdmin(): Promise<number> {
     const { adminDb } = await import("@/lib/firebaseAdmin");
@@ -50,6 +55,7 @@ function toFirestoreDoc(data: Record<string, unknown>) {
 }
 
 async function incrementCounterREST(bearerToken: string): Promise<number> {
+    const PROJECT_ID = getProjectId();
     const commitUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents:commit`;
     const docPath = `projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents/meta/registryCounter`;
 
@@ -91,7 +97,7 @@ async function incrementCounterREST(bearerToken: string): Promise<number> {
 }
 
 async function createActionDocREST(data: Record<string, unknown>, bearerToken: string): Promise<string> {
-    const res = await fetch(`${BASE_URL}/actions`, {
+    const res = await fetch(`${getBaseUrl()}/actions`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -109,33 +115,33 @@ async function createActionDocREST(data: Record<string, unknown>, bearerToken: s
 }
 
 async function incrementCounter(bearerToken?: string): Promise<number> {
-    if (hasAdminCredentials) {
+    if (checkAdminCredentials()) {
         return incrementCounterAdmin();
     }
     return incrementCounterREST(bearerToken!);
 }
 
 async function createActionDoc(data: Record<string, unknown>, bearerToken?: string): Promise<string> {
-    if (hasAdminCredentials) {
+    if (checkAdminCredentials()) {
         return createActionDocAdmin(data);
     }
     return createActionDocREST(data, bearerToken!);
 }
 
 export async function POST(request: NextRequest) {
+    // Read all env vars at runtime — server-only vars are NOT available at build time
+    // on Firebase App Hosting, so module-level reads would be empty strings.
+    const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
     const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
     const hasSecret = !!process.env.RAZORPAY_KEY_SECRET;
+    const hasAdminCredentials = checkAdminCredentials();
     console.log("[verify] Starting. isSimulation:", isSimulation, "keyId:", keyId, "hasSecret:", hasSecret, "hasAdminCreds:", hasAdminCredentials);
 
     try {
-        if (
-            !isSimulation &&
-            (!process.env.RAZORPAY_KEY_SECRET ||
-                keyId.startsWith("rzp_test_"))
-        ) {
-            console.error("[verify] Config guard blocked: hasSecret=", hasSecret, "keyId=", keyId);
+        if (!isSimulation && !hasSecret) {
+            console.error("[verify] Config guard blocked: missing RAZORPAY_KEY_SECRET");
             return NextResponse.json(
-                { error: `Payment configuration error: hasSecret=${hasSecret}, keyPrefix=${keyId.slice(0, 10)}` },
+                { error: "Payment configuration error: RAZORPAY_KEY_SECRET is missing" },
                 { status: 500 }
             );
         }

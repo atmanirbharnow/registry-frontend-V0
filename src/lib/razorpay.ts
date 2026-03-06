@@ -1,8 +1,5 @@
 import crypto from "crypto";
 
-const RAZORPAY_KEY_ID = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || "";
-
 export interface RazorpayOrder {
     id: string;
     amount: number;
@@ -12,7 +9,9 @@ export interface RazorpayOrder {
 export async function createRazorpayOrder(
     amountInPaise: number
 ): Promise<RazorpayOrder> {
-    const auth = Buffer.from(`${RAZORPAY_KEY_ID}:${RAZORPAY_KEY_SECRET}`).toString("base64");
+    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "";
+    const auth = Buffer.from(`${keyId}:${keySecret}`).toString("base64");
 
     const response = await fetch("https://api.razorpay.com/v1/orders", {
         method: "POST",
@@ -45,9 +44,11 @@ export function verifyRazorpaySignature(
     paymentId: string,
     signature: string
 ): boolean {
+    // Read at runtime — same reason as above
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || "";
     const body = `${orderId}|${paymentId}`;
     const expectedSignature = crypto
-        .createHmac("sha256", RAZORPAY_KEY_SECRET)
+        .createHmac("sha256", keySecret)
         .update(body)
         .digest("hex");
 

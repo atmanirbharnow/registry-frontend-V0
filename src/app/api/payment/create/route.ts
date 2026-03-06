@@ -2,9 +2,10 @@ import { NextResponse } from "next/server";
 import { createRazorpayOrder } from "@/lib/razorpay";
 import { PAYMENT_AMOUNT_PAISE } from "@/lib/constants";
 
-const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
-
 export async function POST() {
+    // Read at runtime, not module level — server-only env vars aren't available at build time
+    const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
+
     try {
         if (isSimulation) {
             return NextResponse.json({
