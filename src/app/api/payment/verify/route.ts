@@ -123,14 +123,19 @@ async function createActionDoc(data: Record<string, unknown>, bearerToken?: stri
 }
 
 export async function POST(request: NextRequest) {
+    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
+    const hasSecret = !!process.env.RAZORPAY_KEY_SECRET;
+    console.log("[verify] Starting. isSimulation:", isSimulation, "keyId:", keyId, "hasSecret:", hasSecret, "hasAdminCreds:", hasAdminCredentials);
+
     try {
         if (
             !isSimulation &&
             (!process.env.RAZORPAY_KEY_SECRET ||
-                process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID?.startsWith("rzp_test_"))
+                keyId.startsWith("rzp_test_"))
         ) {
+            console.error("[verify] Config guard blocked: hasSecret=", hasSecret, "keyId=", keyId);
             return NextResponse.json(
-                { error: "Payment configuration error. Please contact support." },
+                { error: `Payment configuration error: hasSecret=${hasSecret}, keyPrefix=${keyId.slice(0, 10)}` },
                 { status: 500 }
             );
         }
@@ -144,7 +149,10 @@ export async function POST(request: NextRequest) {
             formData,
         } = body;
 
+        console.log("[verify] Body received. orderId:", razorpay_order_id, "paymentId:", razorpay_payment_id, "hasSignature:", !!razorpay_signature, "hasToken:", !!userIdToken);
+
         if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+            console.error("[verify] Missing payment details");
             return NextResponse.json(
                 { error: "Missing payment details" },
                 { status: 400 }
@@ -157,6 +165,7 @@ export async function POST(request: NextRequest) {
                 razorpay_payment_id,
                 razorpay_signature
             );
+            console.log("[verify] Signature valid:", isValid);
             if (!isValid) {
                 return NextResponse.json(
                     { error: "Invalid payment signature" },
@@ -165,7 +174,9 @@ export async function POST(request: NextRequest) {
             }
         }
 
+        console.log("[verify] Incrementing counter...");
         const counterNext = await incrementCounter(userIdToken);
+        console.log("[verify] Counter incremented to:", counterNext);
         const registryId = `ECF-${String(counterNext).padStart(4, "0")}`;
         const now = new Date().toISOString();
         const impact = calculateImpactPhase2({
@@ -226,7 +237,9 @@ export async function POST(request: NextRequest) {
             createdAt: now,
         };
 
+        console.log("[verify] Creating action doc...");
         const actionId = await createActionDoc(actionData, userIdToken);
+        console.log("[verify] Action doc created:", actionId, "registryId:", registryId);
 
         return NextResponse.json({
             registryId,
@@ -238,6 +251,7 @@ export async function POST(request: NextRequest) {
     } catch (error: unknown) {
         const message =
             error instanceof Error ? error.message : "Payment verification failed";
+        console.error("[verify] CAUGHT ERROR:", message, error);
         return NextResponse.json({ error: message }, { status: 500 });
     }
 }
