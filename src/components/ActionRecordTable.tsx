@@ -3,9 +3,8 @@
 import React from "react";
 import {
   useActionRecordTable,
-  ActionRecord,
 } from "@/hooks/useActionRecordTable";
-import { Timestamp } from "firebase/firestore";
+import { Action } from "@/types/action";
 import { ACTION_LABELS } from "@/lib/constants";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { useState } from "react";
@@ -15,7 +14,7 @@ import ActionNotFoundIcon from "./svg/ActionNotFoundIcon";
 import GoogleMapVIew from "./GoogleMapVIew";
 
 interface ActionRecordTableProps {
-  onEdit: (record: ActionRecord) => void;
+  onEdit: (record: Action) => void;
 }
 
 export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
@@ -48,7 +47,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
     }
   };
 
-  const formatDate = (timestamp: Timestamp) => {
+  const formatDate = (timestamp: Action["createdAt"]) => {
     if (!timestamp) return "N/A";
     const date = timestamp.toDate();
     return date.toLocaleString("en-IN", {
@@ -200,11 +199,10 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`p-3 rounded-xl border-2 flex items-center justify-center  ${
-              currentPage === 1
-                ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
-                : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
-            }`}
+            className={`p-3 rounded-xl border-2 flex items-center justify-center  ${currentPage === 1
+              ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
+              : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
+              }`}
           >
             <span className='text-lg font-bold'>&lt;</span>
           </button>
@@ -214,11 +212,10 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`p-3 rounded-xl border-2 flex items-center justify-center ${
-              currentPage === totalPages
-                ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
-                : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
-            }`}
+            className={`p-3 rounded-xl border-2 flex items-center justify-center ${currentPage === totalPages
+              ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
+              : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
+              }`}
           >
             <span className='text-lg font-bold'>&gt;</span>
           </button>
