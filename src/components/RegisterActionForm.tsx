@@ -82,10 +82,8 @@ export default function RegisterActionForm() {
         values: typeof formik.values
     ) => {
         try {
-            console.log("[payment] processPaymentVerification called", paymentDetails);
             // Get the user's Firebase ID token for server-side auth
             const idToken = await user?.getIdToken();
-            console.log("[payment] Got idToken:", !!idToken);
 
             const verifyRes = await fetch("/api/payment/verify", {
                 method: "POST",
@@ -108,21 +106,16 @@ export default function RegisterActionForm() {
                 }),
             });
 
-            console.log("[payment] verify response status:", verifyRes.status);
-
             if (!verifyRes.ok) {
                 const errData = await verifyRes.json();
-                console.error("[payment] verify API error:", errData);
                 throw new Error(errData.error || "Payment verification failed");
             }
 
             const result = await verifyRes.json();
-            console.log("[payment] verify success:", result);
             toast.success("Action registered successfully!");
             router.push(`/register/success?id=${result.registryId}`);
         } catch (err) {
             const message = err instanceof Error ? err.message : "Payment verification failed";
-            console.error("[payment] processPaymentVerification error:", message, err);
             toast.error(message);
             setSubmitting(false);
         }
@@ -195,7 +188,6 @@ export default function RegisterActionForm() {
                         razorpay_payment_id: string;
                         razorpay_signature: string;
                     }) => {
-                        console.log("[payment] Razorpay handler fired!", response);
                         await processPaymentVerification(response, values);
                     },
                     prefill: {
@@ -206,7 +198,6 @@ export default function RegisterActionForm() {
                     theme: { color: "rgb(32,38,130)" },
                     modal: {
                         ondismiss: () => {
-                            console.log("[payment] Razorpay modal dismissed (no payment)");
                             setSubmitting(false);
                         },
                         escape: false,
@@ -218,7 +209,6 @@ export default function RegisterActionForm() {
 
                 // Listen for payment failure events to help diagnose issues
                 razorpay.on("payment.failed", (resp: Record<string, unknown>) => {
-                    console.error("[payment] payment.failed event:", resp);
                     const err = resp?.error as Record<string, unknown> | undefined;
                     toast.error(
                         `Payment failed: ${err?.description || err?.reason || "Unknown error"}`

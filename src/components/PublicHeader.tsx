@@ -11,8 +11,8 @@ export default function PublicHeader() {
   return (
     <header className='w-full bg-[rgb(32,38,130)] text-white relative z-50'>
       <div className='max-w-6xl mx-auto px-4 py-3 md:py-4 flex items-center justify-between'>
-        <Link href='/' className='text-lg sm:text-xl font-black tracking-tight shrink-0 mr-4'>
-          Earth Carbon Registry
+        <Link href='/' className='text-lg sm:text-xl font-black tracking-tight shrink-0 mr-4 flex flex-col leading-none'>
+          <span>Climate Asset Registry</span>
         </Link>
 
         {/* Desktop Navigation */}
