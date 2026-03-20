@@ -1,24 +1,4 @@
 {
-  "hosting": [
-    {
-      "target": "earthcarbonregistry",
-      "source": ".",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ]
-    },
-    {
-      "target": "climateassetregistry",
-      "public": "public-climate",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ]
-    }
-  ],
   "firestore": {
     "database": "(default)",
     "location": "eur3",

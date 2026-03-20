@@ -6,12 +6,12 @@ import { ActionStatus } from "@/types/action";
 import { ReactNode } from "react";
 
 interface StatusBadgeProps {
-    status: ActionStatus;
+    status: string;
     className?: string;
 }
 
 const statusConfig: Record<
-    ActionStatus,
+    string,
     { label: string; bg: string; text: string; icon: ReactNode }
 > = {
     pending: {
@@ -26,8 +26,8 @@ const statusConfig: Record<
     },
     verified: {
         label: "Verified",
-        bg: "bg-green-100",
-        text: "text-green-700",
+        bg: "bg-blue-100",
+        text: "text-blue-700",
         icon: (
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -44,10 +44,20 @@ const statusConfig: Record<
             </svg>
         ),
     },
+    pledged: {
+        label: "Pledged",
+        bg: "bg-yellow-100",
+        text: "text-yellow-700",
+        icon: (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+        ),
+    },
 };
 
 export default function StatusBadge({ status, className = "" }: StatusBadgeProps) {
-    const config = statusConfig[status] || statusConfig.pending;
+    const config = (statusConfig as any)[status] || statusConfig.pending;
 
     return (
         <span

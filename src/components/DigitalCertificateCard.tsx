@@ -32,17 +32,17 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
     };
 
     return (
-        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-green-500 shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-[360px] sm:max-w-md mx-auto">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-[rgb(32,38,130)] shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-[360px] sm:max-w-md mx-auto">
             <div className="text-center mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 border-gray-100">
                 <h2 className="text-base sm:text-lg font-black text-gray-800 uppercase tracking-tight mb-2 sm:mb-3">
                     Earth Carbon Registry
                 </h2>
                 {action.status === "verified" ? (
-                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-green-100 rounded-full">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-green-700">
+                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-100 rounded-full">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-blue-700">
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        <span className="text-xs sm:text-sm font-bold text-green-700">VERIFIED</span>
+                        <span className="text-xs sm:text-sm font-bold text-blue-700">VERIFIED</span>
                     </div>
                 ) : (
                     <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-yellow-100 rounded-full">
@@ -65,12 +65,12 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                 </h3>
 
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                    <div className="bg-green-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
+                    <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Carbon Reduced</div>
                         {action.status === "verified" ? (
                             <>
-                                <div className="text-xl sm:text-2xl font-black text-green-600">-{tco2e}</div>
-                                <div className="text-[10px] sm:text-xs font-bold text-green-600">tCO₂e</div>
+                                <div className="text-xl sm:text-2xl font-black text-blue-600">-{tco2e}</div>
+                                <div className="text-[10px] sm:text-xs font-bold text-blue-600">tCO₂e</div>
                             </>
                         ) : (
                             <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>

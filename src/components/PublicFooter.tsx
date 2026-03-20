@@ -7,8 +7,7 @@ export default function PublicFooter() {
           preparedness. Credit issuance is subject to registry methodologies,
           MRV requirements, and host-country authorization.
         </p>
-        <p className='mb-2'>ESG actions do not automatically qualify as carbon credits.</p>
-        <p className='text-xs text-gray-400'>climateassetregistry.org is operated by Earth Green Foundation. Data processed per DPDP Act 2023.</p>
+        <p>ESG actions do not automatically qualify as carbon credits.</p>
       </div>
     </footer>
   );

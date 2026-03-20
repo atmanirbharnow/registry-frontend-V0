@@ -9,7 +9,7 @@ interface QRCodeProps {
 }
 
 export default function QRCode({ registryId, size = 150 }: QRCodeProps) {
-    const verifyUrl = `${APP_URL}/verify/${registryId}`;
+    const verifyUrl = `${APP_URL}/verify/school/${registryId}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(verifyUrl)}`;
 
     return (

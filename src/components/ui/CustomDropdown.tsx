@@ -8,7 +8,7 @@ export interface DropdownOption {
 }
 
 export interface CustomDropdownProps {
-    options: DropdownOption[];
+    options: readonly DropdownOption[];
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;

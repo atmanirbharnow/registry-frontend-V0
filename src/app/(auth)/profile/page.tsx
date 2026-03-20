@@ -132,15 +132,19 @@ export default function ProfilePage() {
                                         )}
                                 </div>
 
-                                <div className="flex flex-col gap-1.5 w-full sm:w-48 mt-4 sm:mt-0">
-                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider cursor-help" title="Currently locked to Gujarat for the pilot phase. This calculates your regional financial energy/water savings.">
+                                <div className="flex flex-col gap-1.5 w-full sm:w-48 mt-4 sm:mt-0 relative group">
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider cursor-default">
                                         Base State
                                     </label>
                                     <div
-                                        className="w-full bg-gray-50 border border-gray-200 text-gray-500 rounded-lg px-3 py-2 text-sm cursor-help font-medium"
-                                        title="Currently locked to Gujarat for the pilot phase. This calculates your regional financial energy/water savings."
+                                        className="w-full bg-gray-50 border border-gray-200 text-gray-500 rounded-lg px-3 py-2 text-sm cursor-default font-medium"
                                     >
                                         Gujarat
+                                    </div>
+                                    {/* Custom Tooltip */}
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-center shadow-xl border border-white/10 leading-tight">
+                                        Currently locked to Gujarat for the pilot phase. This calculates your regional financial energy/water savings.
+                                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-gray-900"></div>
                                     </div>
                                 </div>
                             </div>

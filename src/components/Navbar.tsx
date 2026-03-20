@@ -48,7 +48,7 @@ export default function Navbar() {
           className="flex items-center gap-3 no-underline group"
         >
           <div className="font-black text-xl tracking-tighter text-white flex flex-col leading-none">
-            <span>Climate Asset Registry</span>
+            <span>Earth Carbon Registry</span>
           </div>
         </Link>
 

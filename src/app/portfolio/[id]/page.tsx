@@ -167,14 +167,14 @@ export default function PublicPortfolioPage() {
                     {/* Summary Cards */}
                     <div className="px-5 py-6 sm:px-8 border-b border-gray-100 bg-gray-50/30">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="bg-white border-2 border-green-100 rounded-2xl p-4 text-center shadow-[0_4px_12px_rgb(0,0,0,0.03)] flex flex-col justify-center items-center relative overflow-hidden group hover:border-green-300 transition-colors">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500 rounded-t-2xl"></div>
-                                <div className="p-1.5 bg-green-50 rounded-full text-green-500 mb-2 group-hover:scale-110 transition-transform">
+                            <div className="bg-white border-2 border-blue-100 rounded-2xl p-4 text-center shadow-[0_4px_12px_rgb(0,0,0,0.03)] flex flex-col justify-center items-center relative overflow-hidden group hover:border-blue-300 transition-colors">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-[rgb(32,38,130)] rounded-t-2xl"></div>
+                                <div className="p-1.5 bg-blue-50 rounded-full text-blue-500 mb-2 group-hover:scale-110 transition-transform">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                 </div>
                                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Impact</div>
-                                <div className="text-3xl font-black text-green-600 tracking-tighter">-{portfolio.totalTCO2e.toFixed(3)}</div>
-                                <div className="text-[10px] font-bold text-green-500 mt-1">tCO₂e Reduced</div>
+                                <div className="text-3xl font-black text-blue-600 tracking-tighter">-{portfolio.totalTCO2e.toFixed(3)}</div>
+                                <div className="text-[10px] font-bold text-blue-500 mt-1">tCO₂e Reduced</div>
                             </div>
 
                             <div className="bg-white border-2 border-cyan-100 rounded-2xl p-4 text-center shadow-[0_4px_12px_rgb(0,0,0,0.03)] flex flex-col justify-center items-center relative overflow-hidden group hover:border-cyan-300 transition-colors">
@@ -198,7 +198,7 @@ export default function PublicPortfolioPage() {
 
                         {renderPillar("Energy", "border-orange-100", "bg-orange-50/40", "text-orange-600", portfolio.energy)}
                         {renderPillar("Water", "border-cyan-100", "bg-cyan-50/40", "text-cyan-600", portfolio.water)}
-                        {renderPillar("Waste", "border-emerald-100", "bg-emerald-50/40", "text-emerald-600", portfolio.waste)}
+                        {renderPillar("Waste", "border-blue-100", "bg-blue-50/40", "text-[rgb(32,38,130)]", portfolio.waste)}
 
                         {portfolio.other && portfolio.other.actions.length > 0 &&
                             renderPillar("Other", "border-gray-200", "bg-gray-50/50", "text-gray-600", portfolio.other)

@@ -165,13 +165,13 @@ export default function VerifyPage() {
                 {action.status === "verified" && (
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-green-50 rounded-[2rem] border border-green-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
+                            <div className="bg-blue-50 rounded-[2rem] border border-blue-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
                                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
                                     Action CO₂e Reduction
                                 </h3>
-                                <p className="text-3xl font-black text-green-600">
+                                <p className="text-3xl font-black text-[rgb(32,38,130)]">
                                     {tco2e != null ? (
-                                        <>{tco2e} <span className="text-lg font-bold text-green-500">tCO₂e</span></>
+                                        <>{tco2e} <span className="text-lg font-bold text-blue-500">tCO₂e</span></>
                                     ) : (
                                         <span className="text-gray-400">N/A</span>
                                     )}
@@ -213,11 +213,11 @@ export default function VerifyPage() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <Link
                                             href={`/portfolio/${action.userId}`}
-                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-green-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer block"
+                                            className="group bg-white/10 hover:bg-white/20 border-2 border-transparent hover:border-blue-400 transition-all rounded-2xl p-4 text-left backdrop-blur-sm cursor-pointer block"
                                         >
                                             <div className="text-xs font-bold text-blue-200 uppercase tracking-wider mb-1">Total Impact</div>
-                                            <div className="text-2xl font-black text-white group-hover:text-green-300 transition-colors">-{portfolio.totalTCO2e.toFixed(3)}</div>
-                                            <div className="text-xs font-bold text-green-400">Total tCO₂e Reduced <span className="text-white/50 inline-block ml-1">→</span></div>
+                                            <div className="text-2xl font-black text-white group-hover:text-blue-200 transition-colors">-{portfolio.totalTCO2e.toFixed(3)}</div>
+                                            <div className="text-xs font-bold text-blue-400">Total tCO₂e Reduced <span className="text-white/50 inline-block ml-1">→</span></div>
                                         </Link>
 
                                         <Link
@@ -244,10 +244,10 @@ export default function VerifyPage() {
                                             <span className="text-cyan-300 font-mono">|</span>
                                             <span className="text-white">{portfolio.water.atmanirbharAvg.toFixed(0)}%</span>
                                         </div>
-                                        <div className="flex items-center gap-2 bg-gradient-to-br from-emerald-400/10 to-emerald-500/5 border border-emerald-400/20 px-3 py-1.5 rounded-full text-xs font-medium">
-                                            <span className="text-emerald-400 font-bold">Waste:</span>
+                                        <div className="flex items-center gap-2 bg-gradient-to-br from-blue-400/10 to-blue-500/5 border border-blue-400/20 px-3 py-1.5 rounded-full text-xs font-medium">
+                                            <span className="text-blue-400 font-bold">Waste:</span>
                                             <span className="text-white">-{portfolio.waste.tCO2e.toFixed(1)}t</span>
-                                            <span className="text-emerald-300 font-mono">|</span>
+                                            <span className="text-blue-300 font-mono">|</span>
                                             <span className="text-white">{portfolio.waste.atmanirbharAvg.toFixed(0)}%</span>
                                         </div>
                                     </div>
