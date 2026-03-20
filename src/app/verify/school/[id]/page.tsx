@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { getSchoolByRegistryId } from "@/lib/schoolFirestoreService";
+import { getSchoolByRegistryIdRealtime } from "@/lib/schoolFirestoreService";
 import { School } from "@/types/school";
 import VerificationBadge from "@/components/VerificationBadge";
 import QRCode from "@/components/QRCode";
@@ -19,23 +19,28 @@ export default function SchoolVerifyPage() {
     const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
-        async function fetchSchool() {
-            setLoading(true);
-            try {
-                const data = await getSchoolByRegistryId(registryId);
+        if (!registryId) return;
+        
+        setLoading(true);
+        const unsubscribe = getSchoolByRegistryIdRealtime(
+            registryId,
+            (data) => {
                 if (data) {
                     setSchool(data);
+                    setNotFound(false);
                 } else {
                     setNotFound(true);
                 }
-            } catch (err) {
+                setLoading(false);
+            },
+            (err) => {
                 console.error(err);
                 setNotFound(true);
-            } finally {
                 setLoading(false);
             }
-        }
-        if (registryId) fetchSchool();
+        );
+
+        return () => unsubscribe();
     }, [registryId]);
 
     if (loading) return <PublicShell><div className="flex justify-center py-20"><Spinner size="lg" /></div></PublicShell>;

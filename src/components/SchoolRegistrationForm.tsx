@@ -40,7 +40,6 @@ const validationSchema = [
         contactPerson: Yup.string().required("Required"),
         phone: Yup.string().matches(/^[0-9]{10}$/, "Must be 10 digits").required("Required"),
         email: Yup.string().email("Invalid email").required("Required"),
-        projectId: Yup.string().required("Please select a project"),
     }),
     // Step 2
     Yup.object({
@@ -84,7 +83,12 @@ export default function SchoolRegistrationForm() {
         }
 
         // Load Projects
-        getProjects().then(setProjects);
+        getProjects().then(p => {
+            setProjects(p);
+            if (p.length > 0 && !formik.values.projectId) {
+                formik.setFieldValue("projectId", p[0].id);
+            }
+        });
 
         // Load Draft
         const savedDraft = localStorage.getItem(DRAFT_KEY);
@@ -386,20 +390,6 @@ export default function SchoolRegistrationForm() {
                             <InputField label="Contact Person" name="contactPerson" formik={formik} />
                             <InputField label="Phone (10-digit)" name="phone" formik={formik} maxLength={10} />
                             <InputField label="Email Address" name="email" type="email" formik={formik} />
-                            <div className="space-y-2">
-                                <label className="block text-sm font-bold text-gray-500 mb-2 px-1">Project ID</label>
-                                <CustomDropdown
-                                    options={projects.map(p => ({ value: p.id, label: p.name }))}
-                                    value={formik.values.projectId}
-                                    onChange={(val) => formik.setFieldValue("projectId", val)}
-                                    placeholder="Select Project"
-                                    size="lg"
-                                    className={formik.touched.projectId && formik.errors.projectId ? "border-red-500 rounded-xl" : ""}
-                                />
-                                {formik.touched.projectId && formik.errors.projectId && (
-                                    <p className="text-xs font-bold text-red-500 px-1">{formik.errors.projectId as string}</p>
-                                )}
-                            </div>
                         </div>
                     </StepWrapper>
                 )}
@@ -605,8 +595,8 @@ export default function SchoolRegistrationForm() {
 
 function StepWrapper({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) {
     return (
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl shadow-gray-200 border border-gray-100 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-xl font-black text-white bg-[rgb(32,38,130)] -mx-8 -mt-8 p-6 rounded-t-[2.5rem] flex items-center gap-3">
+        <div className="bg-white rounded-3xl p-6 shadow-2xl shadow-gray-200 border border-gray-100 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-lg font-black text-white bg-[rgb(32,38,130)] -mx-6 -mt-6 p-5 rounded-t-3xl flex items-center gap-3">
                 <span className="p-2 bg-white/20 rounded-lg">{icon}</span>
                 {title}
             </h2>
@@ -629,7 +619,7 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
                         name={name}
                         placeholder={placeholder}
                         maxLength={maxLength}
-                        className={`w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 transition-all outline-none font-semibold text-gray-900 min-h-[140px] text-lg ${
+                        className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 min-h-[120px] text-base ${
                             error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[rgb(32,38,130)] focus:bg-white"
                         }`}
                         {...formik.getFieldProps(name)}
@@ -641,7 +631,7 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
                             name={name}
                             placeholder={placeholder}
                             maxLength={maxLength}
-                            className={`w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 transition-all outline-none font-semibold text-gray-900 text-lg ${
+                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 text-base ${
                                 error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[rgb(32,38,130)] focus:bg-white"
                             } ${suffix ? "pr-12" : ""}`}
                             {...formik.getFieldProps(name)}

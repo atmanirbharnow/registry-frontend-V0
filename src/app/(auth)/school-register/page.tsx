@@ -23,16 +23,16 @@ export default function SchoolRegisterPage() {
                 <div className="flex flex-col items-center text-center space-y-8 relative">
                     <button 
                         onClick={() => router.back()}
-                        className="self-start md:absolute md:left-0 md:top-2 flex items-center gap-2 text-slate-400 hover:text-[rgb(32,38,130)] transition-all group font-bold px-2 py-1"
+                        className="self-start md:absolute md:left-0 md:top-2 flex items-center gap-1.5 text-slate-400 hover:text-[rgb(32,38,130)] transition-all group font-bold px-2 py-1"
                     >
-                        <span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
-                        <span className="text-sm">Back</span>
+                        <span className="text-xl group-hover:-translate-x-1 transition-transform">←</span>
+                        <span className="text-xs">Back</span>
                     </button>
                     
                     <div className="space-y-4 max-w-4xl">
                         <h1 
-                            className="text-3xl md:text-5xl lg:text-6xl font-black text-slate-800 tracking-tight leading-tight"
-                            style={{ wordSpacing: '0.2em' }}
+                            className="text-2xl md:text-3xl lg:text-4xl font-black text-slate-800 tracking-tight leading-tight"
+                            style={{ wordSpacing: '0.15em' }}
                         >
                             School Climate Action Module
                         </h1>

@@ -8,7 +8,6 @@ import {
     orderBy,
     limit,
     updateDoc,
-    serverTimestamp,
     onSnapshot,
     Unsubscribe
 } from "firebase/firestore";
@@ -19,6 +18,32 @@ import { haversineDistance, normalizeSchoolName } from "./schoolUtils";
 const SCHOOL_COLLECTION = "schools";
 const BASELINE_COLLECTION = "schoolBaselines";
 const PROJECT_COLLECTION = "projects";
+
+export function getSchoolByRegistryIdRealtime(
+    registryId: string,
+    onUpdate: (school: School | null) => void,
+    onError?: (error: any) => void
+): Unsubscribe {
+    const q = query(
+        collection(db, SCHOOL_COLLECTION),
+        where("registryId", "==", registryId)
+    );
+
+    return onSnapshot(q, async (snapshot) => {
+        if (snapshot.empty) {
+            onUpdate(null);
+            return;
+        }
+        const schoolDoc = snapshot.docs[0];
+        const schoolData = { id: schoolDoc.id, ...schoolDoc.data() } as School;
+        
+        // Fetch baseline in background if needed (though we now sync baseline to schools)
+        onUpdate(schoolData);
+    }, (error) => {
+        console.error("Firestore Error:", error);
+        onError?.(error);
+    });
+}
 
 export async function getSchoolByRegistryId(registryId: string): Promise<School | null> {
     const q = query(

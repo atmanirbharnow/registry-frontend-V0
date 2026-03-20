@@ -18,17 +18,17 @@ export default function Card({
     return (
         <div
             className={`
-        bg-white rounded-[2rem] border border-gray-100
+        bg-white rounded-3xl border border-gray-100
         shadow-[0_8px_30px_rgb(0,0,0,0.04)]
         ${className}
       `}
         >
             {header && (
-                <div className="px-8 pt-8 pb-6 border-b border-gray-100">
+                <div className="px-6 pt-6 pb-4 border-b border-gray-100">
                     {header}
                 </div>
             )}
-            <div className={noPadding ? "" : "px-8 py-8"}>{children}</div>
+            <div className={noPadding ? "" : "px-6 py-6"}>{children}</div>
         </div>
     );
 }

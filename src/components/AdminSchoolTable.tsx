@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { getAllSchoolsRealtime, getSchoolBaseline } from "@/lib/schoolFirestoreService";
 import { School, SchoolStatus } from "@/types/school";
+import { calculateSchoolImpact } from "@/lib/schoolCalculationEngine";
 import { SCHOOL_STATUS_OPTIONS } from "@/lib/constants/schoolConstants";
 import Spinner from "@/components/ui/Spinner";
 import { toast } from "react-toastify";
@@ -24,10 +25,17 @@ export default function AdminSchoolTable() {
         schoolName: "",
         address: "",
         electricity_kWh_year: "",
+        fuel_type: "None" as School["fuel_type"],
         fuel_consumption_litres: "",
+        renewable_energy_type: "None" as School["renewable_energy_type"],
+        renewable_energy_kwh: "",
         waste_generated_kg: "",
+        waste_diverted_kg: "",
         water_consumption_m3: "",
-        attribution_pct_energy: "",
+        attribution_pct_energy: "100",
+        attribution_pct_waste: "100",
+        attribution_pct_water: "100",
+        students_count: "1",
         baseline_source: "" as School["baseline_source"],
         status: "verified" as SchoolStatus,
         adminNotes: "",
@@ -56,10 +64,17 @@ export default function AdminSchoolTable() {
             schoolName: school.schoolName,
             address: school.address,
             electricity_kWh_year: school.electricity_kWh_year?.toString() || "",
+            fuel_type: school.fuel_type || "None",
             fuel_consumption_litres: school.fuel_consumption_litres?.toString() || "",
+            renewable_energy_type: school.renewable_energy_type || "None",
+            renewable_energy_kwh: school.renewable_energy_kwh?.toString() || "",
             waste_generated_kg: school.waste_generated_kg?.toString() || "",
+            waste_diverted_kg: school.waste_diverted_kg?.toString() || "",
             water_consumption_m3: school.water_consumption_m3?.toString() || "",
             attribution_pct_energy: (school.attribution_pct_energy || 100).toString(),
+            attribution_pct_waste: (school.attribution_pct_waste || 100).toString(),
+            attribution_pct_water: (school.attribution_pct_water || 100).toString(),
+            students_count: (school.students_count || 1).toString(),
             baseline_source: school.baseline_source,
             status: "verified",
             adminNotes: school.adminNotes || "",
@@ -73,10 +88,17 @@ export default function AdminSchoolTable() {
                 setVerifyForm(f => ({
                     ...f,
                     electricity_kWh_year: (baseline.electricity_kWh_year || f.electricity_kWh_year).toString(),
+                    fuel_type: baseline.fuel_type || f.fuel_type,
                     fuel_consumption_litres: (baseline.fuel_consumption_litres || f.fuel_consumption_litres).toString(),
+                    renewable_energy_type: baseline.renewable_energy_type || f.renewable_energy_type,
+                    renewable_energy_kwh: (baseline.renewable_energy_kwh || f.renewable_energy_kwh).toString(),
                     waste_generated_kg: (baseline.waste_generated_kg || f.waste_generated_kg).toString(),
+                    waste_diverted_kg: (baseline.waste_diverted_kg || f.waste_diverted_kg).toString(),
                     water_consumption_m3: (baseline.water_consumption_m3 || f.water_consumption_m3).toString(),
                     attribution_pct_energy: (baseline.attribution_pct_energy || f.attribution_pct_energy).toString(),
+                    attribution_pct_waste: (baseline.attribution_pct_waste || f.attribution_pct_waste).toString(),
+                    attribution_pct_water: (baseline.attribution_pct_water || f.attribution_pct_water).toString(),
+                    students_count: (baseline.students_count || f.students_count).toString(),
                     baseline_source: baseline.baseline_source || f.baseline_source,
                 }));
             }
@@ -105,10 +127,17 @@ export default function AdminSchoolTable() {
                         schoolName: verifyForm.schoolName,
                         address: verifyForm.address,
                         electricity_kWh_year: verifyForm.electricity_kWh_year,
+                        fuel_type: verifyForm.fuel_type,
                         fuel_consumption_litres: verifyForm.fuel_consumption_litres,
+                        renewable_energy_type: verifyForm.renewable_energy_type,
+                        renewable_energy_kwh: verifyForm.renewable_energy_kwh,
                         waste_generated_kg: verifyForm.waste_generated_kg,
+                        waste_diverted_kg: verifyForm.waste_diverted_kg,
                         water_consumption_m3: verifyForm.water_consumption_m3,
                         attribution_pct_energy: verifyForm.attribution_pct_energy,
+                        attribution_pct_waste: verifyForm.attribution_pct_waste,
+                        attribution_pct_water: verifyForm.attribution_pct_water,
+                        students_count: verifyForm.students_count,
                         baseline_source: verifyForm.baseline_source,
                     } : null
                 }),
@@ -154,6 +183,28 @@ export default function AdminSchoolTable() {
 
     if (loading) return <div className="flex justify-center p-20"><Spinner size="lg" /></div>;
 
+    const currentImpact = (() => {
+        try {
+            const impact = calculateSchoolImpact({
+                electricity_kWh_year: verifyForm.electricity_kWh_year ? Number(verifyForm.electricity_kWh_year) : null,
+                fuel_type: verifyForm.fuel_type as any,
+                fuel_consumption_litres: verifyForm.fuel_consumption_litres ? Number(verifyForm.fuel_consumption_litres) : null,
+                renewable_energy_type: verifyForm.renewable_energy_type as any,
+                renewable_energy_kwh: verifyForm.renewable_energy_kwh ? Number(verifyForm.renewable_energy_kwh) : null,
+                attribution_pct_energy: Math.min(100, Math.max(0, Number(verifyForm.attribution_pct_energy) || 0)),
+                students_count: Number(verifyForm.students_count) || 1,
+                waste_generated_kg: verifyForm.waste_generated_kg ? Number(verifyForm.waste_generated_kg) : null,
+                waste_diverted_kg: verifyForm.waste_diverted_kg ? Number(verifyForm.waste_diverted_kg) : null,
+                water_consumption_m3: verifyForm.water_consumption_m3 ? Number(verifyForm.water_consumption_m3) : null,
+                attribution_pct_waste: Math.min(100, Math.max(0, Number(verifyForm.attribution_pct_waste) || 0)),
+                attribution_pct_water: Math.min(100, Math.max(0, Number(verifyForm.attribution_pct_water) || 0)),
+            });
+            return impact;
+        } catch (e) {
+            return null;
+        }
+    })();
+
     const stats = {
         total: schools.length,
         verified: schools.filter(s => s.status === "verified").length,
@@ -190,7 +241,7 @@ export default function AdminSchoolTable() {
                     color="text-purple-600 bg-purple-50"
                 />
             </div>
-            <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+            <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
@@ -279,10 +330,10 @@ export default function AdminSchoolTable() {
             {/* Verification Modal */}
             {verifyModalOpen && selectedSchool && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 py-6 overflow-hidden">
-                    <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl max-h-full flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-full flex flex-col animate-in fade-in zoom-in-95 duration-200">
                         <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center shrink-0">
                             <div>
-                                <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight">Verify School Profile</h2>
+                                <h2 className="text-lg font-black text-gray-800 uppercase tracking-tight">Verify School Profile</h2>
                                 <p className="text-sm font-bold text-[rgb(32,38,130)] mt-1">{selectedSchool.registryId}</p>
                             </div>
                             <button onClick={() => setVerifyModalOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -350,10 +401,23 @@ export default function AdminSchoolTable() {
                                             className={!isEditMode ? "bg-white border-blue-200/50 font-black text-blue-900 !py-3" : "border-gray-200 !py-3"}
                                         />
                                     </div>
+                                    {isEditMode && (
+                                        <div>
+                                            <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Students Count</label>
+                                            <Input
+                                                type="number"
+                                                value={verifyForm.students_count}
+                                                onChange={(e) => setVerifyForm(f => ({ ...f, students_count: e.target.value }))}
+                                                className="border-gray-200 !py-3"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex justify-between items-center pt-2">
                                     <div className="text-sm font-bold text-gray-500">
-                                        Calculated Impact: <span className="text-[rgb(32,38,130)] font-black">{(selectedSchool.tco2e_annual * 1000).toLocaleString() || 0} Kg CO₂e</span>
+                                        Calculated Impact: <span className="text-[rgb(32,38,130)] font-black">
+                                            {currentImpact ? (currentImpact.tco2e_annual * 1000).toLocaleString() : "0"} Kg CO₂e
+                                        </span>
                                     </div>
                                     {!isEditMode ? (
                                         <button type="button" onClick={() => setIsEditMode(true)} className="text-[rgb(32,38,130)] text-xs font-black hover:underline flex items-center gap-1">
@@ -385,7 +449,7 @@ export default function AdminSchoolTable() {
                                         value={verifyForm.adminNotes}
                                         onChange={(e) => setVerifyForm(f => ({ ...f, adminNotes: e.target.value }))}
                                         placeholder="Add any verification notes here..."
-                                        className="w-full px-5 py-3.5 rounded-2xl border-2 border-gray-200 bg-gray-50 text-sm font-bold text-gray-800 focus:border-[rgb(32,38,130)] focus:bg-white outline-none transition-all min-h-[100px] placeholder:text-gray-300"
+                                        className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-gray-50 text-sm font-bold text-gray-800 focus:border-[rgb(32,38,130)] focus:bg-white outline-none transition-all min-h-[100px] placeholder:text-gray-300"
                                     />
                                 </div>
                             </div>
@@ -394,14 +458,14 @@ export default function AdminSchoolTable() {
                                 <button
                                     type="button"
                                     onClick={() => setVerifyModalOpen(false)}
-                                    className="flex-1 px-8 py-4 rounded-2xl bg-gray-100 text-gray-500 font-black hover:bg-gray-200 transition-all"
+                                    className="flex-1 px-6 py-3.5 rounded-xl bg-gray-100 text-gray-500 font-black hover:bg-gray-200 transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={verifySubmitting}
-                                    className="flex-1 px-8 py-4 rounded-2xl bg-[rgb(32,38,130)] text-white font-black shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all disabled:opacity-50 flex justify-center items-center gap-2"
+                                    className="flex-1 px-6 py-3.5 rounded-xl bg-[rgb(32,38,130)] text-white font-black shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all disabled:opacity-50 flex justify-center items-center gap-2"
                                 >
                                     {verifySubmitting ? <Spinner size="sm" light /> : "Submit Decision"}
                                 </button>
@@ -416,8 +480,8 @@ export default function AdminSchoolTable() {
 
 function StatCard({ label, value, icon, color }: { label: string, value: string | number, icon: React.ReactNode, color: string }) {
     return (
-        <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-5 group hover:shadow-xl hover:shadow-blue-900/5 transition-all">
-            <div className={`p-4 rounded-2xl ${color} transition-transform group-hover:scale-110 duration-300`}>
+        <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex items-center gap-5 group hover:shadow-xl hover:shadow-blue-900/5 transition-all">
+            <div className={`p-4 rounded-xl ${color} transition-transform group-hover:scale-110 duration-300`}>
                 {icon}
             </div>
             <div>
