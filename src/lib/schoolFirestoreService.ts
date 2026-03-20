@@ -36,6 +36,11 @@ export async function getSchoolByRegistryId(registryId: string): Promise<School 
     return { id: schoolDoc.id, ...schoolDoc.data(), ...baselineData } as School;
 }
 
+export async function getSchoolBaseline(schoolId: string): Promise<Record<string, any>> {
+    const baselineSnap = await getDoc(doc(db, BASELINE_COLLECTION, schoolId));
+    return baselineSnap.exists() ? baselineSnap.data() : {};
+}
+
 export async function checkDuplicateSchool(place_id: string, schoolName: string, lat: number, lng: number): Promise<{ isDuplicate: boolean; registryId?: string; type?: 'BLOCK' | 'WARNING' }> {
     // Step 1: Place ID Check
     if (place_id) {
@@ -69,12 +74,18 @@ export async function getProjects() {
         const q = query(collection(db, PROJECT_COLLECTION), orderBy("name"));
         const snap = await getDocs(q);
         if (snap.empty) {
-            return [{ id: "proj-default", name: "General Carbon Registry Project" }];
+            return [
+                { id: "proj-general", name: "General Carbon Registry Project" },
+                { id: "proj-earthcarbon", name: "Earth Carbon Foundation - School Decarbonization" }
+            ];
         }
         return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (error) {
         console.error("Error fetching projects:", error);
-        return [{ id: "proj-default", name: "General Carbon Registry Project" }];
+        return [
+            { id: "proj-general", name: "General Carbon Registry Project" },
+            { id: "proj-earthcarbon", name: "Earth Carbon Foundation - School Decarbonization" }
+        ];
     }
 }
 
@@ -86,7 +97,11 @@ export async function getSchoolActions(projectId: string) {
             return [
                 { id: "ACT-001", type: "Solar Installation" },
                 { id: "ACT-002", type: "Tree Plantation" },
-                { id: "ACT-003", type: "Waste Management" }
+                { id: "ACT-003", type: "Waste Management" },
+                { id: "ACT-004", type: "Energy Efficiency" },
+                { id: "ACT-005", type: "Water Conservation" },
+                { id: "ACT-006", type: "Biodiversity Conservation" },
+                { id: "ACT-007", type: "EV Integration" }
             ];
         }
         return snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -94,7 +109,12 @@ export async function getSchoolActions(projectId: string) {
         console.error("Error fetching actions:", error);
         return [
             { id: "ACT-001", type: "Solar Installation" },
-            { id: "ACT-002", type: "Tree Plantation" }
+            { id: "ACT-002", type: "Tree Plantation" },
+            { id: "ACT-003", type: "Waste Management" },
+            { id: "ACT-004", type: "Energy Efficiency" },
+            { id: "ACT-005", type: "Water Conservation" },
+            { id: "ACT-006", type: "Biodiversity Conservation" },
+            { id: "ACT-007", type: "EV Integration" }
         ];
     }
 }

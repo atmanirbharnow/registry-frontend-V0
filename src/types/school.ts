@@ -85,7 +85,7 @@ export interface SchoolFormData {
     fuel_consumption_litres: string | number;
     renewable_energy_type: string;
     renewable_energy_kwh: string | number;
-    attribution_pct_energy: number;
+    attribution_pct_energy: string | number;
     students_count: string | number;
     reporting_year: string;
     action_id: string;
@@ -95,8 +95,8 @@ export interface SchoolFormData {
     waste_diverted_kg: string | number;
     recycling_programs: string[];
     water_consumption_m3: string | number;
-    attribution_pct_waste: number;
-    attribution_pct_water: number;
+    attribution_pct_waste: string | number;
+    attribution_pct_water: string | number;
     calculation_notes: string;
     baseline_source: "school_shared" | "sectoral_average" | "estimated";
 

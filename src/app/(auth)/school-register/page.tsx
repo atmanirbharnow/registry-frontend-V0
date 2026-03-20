@@ -19,19 +19,25 @@ export default function SchoolRegisterPage() {
 
     return (
         <main className="min-h-screen bg-slate-50 pt-12 px-4 sm:px-6 pb-32 opacity-100">
-            <div className="max-w-5xl mx-auto space-y-12">
-                <div className="flex flex-col md:flex-row md:items-center gap-6 justify-between">
-                    <div className="flex items-center gap-6">
-                        <button 
-                            onClick={() => router.back()}
-                            className="flex items-center gap-2 text-slate-400 hover:text-[rgb(32,38,130)] transition-all group font-bold"
+            <div className="max-w-6xl mx-auto space-y-12">
+                <div className="flex flex-col items-center text-center space-y-8 relative">
+                    <button 
+                        onClick={() => router.back()}
+                        className="self-start md:absolute md:left-0 md:top-2 flex items-center gap-2 text-slate-400 hover:text-[rgb(32,38,130)] transition-all group font-bold px-2 py-1"
+                    >
+                        <span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
+                        <span className="text-sm">Back</span>
+                    </button>
+                    
+                    <div className="space-y-4 max-w-4xl">
+                        <h1 
+                            className="text-3xl md:text-5xl lg:text-6xl font-black text-slate-800 tracking-tight leading-tight"
+                            style={{ wordSpacing: '0.2em' }}
                         >
-                            <span className="text-2xl group-hover:-translate-x-1 transition-transform">←</span>
-                            <span className="text-sm">Back</span>
-                        </button>
-                        <div>
-                            <h1 className="text-4xl font-black text-slate-800 tracking-tight">School Climate Action Module</h1>
-                            <p className="text-slate-500 font-bold mt-1 uppercase text-xs tracking-widest bg-white/50 inline-block px-3 py-1 rounded-full border border-slate-100">
+                            School Climate Action Module
+                        </h1>
+                        <div className="flex justify-center">
+                            <p className="text-slate-500 font-black uppercase text-[10px] md:text-xs tracking-[0.2em] bg-white px-4 py-2 rounded-2xl shadow-sm border border-slate-100/50">
                                 Step-by-Step Concierge Flow
                             </p>
                         </div>

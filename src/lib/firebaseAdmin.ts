@@ -26,10 +26,13 @@ function getAdminApp(): App {
         });
     }
 
-    console.warn("⚠️ [Firebase Admin] Initializing without service account credentials. Fallback to ADC.");
-    if (!privateKey) console.warn("   - Missing FIREBASE_PRIVATE_KEY");
-    if (!clientEmail) console.warn("   - Missing FIREBASE_CLIENT_EMAIL");
-    if (!projectId) console.warn("   - Missing NEXT_PUBLIC_FIREBASE_PROJECT_ID");
+    const isDev = process.env.NODE_ENV !== "production";
+    if (!hasValidCredentials && isDev) {
+        console.warn("⚠️ [Firebase Admin] Initializing without service account credentials. Fallback to ADC.");
+        if (!privateKey) console.warn("   - Missing FIREBASE_PRIVATE_KEY");
+        if (!clientEmail) console.warn("   - Missing FIREBASE_CLIENT_EMAIL");
+        if (!projectId) console.warn("   - Missing NEXT_PUBLIC_FIREBASE_PROJECT_ID");
+    }
 
     return initializeApp({ projectId, storageBucket: `${projectId}.appspot.com` });
 }

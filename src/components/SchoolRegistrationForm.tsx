@@ -47,9 +47,12 @@ const validationSchema = [
         students_count: Yup.number().min(1, "Students count must be at least 1").required("Required"),
         reporting_year: Yup.string().required("Required"),
         action_id: Yup.string().required("Please select an action"),
+        attribution_pct_energy: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
     }),
     // Step 3
     Yup.object({
+        attribution_pct_waste: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
+        attribution_pct_water: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
         calculation_notes: Yup.string().max(1000, "Maximum 1000 characters"),
     }),
     // Step 4
@@ -113,7 +116,7 @@ export default function SchoolRegistrationForm() {
             fuel_consumption_litres: "",
             renewable_energy_type: "None",
             renewable_energy_kwh: "",
-            attribution_pct_energy: 100,
+            attribution_pct_energy: "",
             students_count: "",
             reporting_year: "2025",
             action_id: "",
@@ -122,8 +125,8 @@ export default function SchoolRegistrationForm() {
             waste_diverted_kg: "",
             recycling_programs: [],
             water_consumption_m3: "",
-            attribution_pct_waste: 100,
-            attribution_pct_water: 100,
+            attribution_pct_waste: "",
+            attribution_pct_water: "",
             calculation_notes: "",
             baseline_source: "school_shared",
 
@@ -270,7 +273,7 @@ export default function SchoolRegistrationForm() {
             formData.append("razorpay_payment_id", paymentDetails.razorpay_payment_id);
             formData.append("razorpay_signature", paymentDetails.razorpay_signature);
             formData.append("userIdToken", await auth.currentUser?.getIdToken() || "");
-            formData.append("userId", profile?.uid || "");
+            formData.append("userId", auth.currentUser?.uid || "");
 
             const verifyRes = await fetch("/api/school/payment/verify", {
                 method: "POST",

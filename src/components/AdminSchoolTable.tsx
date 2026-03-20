@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getAllSchoolsRealtime } from "@/lib/schoolFirestoreService";
+import { getAllSchoolsRealtime, getSchoolBaseline } from "@/lib/schoolFirestoreService";
 import { School, SchoolStatus } from "@/types/school";
 import { SCHOOL_STATUS_OPTIONS } from "@/lib/constants/schoolConstants";
 import Spinner from "@/components/ui/Spinner";
@@ -49,7 +49,7 @@ export default function AdminSchoolTable() {
         return () => unsubscribe();
     }, []);
 
-    const openVerifyModal = (school: School) => {
+    const openVerifyModal = async (school: School) => {
         setSelectedSchool(school);
         setIsEditMode(false);
         setVerifyForm({
@@ -65,6 +65,24 @@ export default function AdminSchoolTable() {
             adminNotes: school.adminNotes || "",
         });
         setVerifyModalOpen(true);
+
+        // Fetch deep baseline data if missing
+        try {
+            const baseline = await getSchoolBaseline(school.id);
+            if (baseline && Object.keys(baseline).length > 0) {
+                setVerifyForm(f => ({
+                    ...f,
+                    electricity_kWh_year: (baseline.electricity_kWh_year || f.electricity_kWh_year).toString(),
+                    fuel_consumption_litres: (baseline.fuel_consumption_litres || f.fuel_consumption_litres).toString(),
+                    waste_generated_kg: (baseline.waste_generated_kg || f.waste_generated_kg).toString(),
+                    water_consumption_m3: (baseline.water_consumption_m3 || f.water_consumption_m3).toString(),
+                    attribution_pct_energy: (baseline.attribution_pct_energy || f.attribution_pct_energy).toString(),
+                    baseline_source: baseline.baseline_source || f.baseline_source,
+                }));
+            }
+        } catch (error) {
+            console.error("Error fetching baseline:", error);
+        }
     };
 
     const handleAdminVerification = async (e: React.FormEvent) => {
@@ -276,21 +294,21 @@ export default function AdminSchoolTable() {
                             {/* School Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[11px] font-black text-gray-400 uppercase mb-1 ml-1">School Name</label>
+                                    <label className="block text-[11px] font-black text-gray-500 uppercase mb-1 ml-1">School Name</label>
                                     <Input
                                         disabled={!isEditMode}
                                         value={verifyForm.schoolName}
                                         onChange={(e) => setVerifyForm(f => ({ ...f, schoolName: e.target.value }))}
-                                        className={!isEditMode ? "bg-gray-50 border-transparent font-bold !py-3" : "!py-3"}
+                                        className={!isEditMode ? "bg-gray-50 border-gray-200/50 font-bold text-gray-800 !py-3" : "border-gray-200 !py-3"}
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-black text-gray-400 uppercase mb-1 ml-1">Address</label>
+                                    <label className="block text-[11px] font-black text-gray-500 uppercase mb-1 ml-1">Address</label>
                                     <Input
                                         disabled={!isEditMode}
                                         value={verifyForm.address}
                                         onChange={(e) => setVerifyForm(f => ({ ...f, address: e.target.value }))}
-                                        className={!isEditMode ? "bg-gray-50 border-transparent font-bold !py-3" : "!py-3"}
+                                        className={!isEditMode ? "bg-gray-50 border-gray-200/50 font-bold text-gray-800 !py-3" : "border-gray-200 !py-3"}
                                     />
                                 </div>
                             </div>
@@ -303,33 +321,33 @@ export default function AdminSchoolTable() {
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Electricity (kWh)</label>
+                                        <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Electricity (kWh)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
                                             value={verifyForm.electricity_kWh_year}
                                             onChange={(e) => setVerifyForm(f => ({ ...f, electricity_kWh_year: e.target.value }))}
-                                            className={!isEditMode ? "bg-white border-transparent font-black text-blue-800 !py-2" : "!py-2"}
+                                            className={!isEditMode ? "bg-white border-blue-200/50 font-black text-blue-900 !py-3" : "border-gray-200 !py-3"}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Water (m³)</label>
+                                        <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Water (m³)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
                                             value={verifyForm.water_consumption_m3}
                                             onChange={(e) => setVerifyForm(f => ({ ...f, water_consumption_m3: e.target.value }))}
-                                            className={!isEditMode ? "bg-white border-transparent font-black text-blue-800 !py-2" : "!py-2"}
+                                            className={!isEditMode ? "bg-white border-blue-200/50 font-black text-blue-900 !py-3" : "border-gray-200 !py-3"}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Waste (Kg)</label>
+                                        <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Waste (Kg)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
                                             value={verifyForm.waste_generated_kg}
                                             onChange={(e) => setVerifyForm(f => ({ ...f, waste_generated_kg: e.target.value }))}
-                                            className={!isEditMode ? "bg-white border-transparent font-black text-blue-800 !py-2" : "!py-2"}
+                                            className={!isEditMode ? "bg-white border-blue-200/50 font-black text-blue-900 !py-3" : "border-gray-200 !py-3"}
                                         />
                                     </div>
                                 </div>
@@ -353,28 +371,21 @@ export default function AdminSchoolTable() {
                             {/* Decision & Notes */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[11px] font-black text-gray-400 uppercase mb-2 ml-1">Verification Decision</label>
-                                    <div className="relative">
-                                        <select
-                                            value={verifyForm.status}
-                                            onChange={(e) => setVerifyForm(f => ({ ...f, status: e.target.value as SchoolStatus }))}
-                                            className="w-full px-5 py-3.5 rounded-2xl border-2 border-gray-100 bg-gray-50 text-sm font-black focus:border-[rgb(32,38,130)] focus:bg-white outline-none transition-all appearance-none"
-                                        >
-                                            <option value="verified">Verify & Approve</option>
-                                            <option value="rejected">Reject Submission</option>
-                                        </select>
-                                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                                        </div>
-                                    </div>
+                                    <label className="block text-[11px] font-black text-gray-500 uppercase mb-2 ml-1">Verification Decision</label>
+                                    <CustomDropdown
+                                        value={verifyForm.status}
+                                        options={SCHOOL_STATUS_OPTIONS}
+                                        onChange={(val) => setVerifyForm(f => ({ ...f, status: val as SchoolStatus }))}
+                                        className="w-full"
+                                    />
                                 </div>
                                 <div>
-                                    <label className="block text-[11px] font-black text-gray-400 uppercase mb-2 ml-1">Admin Notes (Optional)</label>
+                                    <label className="block text-[11px] font-black text-gray-500 uppercase mb-2 ml-1">Admin Notes (Optional)</label>
                                     <textarea
                                         value={verifyForm.adminNotes}
                                         onChange={(e) => setVerifyForm(f => ({ ...f, adminNotes: e.target.value }))}
                                         placeholder="Add any verification notes here..."
-                                        className="w-full px-5 py-3.5 rounded-2xl border-2 border-gray-100 bg-gray-50 text-sm font-medium focus:border-[rgb(32,38,130)] focus:bg-white outline-none transition-all min-h-[100px]"
+                                        className="w-full px-5 py-3.5 rounded-2xl border-2 border-gray-200 bg-gray-50 text-sm font-bold text-gray-800 focus:border-[rgb(32,38,130)] focus:bg-white outline-none transition-all min-h-[100px] placeholder:text-gray-300"
                                     />
                                 </div>
                             </div>

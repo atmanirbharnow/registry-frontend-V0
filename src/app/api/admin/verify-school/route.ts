@@ -7,8 +7,15 @@ const hasAdminCredentials = !!(
     process.env.FIREBASE_PRIVATE_KEY.includes("BEGIN PRIVATE KEY")
 );
 
-const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!;
+function getProjectId() {
+    return process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!;
+}
+
 const DATABASE_ID = "asia-pacific";
+
+function getBaseUrl() {
+    return `https://firestore.googleapis.com/v1/projects/${getProjectId()}/databases/${DATABASE_ID}/documents`;
+}
 
 function toFirestoreValue(value: unknown): Record<string, unknown> {
     if (value === null || value === undefined) return { nullValue: null };
@@ -23,7 +30,16 @@ async function updateSchoolAdmin(
     data: Record<string, unknown>
 ): Promise<void> {
     const { adminDb } = await import("@/lib/firebaseAdmin");
-    await adminDb.collection("school-baselines").doc(schoolId).update(data);
+    const batch = adminDb.batch();
+    
+    // Update both schools and schoolBaselines
+    const schoolRef = adminDb.collection("schools").doc(schoolId);
+    const baselineRef = adminDb.collection("schoolBaselines").doc(schoolId);
+    
+    batch.update(schoolRef, data);
+    batch.update(baselineRef, data);
+    
+    await batch.commit();
 }
 
 async function updateSchoolREST(
@@ -31,7 +47,6 @@ async function updateSchoolREST(
     data: Record<string, unknown>,
     bearerToken: string
 ): Promise<void> {
-    const docPath = `projects/${PROJECT_ID}/databases/${DATABASE_ID}/documents/school-baselines/${schoolId}`;
 
     const fields: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(data)) {
@@ -39,22 +54,28 @@ async function updateSchoolREST(
     }
 
     const updateMask = Object.keys(data).map((f) => `updateMask.fieldPaths=${f}`).join("&");
+    
+    // Update both collections via REST
+    const collections = ["schools", "schoolBaselines"];
+    
+    for (const coll of collections) {
+        const docPath = `projects/${getProjectId()}/databases/${DATABASE_ID}/documents/${coll}/${schoolId}`;
+        const res = await fetch(
+            `https://firestore.googleapis.com/v1/${docPath}?${updateMask}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${bearerToken}`,
+                },
+                body: JSON.stringify({ fields }),
+            }
+        );
 
-    const res = await fetch(
-        `https://firestore.googleapis.com/v1/${docPath}?${updateMask}`,
-        {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${bearerToken}`,
-            },
-            body: JSON.stringify({ fields }),
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error?.message || `Firestore update failed for ${coll}`);
         }
-    );
-
-    if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error?.message || "Firestore update failed");
     }
 }
 

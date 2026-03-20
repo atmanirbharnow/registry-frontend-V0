@@ -54,8 +54,12 @@ export default function SchoolVerifyPage() {
         );
     }
 
-    const tco2e = school.tco2e_annual != null ? school.tco2e_annual.toFixed(2) : "N/A";
-    const intensity = school.carbon_intensity != null ? school.carbon_intensity.toFixed(2) : "N/A";
+    const tco2e = school.tco2e_annual != null ? Math.abs(school.tco2e_annual).toFixed(2) : "N/A";
+    
+    // Convert carbon intensity to Kg for better readability if student count is large
+    const intensityRaw = (school.tco2e_annual || 0) * 1000 / (school.students_count || 1);
+    const intensityVal = intensityRaw.toFixed(2);
+    
     const verifyUrl = `${APP_URL}/verify/school/${school.registryId}`;
     const shareText = `Check out ${school.schoolName}'s climate action on the Earth Carbon Registry: ${verifyUrl}`;
 
@@ -81,7 +85,7 @@ export default function SchoolVerifyPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <ImpactCard 
                         label="Annual climate impact" 
-                        value={`-${tco2e}`} 
+                        value={tco2e} 
                         unit="tCO2e" 
                         color="bg-[rgb(32,38,130)]" 
                         description="Total annual GHG reduction claim."
@@ -109,8 +113,8 @@ export default function SchoolVerifyPage() {
                         <p className="text-gray-500 text-sm font-medium italic">Emissions per student per year</p>
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-black text-gray-900">{intensity}</span>
-                        <span className="text-sm font-bold text-gray-400">tCO₂e / student</span>
+                        <span className="text-4xl font-black text-gray-900">{intensityVal}</span>
+                        <span className="text-sm font-bold text-gray-400">Kg CO₂e / student</span>
                     </div>
                 </div>
 
