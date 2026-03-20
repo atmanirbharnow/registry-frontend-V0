@@ -409,7 +409,16 @@ export default function SchoolRegistrationForm() {
                             <DropdownField label="Fuel Type" name="fuel_type" options={FUEL_TYPE_OPTIONS} formik={formik} />
                             
                             {formik.values.fuel_type !== "None" && (
-                                <InputField label="Annual Fuel (Litres/Kg)" name="fuel_consumption_litres" type="number" formik={formik} />
+                                <InputField 
+                                    label={
+                                        formik.values.fuel_type === "LPG" ? "Annual Fuel (Kg)" : 
+                                        formik.values.fuel_type === "Natural Gas" ? "Annual Fuel (m3)" : 
+                                        "Annual Fuel (Litres)"
+                                    } 
+                                    name="fuel_consumption_litres" 
+                                    type="number" 
+                                    formik={formik} 
+                                />
                             )}
 
                             <DropdownField label="Renewable Type" name="renewable_energy_type" options={RENEWABLE_TYPE_OPTIONS} formik={formik} />

@@ -181,6 +181,53 @@ export default function AdminSchoolTable() {
         }
     };
 
+    const handleExportSchoolCSV = () => {
+        const headers = [
+            "Registry ID",
+            "School Name",
+            "Status",
+            "tCO2e",
+            "Atmanirbhar %",
+            "Circularity %",
+            "Contact Person",
+            "Email",
+            "Phone",
+            "City",
+            "Created At"
+        ];
+
+        const rows = schools.map((s) => [
+            s.registryId || "",
+            s.schoolName || "",
+            s.status || "pledged",
+            s.tco2e_annual != null ? s.tco2e_annual.toFixed(3) : "0",
+            s.atmanirbhar_pct != null ? s.atmanirbhar_pct.toFixed(1) : "0",
+            s.circularity_pct != null ? s.circularity_pct.toFixed(1) : "0",
+            s.contactPerson || "",
+            s.email || "",
+            s.phone || "",
+            s.city || "",
+            s.createdAt && (s.createdAt as any).toDate 
+                ? (s.createdAt as any).toDate().toISOString() 
+                : typeof s.createdAt === "string" 
+                    ? new Date(s.createdAt).toISOString() 
+                    : "",
+        ]);
+
+        const csvContent = [
+            headers.join(","),
+            ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+        ].join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `ecf-schools-${new Date().toISOString().split("T")[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
+
     if (loading) return <div className="flex justify-center p-20"><Spinner size="lg" /></div>;
 
     const currentImpact = (() => {
@@ -241,6 +288,21 @@ export default function AdminSchoolTable() {
                     color="text-purple-600 bg-purple-50"
                 />
             </div>
+
+            <div className="flex justify-end mb-4">
+                <button
+                    onClick={handleExportSchoolCSV}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-100 bg-white text-[rgb(32,38,130)] hover:bg-[rgba(32,38,130,0.05)] transition-colors text-sm font-bold shadow-sm"
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Export CSV
+                </button>
+            </div>
+
             <div className="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">

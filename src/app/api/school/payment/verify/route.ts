@@ -4,6 +4,7 @@ import { generateSchoolHash } from "@/lib/hashUtils";
 import { calculateSchoolImpact } from "@/lib/schoolCalculationEngine";
 import { adminDb, adminStorage } from "@/lib/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
+import { normalizeSchoolName } from "@/lib/schoolUtils";
 
 const hasAdminCredentials = !!(
     process.env.FIREBASE_PRIVATE_KEY &&
@@ -224,6 +225,8 @@ export async function POST(request: NextRequest) {
             waste_generated_kg: formData.get("waste_generated_kg") ? Number(formData.get("waste_generated_kg")) : null,
             water_consumption_m3: formData.get("water_consumption_m3") ? Number(formData.get("water_consumption_m3")) : null,
             baseline_source: formData.get("baseline_source") || "self-reported",
+            name_normalized: normalizeSchoolName(formData.get("schoolName") as string),
+            students_count: Number(formData.get("students_count")) || 1,
         };
 
         // Collection 2: schoolBaselines (admin only, raw data + impact)

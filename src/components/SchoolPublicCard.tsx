@@ -34,7 +34,7 @@ export default function SchoolPublicCard({ school }: SchoolPublicCardProps) {
                         <DetailItem label="Contact Person" value={school.contactPerson} />
                     </div>
                     <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-[2rem]">
-                        <QRCode registryId={school.registryId} size={120} />
+                        <QRCode registryId={school.registryId} size={120} type="school" />
                         <p className="text-[10px] font-bold text-gray-400 mt-4 uppercase">Scan to Verify</p>
                     </div>
                 </div>

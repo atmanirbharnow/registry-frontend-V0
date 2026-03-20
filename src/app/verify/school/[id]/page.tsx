@@ -165,7 +165,7 @@ export default function SchoolVerifyPage() {
                         </div>
                         
                         <div className="flex flex-col sm:flex-row items-center gap-8 pt-4">
-                            <QRCode registryId={school.registryId} size={150} />
+                            <QRCode registryId={school.registryId} size={150} type="school" />
                             <div className="space-y-6 w-full">
                                 <p className="text-sm font-medium text-gray-400 italic">
                                     "This digital registry entry validates this school's climate commitment for the reporting year."
