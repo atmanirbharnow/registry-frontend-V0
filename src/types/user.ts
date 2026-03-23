@@ -9,6 +9,10 @@ export interface UserProfile {
     photoURL: string | null;
     role: UserRole;
     socialHandles: [string, string, string];
+    phone?: string;
+    contactPerson?: string;
+    institutionType?: "School" | "Corporate" | "NGO" | "Government" | "Individual";
+    actorName?: string;
     createdAt: Timestamp;
     updatedAt?: Timestamp;
 }

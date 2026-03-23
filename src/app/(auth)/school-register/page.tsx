@@ -12,7 +12,7 @@ export default function SchoolRegisterPage() {
 
     if (loading) return <div className="flex justify-center items-center min-h-screen"><Spinner size="lg" /></div>;
 
-    if (!profile || profile.role !== "admin") {
+    if (!profile) {
         router.replace("/profile");
         return null;
     }

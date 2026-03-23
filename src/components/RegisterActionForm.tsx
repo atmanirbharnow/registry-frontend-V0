@@ -13,6 +13,7 @@ import Input from "./ui/Input";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
 import { useAuth } from "@/context/AuthContext";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { PAYMENT_AMOUNT_DISPLAY } from "@/lib/constants";
 
 
@@ -33,14 +34,10 @@ const validationSchema = Yup.object().shape({
         .typeError("Must be a number"),
     unit: Yup.string().required("Unit is required"),
     address: Yup.string().required("Address is required"),
-    actorType: Yup.string().required("Actor type is required"),
-    actorName: Yup.string().required("Actor name is required"),
-    contactPerson: Yup.string().required("Contact person is required"),
-    phone: Yup.string()
-        .matches(/^\d{10}$/, "Must be a 10-digit number")
-        .required("Phone is required"),
-    email: Yup.string().email("Invalid email").required("Email is required"),
-    commissioningDate: Yup.string(),
+    commissioningDate: Yup.date()
+        .min(new Date("2025-01-01"), "Year must be 2025 or later")
+        .max(new Date("2099-12-31"), "Invalid year")
+        .required("Commissioning date is required"),
     localPercent: Yup.number().min(0).max(100).typeError("Must be a number"),
     indigenousPercent: Yup.number().min(0).max(100).typeError("Must be a number"),
     communityPercent: Yup.number().min(0).max(100).typeError("Must be a number"),
@@ -51,16 +48,16 @@ const validationSchema = Yup.object().shape({
 
 export default function RegisterActionForm() {
     const { user } = useAuth();
+    const { profile } = useUserProfile();
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
     const [isSimulationMode, setIsSimulationMode] = useState(false);
     const [meterPhotos, setMeterPhotos] = useState<string[]>(["", "", ""]);
     const [sitePhoto, setSitePhoto] = useState<string | null>(null);
+    const [currentStep, setCurrentStep] = useState(1);
+    const totalSteps = 3;
 
     useEffect(() => {
-        // Only add the script if it doesn't already exist.
-        // CRITICAL: Do NOT remove this script on cleanup — removing it destroys
-        // window.Razorpay and breaks the payment handler callback on deployment.
         const existing = document.querySelector(
             'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
         );
@@ -70,7 +67,6 @@ export default function RegisterActionForm() {
             script.async = true;
             document.body.appendChild(script);
         }
-        // No cleanup — intentional. Removing the script destroys window.Razorpay.
     }, []);
 
     const processPaymentVerification = async (
@@ -82,7 +78,6 @@ export default function RegisterActionForm() {
         values: typeof formik.values
     ) => {
         try {
-            // Get the user's Firebase ID token for server-side auth
             const idToken = await user?.getIdToken();
 
             const verifyRes = await fetch("/api/payment/verify", {
@@ -102,10 +97,15 @@ export default function RegisterActionForm() {
                         sitePhoto,
                         userId: user?.uid,
                         userEmail: user?.email,
+                        // Pull actor info from profile
+                        actorType: "Individual/Organization",
+                        actorName: profile?.displayName || user?.displayName || "",
+                        contactPerson: profile?.contactPerson || "",
+                        phone: profile?.phone || "",
+                        email: profile?.email || user?.email || "",
                     },
                 }),
             });
-
 
             if (!verifyRes.ok) {
                 const errData = await verifyRes.json();
@@ -130,11 +130,6 @@ export default function RegisterActionForm() {
             address: "",
             lat: null as number | null,
             lng: null as number | null,
-            actorType: "",
-            actorName: "",
-            contactPerson: "",
-            phone: "",
-            email: "",
             commissioningDate: "",
             localPercent: "",
             indigenousPercent: "",
@@ -192,9 +187,9 @@ export default function RegisterActionForm() {
                         await processPaymentVerification(response, values);
                     },
                     prefill: {
-                        name: values.actorName,
-                        email: values.email,
-                        contact: values.phone,
+                        name: profile?.displayName || user?.displayName || "",
+                        email: profile?.email || user?.email || "",
+                        contact: profile?.phone || "",
                     },
                     theme: { color: "rgb(32,38,130)" },
                     modal: {
@@ -207,8 +202,6 @@ export default function RegisterActionForm() {
                 };
 
                 const razorpay = new window.Razorpay(options);
-
-                // Listen for payment failure events to help diagnose issues
                 razorpay.on("payment.failed", (resp: Record<string, unknown>) => {
                     const err = resp?.error as Record<string, unknown> | undefined;
                     toast.error(
@@ -226,6 +219,36 @@ export default function RegisterActionForm() {
         },
     });
 
+    const handleNext = async () => {
+        const errors = await formik.validateForm();
+        const stepFields: Record<number, string[]> = {
+            1: ["actionType", "quantity", "unit", "commissioningDate"],
+            2: ["address"],
+            3: ["consentGiven", "disclaimerAccepted"]
+        };
+
+        const currentStepFields = stepFields[currentStep];
+        const hasStepErrors = currentStepFields.some(field => errors[field as keyof typeof errors]);
+
+        if (!hasStepErrors) {
+            if (currentStep === 2) {
+                const hasPhotos = sitePhoto || meterPhotos.some(p => p && p.trim() !== "");
+                if (!hasPhotos) {
+                    toast.error("Please upload at least one verification photo (Site or Meter)");
+                    return;
+                }
+            }
+            setCurrentStep(s => Math.min(s + 1, totalSteps));
+        } else {
+            // Mark fields as touched to show errors
+            const touched = currentStepFields.reduce((acc, field) => ({ ...acc, [field]: true }), {});
+            formik.setTouched({ ...formik.touched, ...touched });
+            toast.warning("Please fill required fields to proceed");
+        }
+    };
+
+    const handlePrev = () => setCurrentStep(s => Math.max(s - 1, 1));
+
     const handlePlaceSelect = (location: { address: string; lat?: number; lng?: number }) => {
         formik.setFieldValue("address", location.address);
         if (location.lat && location.lng) {
@@ -234,219 +257,290 @@ export default function RegisterActionForm() {
         }
     };
 
+    const progress = (currentStep / totalSteps) * 100;
+
     return (
-        <form onSubmit={formik.handleSubmit} className="space-y-8">
-            {isSimulationMode && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-3 flex items-center gap-2">
-                    <span className="text-xl flex items-center justify-center">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-                        </svg>
-                    </span>
-                    <span className="text-sm font-semibold text-yellow-700">
-                        Payment Simulation Mode — No real charges
-                    </span>
-                </div>
-            )}
-
-            <Card header={<h3 className="text-lg font-semibold text-gray-800">Action Details</h3>}>
-                <div className="space-y-6">
-                    <ActionTypeSelector
-                        value={formik.values.actionType}
-                        unitValue={formik.values.unit}
-                        onChange={(val) => formik.setFieldValue("actionType", val)}
-                        onUnitChange={(unit) => formik.setFieldValue("unit", unit)}
-                        error={formik.errors.actionType}
-                        touched={formik.touched.actionType}
-                    />
-
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="quantity"
-                            className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1"
-                        >
-                            Capacity / Quantity
-                        </label>
-                        <div className="relative">
-                            <input
-                                id="quantity"
-                                name="quantity"
-                                type="number"
-                                step="0.01"
-                                className={`
-                  w-full px-5 py-4 pr-24 rounded-xl border bg-gray-50/50
-                  focus:bg-white transition-all duration-200 outline-none
-                  font-medium text-gray-700 placeholder:text-gray-300
-                  ${formik.touched.quantity && formik.errors.quantity
-                                        ? "border-red-400 focus:border-red-400"
-                                        : "border-gray-100 focus:border-blue-400"
-                                    }
-                `}
-                                value={formik.values.quantity}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                placeholder="0.00"
-                            />
-                            <div className="absolute right-5 top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-100/50 rounded-lg text-gray-500 font-bold text-sm pointer-events-none">
-                                {formik.values.unit || "units"}
+        <div className="space-y-8">
+            {/* Progress Bar */}
+            <div className="mb-12">
+                <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
+                    {[1, 2, 3].map((step) => (
+                        <div key={step} className="flex flex-col items-center min-w-[100px]">
+                            <span className={`text-[10px] font-black mb-2 whitespace-nowrap uppercase tracking-widest ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-300"}`}>
+                                {step === 1 && "Action Details"}
+                                {step === 2 && "Location & Photos"}
+                                {step === 3 && "Finalize"}
+                            </span>
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${
+                                currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" : 
+                                currentStep > step ? "bg-green-500 border-green-100 text-white" : 
+                                "bg-white border-gray-50 text-gray-200"
+                            }`}>
+                                {currentStep > step ? (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                ) : step}
                             </div>
                         </div>
-                        {formik.touched.quantity && formik.errors.quantity && (
-                            <p className="text-red-500 text-xs ml-1">{formik.errors.quantity}</p>
-                        )}
+                    ))}
+                </div>
+                <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
+                    <div 
+                        className="h-full bg-gradient-to-r from-[rgb(32,38,130)] to-blue-500 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(32,38,130,0.4)]"
+                        style={{ width: `${progress}%` }}
+                    />
+                </div>
+            </div>
+
+            <form onSubmit={formik.handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {isSimulationMode && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-3 flex items-center gap-2">
+                        <span className="text-xl flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        </span>
+                        <span className="text-sm font-semibold text-yellow-700">
+                            Payment Simulation Mode — No real charges
+                        </span>
                     </div>
+                )}
 
-                    <Input
-                        label="Commissioning Date"
-                        name="commissioningDate"
-                        type="date"
-                        value={formik.values.commissioningDate}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                    />
-                </div>
-            </Card>
+                {currentStep === 1 && (
+                    <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-blue-50 rounded-lg text-blue-600">⚡</span> <h3 className="text-xl font-bold text-gray-800">Action Details</h3></div>}>
+                        <div className="space-y-8">
+                            <ActionTypeSelector
+                                value={formik.values.actionType}
+                                unitValue={formik.values.unit}
+                                onChange={(val) => formik.setFieldValue("actionType", val)}
+                                onUnitChange={(unit) => formik.setFieldValue("unit", unit)}
+                                error={formik.errors.actionType}
+                                touched={formik.touched.actionType}
+                            />
 
+                            <div className="space-y-3">
+                                <label
+                                    htmlFor="quantity"
+                                    className="block text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1"
+                                >
+                                    Capacity / Quantity
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="quantity"
+                                        name="quantity"
+                                        type="number"
+                                        step="0.01"
+                                        className={`
+                                            w-full px-5 py-5 pr-24 rounded-2xl border-2 bg-gray-50/50
+                                            focus:bg-white transition-all duration-300 outline-none
+                                            font-black text-xl text-gray-900 placeholder:text-gray-300
+                                            ${formik.touched.quantity && formik.errors.quantity
+                                                ? "border-red-400 focus:border-red-400"
+                                                : "border-gray-100 focus:border-[rgb(32,38,130)]"
+                                            }
+                                        `}
+                                        value={formik.values.quantity}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        placeholder="0.00"
+                                    />
+                                    <div className="absolute right-5 top-1/2 -translate-y-1/2 px-4 py-2 bg-white border border-gray-100 rounded-xl text-gray-500 font-black text-sm shadow-sm">
+                                        {formik.values.unit || "UNITS"}
+                                    </div>
+                                </div>
+                                {formik.touched.quantity && formik.errors.quantity && (
+                                    <p className="text-red-500 text-xs font-bold ml-1">{formik.errors.quantity}</p>
+                                )}
+                            </div>
 
-
-            <Card header={<h3 className="text-lg font-semibold text-gray-800">Actor Information</h3>}>
-                <ActorDetailsSection
-                    actorType={formik.values.actorType}
-                    actorName={formik.values.actorName}
-                    contactPerson={formik.values.contactPerson}
-                    phone={formik.values.phone}
-                    email={formik.values.email}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    errors={formik.errors as Record<string, string | undefined>}
-                    touched={formik.touched as Record<string, boolean | undefined>}
-                />
-            </Card>
-
-            <Card header={<h3 className="text-lg font-semibold text-gray-800">Location</h3>}>
-                <LocationPickerSection
-                    address={formik.values.address}
-                    lat={formik.values.lat}
-                    lng={formik.values.lng}
-                    onAddressChange={formik.handleChange}
-                    onPlaceSelect={handlePlaceSelect}
-                    onCoordsChange={(lat, lng) => {
-                        formik.setFieldValue("lat", lat);
-                        formik.setFieldValue("lng", lng);
-                    }}
-                    error={formik.errors.address}
-                    touched={formik.touched.address}
-                />
-            </Card>
-
-            <Card header={<h3 className="text-lg font-semibold text-gray-800">Photos</h3>}>
-                <PhotoUploadSection
-                    meterPhotos={meterPhotos}
-                    sitePhoto={sitePhoto}
-                    userId={user?.uid || ""}
-                    onMeterPhotosChange={setMeterPhotos}
-                    onSitePhotoChange={setSitePhoto}
-                />
-            </Card>
-
-            <Card header={
-                <div>
-                    <h3 className="text-lg font-semibold text-gray-800">Atmanirbhar Assessment</h3>
-                    <p className="text-xs text-gray-500 mt-1">Optional — help us measure self-reliance impact</p>
-                </div>
-            }>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Input
-                        label="Local Sourcing %"
-                        name="localPercent"
-                        type="number"
-                        value={formik.values.localPercent}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="0 - 100"
-                        error={formik.touched.localPercent ? formik.errors.localPercent : undefined}
-                    />
-                    <Input
-                        label="Indigenous Tech %"
-                        name="indigenousPercent"
-                        type="number"
-                        value={formik.values.indigenousPercent}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="0 - 100"
-                        error={formik.touched.indigenousPercent ? formik.errors.indigenousPercent : undefined}
-                    />
-                    <Input
-                        label="Community Ownership %"
-                        name="communityPercent"
-                        type="number"
-                        value={formik.values.communityPercent}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="0 - 100"
-                        error={formik.touched.communityPercent ? formik.errors.communityPercent : undefined}
-                    />
-                    <Input
-                        label="Jobs Created"
-                        name="jobsCreated"
-                        type="number"
-                        value={formik.values.jobsCreated}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Number of jobs"
-                        error={formik.touched.jobsCreated ? formik.errors.jobsCreated : undefined}
-                    />
-                </div>
-            </Card>
-
-            <Card>
-                <div className="space-y-6">
-                    <label className="flex items-start gap-3 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            name="consentGiven"
-                            checked={formik.values.consentGiven}
-                            onChange={formik.handleChange}
-                            className="mt-1 w-5 h-5 accent-[rgb(32,38,130)] cursor-pointer"
-                        />
-                        <span className="text-sm text-gray-600">
-                            I verify that the data provided above is correct to the best of my knowledge.
-                            I understand that this submission will generate a tamper-evident digital signature.
-                        </span>
-                    </label>
-                    {formik.touched.consentGiven && formik.errors.consentGiven && (
-                        <p className="text-red-500 text-xs ml-1">{formik.errors.consentGiven}</p>
-                    )}
-
-                    <label className="flex items-start gap-3 cursor-pointer">
-                        <input
-                            type="checkbox"
-                            name="disclaimerAccepted"
-                            checked={formik.values.disclaimerAccepted}
-                            onChange={formik.handleChange}
-                            className="mt-1 w-5 h-5 accent-[rgb(32,38,130)] cursor-pointer"
-                        />
-                        <span className="text-sm text-gray-600">
-                            I understand that the carbon reduction (tCO₂e) and Atmanirbhar
-                            values displayed are <strong>estimates</strong> based on my submitted data.
-                            Earth Carbon Foundation verifies all actions in good faith.
-                        </span>
-                    </label>
-                    {formik.touched.disclaimerAccepted && formik.errors.disclaimerAccepted && (
-                        <p className="text-red-500 text-xs ml-1">{formik.errors.disclaimerAccepted}</p>
-                    )}
-
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
-                        <div>
-                            <p className="text-sm text-gray-500">Registration Fee</p>
-                            <p className="text-2xl font-black text-gray-800">{PAYMENT_AMOUNT_DISPLAY}</p>
+                            <Input
+                                label="Commissioning Date"
+                                name="commissioningDate"
+                                type="date"
+                                className="!py-4 !rounded-xl !text-base !font-bold"
+                                min="2025-01-01"
+                                max="2099-12-31"
+                                value={formik.values.commissioningDate}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                            />
                         </div>
-                        <Button type="submit" size="lg" loading={submitting}>
-                            Pay & Register Action
-                        </Button>
+                    </Card>
+                )}
+
+                {currentStep === 2 && (
+                    <div className="space-y-8">
+                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-green-50 rounded-lg text-green-600">📍</span> <h3 className="text-xl font-bold text-gray-800">Location</h3></div>}>
+                            <LocationPickerSection
+                                address={formik.values.address}
+                                lat={formik.values.lat}
+                                lng={formik.values.lng}
+                                onAddressChange={formik.handleChange}
+                                onPlaceSelect={handlePlaceSelect}
+                                onCoordsChange={(lat, lng) => {
+                                    formik.setFieldValue("lat", lat);
+                                    formik.setFieldValue("lng", lng);
+                                }}
+                                error={formik.errors.address}
+                                touched={formik.touched.address}
+                            />
+                        </Card>
+
+                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-indigo-50 rounded-lg text-indigo-600">📸</span> <h3 className="text-xl font-bold text-gray-800">Verification Photos</h3></div>}>
+                            <PhotoUploadSection
+                                meterPhotos={meterPhotos}
+                                sitePhoto={sitePhoto}
+                                userId={user?.uid || ""}
+                                onMeterPhotosChange={setMeterPhotos}
+                                onSitePhotoChange={setSitePhoto}
+                            />
+                        </Card>
                     </div>
+                )}
+
+                {currentStep === 3 && (
+                    <div className="space-y-8">
+                        <Card header={
+                            <div className="flex items-center justify-between group cursor-default">
+                                <div className="flex items-center gap-3">
+                                    <span className="p-2 bg-cyan-50 rounded-lg text-cyan-600">🇮🇳</span>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-800">Atmanirbhar Assessment</h3>
+                                        <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">Optional — help us measure self-reliance impact</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <Input
+                                    label="Local Sourcing %"
+                                    name="localPercent"
+                                    type="number"
+                                    className="!py-4 !rounded-xl !font-bold"
+                                    value={formik.values.localPercent}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="0 - 100"
+                                    error={formik.touched.localPercent ? formik.errors.localPercent : undefined}
+                                />
+                                <Input
+                                    label="Indigenous Tech %"
+                                    name="indigenousPercent"
+                                    type="number"
+                                    className="!py-4 !rounded-xl !font-bold"
+                                    value={formik.values.indigenousPercent}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="0 - 100"
+                                    error={formik.touched.indigenousPercent ? formik.errors.indigenousPercent : undefined}
+                                />
+                                <Input
+                                    label="Community Ownership %"
+                                    name="communityPercent"
+                                    type="number"
+                                    className="!py-4 !rounded-xl !font-bold"
+                                    value={formik.values.communityPercent}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="0 - 100"
+                                    error={formik.touched.communityPercent ? formik.errors.communityPercent : undefined}
+                                />
+                                <Input
+                                    label="Jobs Created"
+                                    name="jobsCreated"
+                                    type="number"
+                                    className="!py-4 !rounded-xl !font-bold"
+                                    value={formik.values.jobsCreated}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="Number of jobs"
+                                    error={formik.touched.jobsCreated ? formik.errors.jobsCreated : undefined}
+                                />
+                            </div>
+                        </Card>
+
+                        <Card>
+                            <div className="space-y-8">
+                                <div className="bg-slate-50 p-6 rounded-[2rem] border border-gray-100 space-y-4">
+                                    <label className="flex items-start gap-4 cursor-pointer group">
+                                        <div className="mt-1 relative">
+                                            <input
+                                                type="checkbox"
+                                                name="consentGiven"
+                                                checked={formik.values.consentGiven}
+                                                onChange={formik.handleChange}
+                                                className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                            />
+                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
+                                            I verify that the data provided above is correct to the best of my knowledge.
+                                            I understand that this submission will generate a tamper-evident digital signature.
+                                        </span>
+                                    </label>
+                                    {formik.touched.consentGiven && formik.errors.consentGiven && (
+                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.consentGiven}</p>
+                                    )}
+
+                                    <label className="flex items-start gap-4 cursor-pointer group">
+                                        <div className="mt-1 relative">
+                                            <input
+                                                type="checkbox"
+                                                name="disclaimerAccepted"
+                                                checked={formik.values.disclaimerAccepted}
+                                                onChange={formik.handleChange}
+                                                className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                            />
+                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        </div>
+                                        <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
+                                            I understand that the carbon reduction (tCO₂e) and Atmanirbhar
+                                            values displayed are <span className="text-blue-600">estimates</span> based on my submitted data.
+                                            Earth Carbon Foundation verifies all actions in good faith.
+                                        </span>
+                                    </label>
+                                    {formik.touched.disclaimerAccepted && formik.errors.disclaimerAccepted && (
+                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.disclaimerAccepted}</p>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-2">
+                                    <div className="text-center sm:text-left">
+                                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Registration Fee</p>
+                                        <p className="text-4xl font-black text-gray-800">{PAYMENT_AMOUNT_DISPLAY}</p>
+                                    </div>
+                                    <Button type="submit" className="w-full sm:w-auto px-8 py-3.5 text-base rounded-xl shadow-lg shadow-blue-500/10" loading={submitting}>
+                                        Pay & Register Action
+                                    </Button>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                )}
+
+                {/* Navigation */}
+                <div className="flex flex-col sm:flex-row sm:justify-end gap-4 pt-6">
+                    {currentStep > 1 && (
+                        <button
+                            type="button"
+                            onClick={handlePrev}
+                            className="w-full sm:w-40 py-3 px-6 rounded-xl bg-white border-2 border-gray-100 text-gray-500 font-bold text-sm hover:bg-gray-50 transition-all active:scale-95"
+                        >
+                            Back
+                        </button>
+                    )}
+
+                    {currentStep < totalSteps && (
+                        <button
+                            type="button"
+                            onClick={handleNext}
+                            className="w-full sm:w-40 py-3 px-6 rounded-xl bg-[rgb(32,38,130)] text-white font-bold text-sm shadow-lg shadow-blue-900/10 hover:shadow-blue-900/20 hover:-translate-y-0.5 transition-all active:scale-95"
+                        >
+                            Next Step
+                        </button>
+                    )}
                 </div>
-            </Card>
-        </form >
+            </form>
+        </div>
     );
 }

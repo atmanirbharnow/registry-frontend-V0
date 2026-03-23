@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
 
         // Feature 9: Photo Upload
         let photoUrl = null;
-        if (photoFile) {
+        if (photoFile && typeof photoFile !== "string") {
             if (hasAdminCredentials) {
                 const buffer = Buffer.from(await photoFile.arrayBuffer());
                 const bucket = adminStorage.bucket();

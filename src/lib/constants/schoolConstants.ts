@@ -46,7 +46,6 @@ export const RENEWABLE_TYPE_OPTIONS = [
 ] as const;
 
 export const REPORTING_YEAR_OPTIONS = [
-    { value: "2024", label: "2024" },
     { value: "2025", label: "2025" },
     { value: "2026", label: "2026" },
     { value: "2027", label: "2027" },

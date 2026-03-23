@@ -31,32 +31,38 @@ declare global {
 }
 
 const validationSchema = [
-    // Step 1
+    // Step 1: Identity
     Yup.object({
         schoolName: Yup.string().required("School name is required"),
         address: Yup.string().required("Address is required"),
         city: Yup.string().required("City is required"),
         pincode: Yup.string().matches(/^[0-9]{6}$/, "Must be a 6-digit pincode").required("Required"),
-        contactPerson: Yup.string().required("Required"),
-        phone: Yup.string().matches(/^[0-9]{10}$/, "Must be 10 digits").required("Required"),
-        email: Yup.string().email("Invalid email").required("Required"),
     }),
-    // Step 2
+    // Step 2: Energy & Fuel
     Yup.object({
         students_count: Yup.number().min(1, "Students count must be at least 1").required("Required"),
         reporting_year: Yup.string().required("Required"),
         action_id: Yup.string().required("Please select an action"),
-        attribution_pct_energy: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
+        electricity_kWh_year: Yup.number().required("Required"),
+        fuel_type: Yup.string().required("Required"),
     }),
-    // Step 3
+    // Step 3: Waste & Water
     Yup.object({
+        waste_generated_kg: Yup.number().required("Required"),
+        water_consumption_m3: Yup.number().required("Required"),
+        attribution_pct_energy: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
         attribution_pct_waste: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
         attribution_pct_water: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
-        calculation_notes: Yup.string().max(1000, "Maximum 1000 characters"),
+        photo_file: Yup.mixed().required("Proof photo is required"),
     }),
-    // Step 4
+    // Step 4: Finalization
     Yup.object({
         consent_confirmed: Yup.boolean().oneOf([true], "Please provide consent to proceed").required(),
+        installation_date: Yup.date()
+            .transform((value, originalValue) => originalValue === "" ? null : value)
+            .nullable()
+            .min(new Date("2025-01-01"), "Year must be 2025 or later")
+            .max(new Date("2099-12-31"), "Invalid year"),
     })
 ];
 
@@ -96,7 +102,7 @@ export default function SchoolRegistrationForm() {
             try {
                 const parsed = JSON.parse(savedDraft);
                 formik.setValues(parsed);
-                if (parsed.currentStep) setCurrentStep(parsed.currentStep);
+                if (parsed.currentStep) setCurrentStep(Math.min(parsed.currentStep, totalSteps));
             } catch (e) {
                 console.error("Failed to load draft", e);
             }
@@ -171,12 +177,19 @@ export default function SchoolRegistrationForm() {
                     description: "School Onboarding - Rs.199",
                     order_id: orderData.orderId,
                     handler: async (response: any) => {
-                        await processPaymentVerification(response, values);
+                        // Pre-fill profile data before verification
+                        const finalValues = {
+                            ...values,
+                            contactPerson: profile?.contactPerson || "",
+                            phone: profile?.phone || "",
+                            email: profile?.email || auth.currentUser?.email || "",
+                        };
+                        await processPaymentVerification(response, finalValues);
                     },
                     prefill: {
-                        name: values.schoolName,
-                        email: values.email,
-                        contact: values.phone,
+                        name: profile?.displayName || auth.currentUser?.displayName || values.schoolName,
+                        email: profile?.email || auth.currentUser?.email || "",
+                        contact: profile?.phone || "",
                     },
                     theme: { color: "rgb(32,38,130)" },
                     modal: {
@@ -317,6 +330,9 @@ export default function SchoolRegistrationForm() {
             }
             setCurrentStep(currentStep + 1);
         } else {
+            if (currentStep === 3 && errors.photo_file) {
+                toast.error("Please upload a proof photo of the action to proceed.", { position: "top-center" });
+            }
             formik.setTouched(
                 Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {})
             );
@@ -333,15 +349,15 @@ export default function SchoolRegistrationForm() {
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
                     {[1, 2, 3, 4].map((step) => (
-                        <div key={step} className="flex flex-col items-center min-w-[80px]">
-                            <span className={`text-[10px] sm:text-xs font-bold mb-2 whitespace-nowrap ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
+                        <div key={step} className="flex flex-col items-center min-w-[100px]">
+                            <span className={`text-[10px] sm:text-xs font-bold mb-2 whitespace-nowrap uppercase tracking-widest ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
                                 {step === 1 && "Identity"}
-                                {step === 2 && "Emissions"}
+                                {step === 2 && "Energy & Fuel"}
                                 {step === 3 && "Waste & Water"}
-                                {step === 4 && "Consent"}
+                                {step === 4 && "Finalize"}
                             </span>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-4 transition-all ${
-                                currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white" : 
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${
+                                currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" : 
                                 currentStep > step ? "bg-green-500 border-green-100 text-white" : 
                                 "bg-white border-gray-100 text-gray-300"
                             }`}>
@@ -350,15 +366,15 @@ export default function SchoolRegistrationForm() {
                         </div>
                     ))}
                 </div>
-                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
                     <div 
-                        className="h-full bg-[rgb(32,38,130)] transition-all duration-500 ease-out"
+                        className="h-full bg-gradient-to-r from-[rgb(32,38,130)] to-blue-500 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(32,38,130,0.4)]"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(); }} className="space-y-8">
+            <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(); }} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {currentStep === 1 && (
                     <StepWrapper title="Step 1: School Identity" icon={<IdentityIcon />}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -387,168 +403,126 @@ export default function SchoolRegistrationForm() {
                             <div className="md:col-span-2">
                                 <InputField label="Full Address" name="address" formik={formik} textarea />
                             </div>
-                            <InputField label="Contact Person" name="contactPerson" formik={formik} />
-                            <InputField label="Phone (10-digit)" name="phone" formik={formik} maxLength={10} />
-                            <InputField label="Email Address" name="email" type="email" formik={formik} />
                         </div>
                     </StepWrapper>
                 )}
 
                 {currentStep === 2 && (
-                    <StepWrapper title="Step 2: Energy & Emissions" icon={<EnergyIcon />}>
+                    <StepWrapper title="Step 2: Energy & Fuel Data" icon={<EnergyIcon />}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <InputField label="Students Count (Required)" name="students_count" type="number" formik={formik} />
+                            <InputField label="Students Count" name="students_count" type="number" formik={formik} />
                             <DropdownField label="Reporting Year" name="reporting_year" options={REPORTING_YEAR_OPTIONS} formik={formik} />
                             
-                            <DropdownField label="Action ID" name="action_id" options={actions.map(a => ({ value: a.id, label: `${a.type} - ${a.id}` }))} formik={formik} placeholder="Select Action" />
-                            <DropdownField label="Primary Data Source" name="baseline_source" options={BASELINE_SOURCE_OPTIONS} formik={formik} />
+                            <DropdownField label="Primary Action Type" name="action_id" options={actions.map(a => ({ value: a.id, label: `${a.type} - ${a.id}` }))} formik={formik} placeholder="Select Action" />
+                            <DropdownField label="Data Source" name="baseline_source" options={BASELINE_SOURCE_OPTIONS} formik={formik} />
 
                             <div className="md:col-span-2 h-px bg-gray-100 my-4" />
 
-                            <InputField label="Annual Electricity Use (kWh)" name="electricity_kWh_year" type="number" formik={formik} placeholder="Fallback used if blank" />
-                            <DropdownField label="Fuel Type" name="fuel_type" options={FUEL_TYPE_OPTIONS} formik={formik} />
+                            <InputField label="Electricity Use (kWh/yr)" name="electricity_kWh_year" type="number" formik={formik} />
+                            <DropdownField label="Main Fuel Type" name="fuel_type" options={FUEL_TYPE_OPTIONS} formik={formik} />
                             
                             {formik.values.fuel_type !== "None" && (
                                 <InputField 
-                                    label={
-                                        formik.values.fuel_type === "LPG" ? "Annual Fuel (Kg)" : 
-                                        formik.values.fuel_type === "Natural Gas" ? "Annual Fuel (m3)" : 
-                                        "Annual Fuel (Litres)"
-                                    } 
+                                    label="Annual Fuel Consumption (Litres)" 
                                     name="fuel_consumption_litres" 
                                     type="number" 
                                     formik={formik} 
                                 />
                             )}
 
-                            <DropdownField label="Renewable Type" name="renewable_energy_type" options={RENEWABLE_TYPE_OPTIONS} formik={formik} />
-                            {formik.values.renewable_energy_type !== "None" && (
-                                <InputField label="Renewable Gen. (kWh/year)" name="renewable_energy_kwh" type="number" formik={formik} />
-                            )}
+                            <div className="md:col-span-2 h-px bg-gray-100 my-4" />
 
-                            <div className="md:col-span-2">
-                                <InputField 
-                                    label="Attribution % for Energy (0-100)" 
-                                    name="attribution_pct_energy" 
-                                    type="number" 
-                                    formik={formik} 
-                                    min={0} max={100}
-                                    placeholder="Enter percentage"
-                                    suffix="%"
-                                />
-                                {formik.values.attribution_pct_energy === 0 && (
-                                    <p className="text-[10px] text-orange-500 font-bold mt-1">Attribution 0% means no climate impact is claimed for this pillar.</p>
-                                )}
-                            </div>
+                            <DropdownField label="Renewable Energy (if any)" name="renewable_energy_type" options={RENEWABLE_TYPE_OPTIONS} formik={formik} />
+                            {formik.values.renewable_energy_type !== "None" && (
+                                <InputField label="Renewable Gen (kWh/yr)" name="renewable_energy_kwh" type="number" formik={formik} />
+                            )}
                         </div>
                     </StepWrapper>
                 )}
 
                 {currentStep === 3 && (
-                    <StepWrapper title="Step 3: Waste & Water" icon={<WasteIcon />}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <InputField label="Waste Generated (kg/year)" name="waste_generated_kg" type="number" formik={formik} />
-                            <InputField label="Waste Diverted (kg/year)" name="waste_diverted_kg" type="number" formik={formik} />
-                            
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-bold text-gray-500 mb-2">Recycling Programs</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                    {RECYCLING_PROGRAM_OPTIONS.map(opt => (
-                                        <label key={opt.value} className="flex items-center gap-2 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 cursor-pointer">
-                                            <input 
-                                                type="checkbox" 
-                                                className="w-4 h-4 rounded accent-[rgb(32,38,130)]"
-                                                checked={formik.values.recycling_programs.includes(opt.value)}
-                                                onChange={(e) => {
-                                                    const current = formik.values.recycling_programs;
-                                                    if (e.target.checked) {
-                                                        formik.setFieldValue("recycling_programs", [...current, opt.value]);
-                                                    } else {
-                                                        formik.setFieldValue("recycling_programs", current.filter(v => v !== opt.value));
-                                                    }
-                                                }}
-                                            />
-                                            <span className="text-xs font-bold text-gray-600">{opt.label}</span>
-                                        </label>
-                                    ))}
+                    <div className="space-y-8">
+                        <StepWrapper title="Step 3: Waste & Water Data" icon={<WasteIcon />}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputField label="Waste Generated (kg/yr)" name="waste_generated_kg" type="number" formik={formik} />
+                                <InputField label="Water Consumption (m3/yr)" name="water_consumption_m3" type="number" formik={formik} />
+
+                                <div className="md:col-span-2 h-px bg-gray-100 my-4 text-center">
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Attribution Percentages</p>
                                 </div>
+
+                                <InputField 
+                                    label="Energy Attribution" 
+                                    name="attribution_pct_energy" 
+                                    type="number" 
+                                    formik={formik} 
+                                    suffix="%"
+                                />
+                                <InputField 
+                                    label="Waste Attribution" 
+                                    name="attribution_pct_waste" 
+                                    type="number" 
+                                    formik={formik} 
+                                    suffix="%"
+                                />
+                                <InputField 
+                                    label="Water Attribution" 
+                                    name="attribution_pct_water" 
+                                    type="number" 
+                                    formik={formik} 
+                                    suffix="%"
+                                />
                             </div>
+                        </StepWrapper>
 
-                            <div className="md:col-span-2 h-px bg-gray-100 my-4" />
-
-                            <InputField label="Water Consumption (m3/year)" name="water_consumption_m3" type="number" formik={formik} />
-                            
-                            <InputField 
-                                label="Attribution % Waste (0-100)" 
-                                name="attribution_pct_waste" 
-                                type="number" 
-                                formik={formik} 
-                                min={0} max={100}
-                                placeholder="Enter percentage"
-                                suffix="%"
-                            />
-                            <InputField 
-                                label="Attribution % Water (0-100)" 
-                                name="attribution_pct_water" 
-                                type="number" 
-                                formik={formik} 
-                                min={0} max={100}
-                                placeholder="Enter percentage"
-                                suffix="%"
-                            />
-
-                            <div className="md:col-span-2">
-                                <InputField label="Calculation Notes (Optional)" name="calculation_notes" formik={formik} textarea maxLength={1000} />
-                                <div className="text-right text-[10px] font-bold text-gray-400 mt-1">
-                                    {formik.values.calculation_notes.length} / 1000
-                                </div>
+                        <StepWrapper title="Action Verification" icon={<WasteIcon />}>
+                            <div className="space-y-6">
+                                <label className="block text-sm font-bold text-gray-500 px-1 text-center">Proof Photo (JPG/PNG only, max 10MB)</label>
+                                <input type="file" onChange={handlePhotoChange} className="hidden" id="photo-upload" accept="image/jpeg,image/png" />
+                                <label htmlFor="photo-upload" className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl p-8 hover:border-[rgb(32,38,130)] hover:bg-blue-50/20 cursor-pointer transition-all">
+                                    {photoPreview ? (
+                                        <img src={photoPreview} alt="Preview" className="h-40 w-auto rounded-xl object-cover shadow-xl" />
+                                    ) : (
+                                        <div className="text-center space-y-3">
+                                            <span className="text-4xl">📷</span>
+                                            <p className="text-sm font-bold text-gray-400">Click to upload photo of the action</p>
+                                        </div>
+                                    )}
+                                </label>
                             </div>
-                        </div>
-                    </StepWrapper>
+                        </StepWrapper>
+                    </div>
                 )}
 
                 {currentStep === 4 && (
-                    <StepWrapper title="Step 4: Actions & Consent" icon={<RegistryIcon />}>
+                    <StepWrapper title="Step 4: Registry Finalization" icon={<RegistryIcon />}>
                         <div className="space-y-8">
-                            <div className="bg-blue-50/50 p-6 rounded-3xl border border-blue-100 flex items-center justify-between">
-                                <span className="font-bold text-gray-700">Has existing low-carbon actions installed?</span>
-                                <button
-                                    type="button"
-                                    onClick={() => formik.setFieldValue("has_existing_actions", formik.values.has_existing_actions === "Yes" ? "No" : "Yes")}
-                                    className={`relative w-14 h-8 rounded-full transition-all ${formik.values.has_existing_actions === "Yes" ? "bg-[rgb(32,38,130)]" : "bg-gray-300"}`}
-                                >
-                                    <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all shadow-md ${formik.values.has_existing_actions === "Yes" ? "left-7" : "left-1"}`} />
-                                </button>
-                            </div>
+                            <div className="bg-slate-50 p-6 rounded-[2rem] border border-gray-100 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-bold text-gray-700">Has existing low-carbon actions?</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => formik.setFieldValue("has_existing_actions", formik.values.has_existing_actions === "Yes" ? "No" : "Yes")}
+                                        className={`relative w-14 h-8 rounded-full transition-all ${formik.values.has_existing_actions === "Yes" ? "bg-[rgb(32,38,130)]" : "bg-gray-300"}`}
+                                    >
+                                        <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all shadow-md ${formik.values.has_existing_actions === "Yes" ? "left-7" : "left-1"}`} />
+                                    </button>
+                                </div>
 
-                            {formik.values.has_existing_actions === "Yes" ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <DropdownField label="Action Type" name="action_type" options={ACTION_TYPE_OPTIONS} formik={formik} placeholder="Select Type" />
-                                    <InputField label="Installation Date" name="installation_date" type="date" formik={formik} />
-                                    <div className="sm:col-span-2">
-                                        <InputField label="Capacity (e.g. 5kW Solar)" name="capacity_description" formik={formik} />
+                                {formik.values.has_existing_actions === "Yes" && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                                        <DropdownField label="Action Type" name="action_type" options={ACTION_TYPE_OPTIONS} formik={formik} />
+                                        <InputField label="Installation Date" name="installation_date" type="date" formik={formik} min="2025-01-01" max="2099-12-31" />
                                     </div>
-                                    <div className="sm:col-span-2 space-y-2">
-                                        <label className="block text-sm font-bold text-gray-500 px-1">Proof Photo (JPG/PNG only, max 10MB)</label>
-                                        <input type="file" onChange={handlePhotoChange} className="hidden" id="photo-upload" accept="image/jpeg,image/png" />
-                                        <label htmlFor="photo-upload" className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl p-8 hover:border-[rgb(32,38,130)] hover:bg-blue-50/20 cursor-pointer transition-all">
-                                            {photoPreview ? (
-                                                <img src={photoPreview} alt="Preview" className="h-40 w-auto rounded-xl object-cover shadow-lg" />
-                                            ) : (
-                                                <div className="text-center space-y-2">
-                                                    <span className="text-3xl">📷</span>
-                                                    <p className="text-sm font-bold text-gray-400">Click to upload photo of action</p>
-                                                </div>
-                                            )}
-                                        </label>
+                                )}
+
+                                {formik.values.has_existing_actions === "No" && (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
+                                        <InputField label="Planned Action" name="planned_action_type" formik={formik} placeholder="e.g., Solar panels" />
+                                        <InputField label="Target Date" name="target_date" type="date" formik={formik} min="2025-01-01" max="2099-12-31" />
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <DropdownField label="Planned Action Type" name="planned_action_type" options={ACTION_TYPE_OPTIONS} formik={formik} placeholder="Select Type" />
-                                    <InputField label="Target Completion Date" name="target_date" type="date" formik={formik} />
-                                </div>
-                            )}
+                                )}
+                            </div>
 
                             <div className="pt-6 border-t border-gray-100">
                                 <label className="flex gap-4 cursor-pointer group">
@@ -558,42 +532,52 @@ export default function SchoolRegistrationForm() {
                                         checked={formik.values.consent_confirmed}
                                         onChange={(e) => formik.setFieldValue("consent_confirmed", e.target.checked)}
                                     />
-                                    <span className={`text-sm font-medium leading-relaxed transition-colors ${formik.touched.consent_confirmed && formik.errors.consent_confirmed ? "text-red-500" : "text-gray-500 group-hover:text-gray-800"}`}>
+                                    <span className={`text-sm font-bold leading-relaxed transition-colors ${formik.touched.consent_confirmed && formik.errors.consent_confirmed ? "text-red-500" : "text-gray-500 group-hover:text-gray-800"}`}>
                                         I authorize Earth Carbon Foundation to collect, verify, and publicly display this school's low-carbon action data for transparency and climate accountability purposes.
                                     </span>
                                 </label>
+                            </div>
+
+                            <div className="bg-slate-50 border border-gray-100 p-6 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl shadow-gray-200/50">
+                                <div className="space-y-1 text-center sm:text-left font-bold">
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Onboarding Fee</span>
+                                    <div className="flex items-baseline justify-center sm:justify-start gap-1">
+                                        <span className="text-xl text-gray-400">₹</span>
+                                        <span className="text-4xl text-gray-900">199</span>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => formik.handleSubmit()}
+                                    disabled={submitting}
+                                    className="w-full sm:w-auto px-10 py-4 bg-[rgb(32,38,130)] text-white rounded-2xl font-black shadow-xl shadow-blue-900/20 hover:scale-[1.05] transition-all active:scale-[0.98] disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
+                                >
+                                    {submitting ? <Spinner size="sm" /> : "Pay & Register"}
+                                </button>
                             </div>
                         </div>
                     </StepWrapper>
                 )}
 
                 {/* Navigation Buttons */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 pt-8">
+                <div className="flex flex-col sm:flex-row items-center sm:justify-end gap-4 pt-8">
                     {currentStep > 1 && (
                         <button
                             type="button"
                             onClick={handlePrev}
-                            className="w-full sm:flex-1 px-8 py-5 rounded-2xl bg-gray-100 text-gray-600 font-black hover:bg-gray-200 transition-all active:scale-[0.98]"
+                            className="w-full sm:w-40 px-6 py-3 rounded-xl bg-white border-2 border-gray-100 text-gray-500 font-bold text-sm hover:bg-gray-50 transition-all active:scale-[0.98]"
                         >
-                            Previous
+                            Back
                         </button>
                     )}
                     
-                    {currentStep < totalSteps ? (
+                    {currentStep < totalSteps && (
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full sm:flex-1 px-8 py-5 rounded-2xl bg-[rgb(32,38,130)] text-white font-black shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                            className="w-full sm:w-40 px-6 py-3 rounded-xl bg-[rgb(32,38,130)] text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
                         >
                             Next Step
-                        </button>
-                    ) : (
-                        <button
-                            type="submit"
-                            disabled={submitting}
-                            className="w-full sm:flex-1 px-8 py-5 rounded-2xl bg-[rgb(32,38,130)] text-white font-black shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50 flex justify-center items-center gap-3"
-                        >
-                            {submitting ? <Spinner size="sm" light /> : "Pay Rs.199 and Register"}
                         </button>
                     )}
                 </div>
