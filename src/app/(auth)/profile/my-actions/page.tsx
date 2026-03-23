@@ -12,11 +12,14 @@ import { ACTION_LABELS } from "@/lib/constants";
 import { calculatePortfolioMetrics } from "@/lib/portfolioCalculator";
 import PerformanceBreakdownModal from "@/components/PerformanceBreakdownModal";
 
+import UserSchoolTable from "@/components/UserSchoolTable";
+
 export default function MyActionsPage() {
     const { user } = useAuth();
     const { profile, loading, needsSetup } = useUserProfile();
     const { actions, loading: actionsLoading } = useActionRecordTable();
     const [isBreakdownModalOpen, setIsBreakdownModalOpen] = React.useState(false);
+    const [activeTab, setActiveTab] = React.useState<"climate" | "school">("climate");
 
     const portfolio = React.useMemo(() => {
         return actions.length > 0 ? calculatePortfolioMetrics(actions) : null;
@@ -58,7 +61,7 @@ export default function MyActionsPage() {
             <div className="w-full space-y-8">
                 {/* Profile Header (minimal) */}
                 {profile && (
-                    <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 flex justify-between items-center">
+                    <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div>
                             <div className="flex items-center gap-2">
                                 <h2 className="text-lg font-bold text-gray-800">
@@ -72,16 +75,39 @@ export default function MyActionsPage() {
                             </div>
                             <p className="text-sm text-gray-500">{profile.email}</p>
                         </div>
-                        <Link href="/profile">
-                            <button className="px-4 py-2 bg-gray-100 text-gray-600 font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-gray-200 transition-colors">
-                                ← Back to Selection
-                            </button>
-                        </Link>
+
+                        <div className="flex items-center gap-4">
+                            <div className="flex p-1 bg-gray-100 rounded-xl">
+                                <button
+                                    onClick={() => setActiveTab("climate")}
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "climate"
+                                        ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                        }`}
+                                >
+                                    Climate Action
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("school")}
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "school"
+                                        ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                        : "text-gray-500 hover:text-gray-700"
+                                        }`}
+                                >
+                                    School Action
+                                </button>
+                            </div>
+                            <Link href="/profile">
+                                <button className="px-4 py-2 bg-gray-100 text-gray-600 font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-gray-200 transition-colors">
+                                    ← Back
+                                </button>
+                            </Link>
+                        </div>
                     </div>
                 )}
 
-                {/* Performance Metrics (Optional, user said remove bottom data but table is actions table) */}
-                {portfolio && portfolio.totalTCO2e > 0 && (
+                {/* Performance Metrics (Only for Climate Actions for now) */}
+                {activeTab === "climate" && portfolio && portfolio.totalTCO2e > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] rounded-2xl p-5 text-white">
                             <div className="text-[10px] font-bold text-blue-200 uppercase tracking-wider mb-1">Total Impact Managed</div>
@@ -94,107 +120,115 @@ export default function MyActionsPage() {
                     </div>
                 )}
 
-                {/* Actions Table */}
+                {/* Actions Table Content */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-bold text-gray-800">My Registered Actions</h2>
+                        <h2 className="text-lg font-bold text-gray-800">
+                            {activeTab === "climate" ? "My Registered Climate Actions" : "My Registered School Actions"}
+                        </h2>
                     </div>
 
-                    {actionsLoading ? (
-                        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-                            <div className="p-6 space-y-3">
-                                <SkeletonRow />
-                                <SkeletonRow />
-                                <SkeletonRow />
-                            </div>
-                        </div>
-                    ) : actions.length === 0 ? (
-                        <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 mb-4">
-                                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
-                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                            </svg>
-                            <h3 className="text-gray-500 font-semibold text-lg">No actions registered yet</h3>
-                            <p className="text-gray-400 text-sm mt-1">Visit the profile page to register your first action.</p>
-                        </div>
+                    {activeTab === "climate" ? (
+                        <>
+                            {actionsLoading ? (
+                                <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+                                    <div className="p-6 space-y-3">
+                                        <SkeletonRow />
+                                        <SkeletonRow />
+                                        <SkeletonRow />
+                                    </div>
+                                </div>
+                            ) : actions.length === 0 ? (
+                                <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 mb-4">
+                                        <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                                    </svg>
+                                    <h3 className="text-gray-500 font-semibold text-lg">No actions registered yet</h3>
+                                    <p className="text-gray-400 text-sm mt-1">Visit the profile page to register your first climate action.</p>
+                                </div>
+                            ) : (
+                                <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full min-w-[800px]">
+                                            <thead>
+                                                <tr className="bg-gray-50/50 border-b border-gray-100/50">
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Registry ID</th>
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Action Type</th>
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Quantity</th>
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">CO₂e (kg)</th>
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Signature</th>
+                                                    <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">View</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-50">
+                                                {actions.map((action) => (
+                                                    <tr key={action.id} className="hover:bg-gray-50/50 transition-colors">
+                                                        <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[rgb(32,38,130)]">
+                                                            {action.registryId ? (
+                                                                <a href={`/verify/${action.registryId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                                                    {action.registryId}
+                                                                </a>
+                                                            ) : (
+                                                                <span className="text-gray-300">Pending ID</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="py-3.5 px-5 text-sm font-medium text-gray-700">
+                                                            {ACTION_LABELS[action.actionType] || action.actionType}
+                                                        </td>
+                                                        <td className="py-3.5 px-5 text-sm text-gray-600">
+                                                            {action.quantity} {action.unit}
+                                                        </td>
+                                                        <td className="py-3.5 px-5 text-sm">
+                                                            {action.co2eKg != null ? (
+                                                                <a href={action.registryId ? `/verify/${action.registryId}` : undefined} target="_blank" rel="noopener noreferrer" className="text-[rgb(32,38,130)] font-medium hover:underline">
+                                                                    {action.co2eKg.toFixed(3)}
+                                                                </a>
+                                                            ) : (
+                                                                <span className="text-gray-300">N/A</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="py-3.5 px-5">
+                                                            <StatusBadge status={action.status || "pending"} />
+                                                        </td>
+                                                        <td className="py-3.5 px-5 text-sm text-gray-400 whitespace-nowrap">
+                                                            {formatDate(action.createdAt)}
+                                                        </td>
+                                                        <td className="py-3.5 px-5 text-sm">
+                                                            {action.sha256Hash ? (
+                                                                <span className="text-[rgb(32,38,130)] font-mono text-xs" title={action.sha256Hash}>
+                                                                    {action.sha256Hash.substring(0, 12)}...
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-gray-300">N/A</span>
+                                                            )}
+                                                        </td>
+                                                        <td className="py-3.5 px-5 text-sm">
+                                                            {action.registryId ? (
+                                                                <a href={`/verify/${action.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[rgb(32,38,130)] font-medium hover:underline text-xs">
+                                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                                                                        <polyline points="15 3 21 3 21 9" />
+                                                                        <line x1="10" y1="14" x2="21" y2="3" />
+                                                                    </svg>
+                                                                    Verify
+                                                                </a>
+                                                            ) : (
+                                                                <span className="text-gray-300">—</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     ) : (
-                        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full min-w-[800px]">
-                                    <thead>
-                                        <tr className="bg-gray-50/50 border-b border-gray-100/50">
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Registry ID</th>
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Action Type</th>
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Quantity</th>
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">CO₂e (kg)</th>
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Signature</th>
-                                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">View</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {actions.map((action) => (
-                                            <tr key={action.id} className="hover:bg-gray-50/50 transition-colors">
-                                                <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[rgb(32,38,130)]">
-                                                    {action.registryId ? (
-                                                        <a href={`/verify/${action.registryId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                                            {action.registryId}
-                                                        </a>
-                                                    ) : (
-                                                        <span className="text-gray-300">Pending ID</span>
-                                                    )}
-                                                </td>
-                                                <td className="py-3.5 px-5 text-sm font-medium text-gray-700">
-                                                    {ACTION_LABELS[action.actionType] || action.actionType}
-                                                </td>
-                                                <td className="py-3.5 px-5 text-sm text-gray-600">
-                                                    {action.quantity} {action.unit}
-                                                </td>
-                                                <td className="py-3.5 px-5 text-sm">
-                                                    {action.co2eKg != null ? (
-                                                        <a href={action.registryId ? `/verify/${action.registryId}` : undefined} target="_blank" rel="noopener noreferrer" className="text-[rgb(32,38,130)] font-medium hover:underline">
-                                                            {action.co2eKg.toFixed(3)}
-                                                        </a>
-                                                    ) : (
-                                                        <span className="text-gray-300">N/A</span>
-                                                    )}
-                                                </td>
-                                                <td className="py-3.5 px-5">
-                                                    <StatusBadge status={action.status || "pending"} />
-                                                </td>
-                                                <td className="py-3.5 px-5 text-sm text-gray-400 whitespace-nowrap">
-                                                    {formatDate(action.createdAt)}
-                                                </td>
-                                                <td className="py-3.5 px-5 text-sm">
-                                                    {action.sha256Hash ? (
-                                                        <span className="text-[rgb(32,38,130)] font-mono text-xs" title={action.sha256Hash}>
-                                                            {action.sha256Hash.substring(0, 12)}...
-                                                        </span>
-                                                    ) : (
-                                                        <span className="text-gray-300">N/A</span>
-                                                    )}
-                                                </td>
-                                                <td className="py-3.5 px-5 text-sm">
-                                                    {action.registryId ? (
-                                                        <a href={`/verify/${action.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[rgb(32,38,130)] font-medium hover:underline text-xs">
-                                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                                                                <polyline points="15 3 21 3 21 9" />
-                                                                <line x1="10" y1="14" x2="21" y2="3" />
-                                                            </svg>
-                                                            Verify
-                                                        </a>
-                                                    ) : (
-                                                        <span className="text-gray-300">—</span>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <UserSchoolTable />
                     )}
                 </div>
             </div>

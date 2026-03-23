@@ -271,20 +271,19 @@ export default function RegisterActionForm() {
                                 {step === 2 && "Location & Photos"}
                                 {step === 3 && "Finalize"}
                             </span>
-                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${
-                                currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" : 
-                                currentStep > step ? "bg-green-500 border-green-100 text-white" : 
-                                "bg-white border-gray-50 text-gray-200"
-                            }`}>
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" :
+                                    currentStep > step ? "bg-green-500 border-green-100 text-white" :
+                                        "bg-white border-gray-50 text-gray-200"
+                                }`}>
                                 {currentStep > step ? (
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 ) : step}
                             </div>
                         </div>
                     ))}
                 </div>
                 <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
-                    <div 
+                    <div
                         className="h-full bg-gradient-to-r from-[rgb(32,38,130)] to-blue-500 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(32,38,130,0.4)]"
                         style={{ width: `${progress}%` }}
                     />
@@ -406,7 +405,6 @@ export default function RegisterActionForm() {
                                     <span className="p-2 bg-cyan-50 rounded-lg text-cyan-600">🇮🇳</span>
                                     <div>
                                         <h3 className="text-xl font-bold text-gray-800">Atmanirbhar Assessment</h3>
-                                        <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mt-0.5">Optional — help us measure self-reliance impact</p>
                                     </div>
                                 </div>
                             </div>
@@ -471,7 +469,7 @@ export default function RegisterActionForm() {
                                                 onChange={formik.handleChange}
                                                 className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
                                             />
-                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                         </div>
                                         <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
                                             I verify that the data provided above is correct to the best of my knowledge.
@@ -491,7 +489,7 @@ export default function RegisterActionForm() {
                                                 onChange={formik.handleChange}
                                                 className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
                                             />
-                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                         </div>
                                         <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
                                             I understand that the carbon reduction (tCO₂e) and Atmanirbhar

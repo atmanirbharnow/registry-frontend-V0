@@ -164,4 +164,33 @@ export function getAllSchoolsRealtime(
         onError?.(error);
     });
 }
+export function getUserSchoolsRealtime(
+    userId: string,
+    onUpdate: (schools: School[]) => void,
+    onError?: (error: any) => void
+): Unsubscribe {
+    const q = query(
+        collection(db, SCHOOL_COLLECTION),
+        where("userId", "==", userId)
+    );
+
+    return onSnapshot(q, (snapshot) => {
+        const schools = snapshot.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+        })) as School[];
+        
+        // Sort by createdAt if it exists
+        schools.sort((a, b) => {
+            const timeA = (a.createdAt as any)?.toMillis?.() || 0;
+            const timeB = (b.createdAt as any)?.toMillis?.() || 0;
+            return timeB - timeA;
+        });
+
+        onUpdate(schools);
+    }, (error) => {
+        console.error("Firestore Error:", error);
+        onError?.(error);
+    });
+}
 

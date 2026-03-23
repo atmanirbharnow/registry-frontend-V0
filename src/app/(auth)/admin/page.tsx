@@ -54,7 +54,16 @@ export default function AdminPage() {
                                 : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
                                 }`}
                         >
-                            Registered Actions
+                            Climate Action
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("schools")}
+                            className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "schools"
+                                ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+                                }`}
+                        >
+                            School Action
                         </button>
                         <button
                             onClick={() => setActiveTab("users")}
@@ -65,20 +74,10 @@ export default function AdminPage() {
                         >
                             Users
                         </button>
-                        <button
-                            onClick={() => setActiveTab("schools")}
-                            className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "schools"
-                                ? "bg-white text-[rgb(32,38,130)] shadow-sm"
-                                : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
-                                }`}
-                        >
-                            Schools
-                        </button>
                     </div>
                 </div>
 
                 {activeTab === "actions" && <AdminActionTable />}
-                {activeTab === "users" && <AdminUserTable />}
                 {activeTab === "schools" && (
                     <div className="space-y-6">
                         <div className="flex justify-end">
@@ -92,6 +91,7 @@ export default function AdminPage() {
                         <AdminSchoolTable />
                     </div>
                 )}
+                {activeTab === "users" && <AdminUserTable />}
             </div>
         </main>
     );

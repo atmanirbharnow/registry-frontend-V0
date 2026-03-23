@@ -20,7 +20,7 @@ export default function SchoolVerifyPage() {
 
     useEffect(() => {
         if (!registryId) return;
-        
+
         setLoading(true);
         const unsubscribe = getSchoolByRegistryIdRealtime(
             registryId,
@@ -60,11 +60,11 @@ export default function SchoolVerifyPage() {
     }
 
     const tco2e = school.tco2e_annual != null ? Math.abs(school.tco2e_annual).toFixed(2) : "N/A";
-    
+
     // Convert carbon intensity to Kg for better readability if student count is large
     const intensityRaw = (school.tco2e_annual || 0) * 1000 / (school.students_count || 1);
     const intensityVal = intensityRaw.toFixed(2);
-    
+
     const verifyUrl = `${APP_URL}/verify/school/${school.registryId}`;
     const shareText = `Check out ${school.schoolName}'s climate action on the Earth Carbon Registry: ${verifyUrl}`;
 
@@ -87,9 +87,6 @@ export default function SchoolVerifyPage() {
                             <div className="bg-blue-50/50 px-4 py-2 rounded-xl border border-blue-100/50">
                                 <p className="text-[10px] sm:text-xs font-bold text-blue-600 flex items-center gap-2">
                                     <span className="animate-pulse">⏱️</span>
-                                    Verification turnaround &lt;48 hrs • Trust through speed
-                                </p>
-                                <p className="text-[9px] text-blue-400 font-medium mt-0.5">
                                     Your action will be verified within 48 hours and you will get a verified certificate.
                                 </p>
                             </div>
@@ -99,25 +96,25 @@ export default function SchoolVerifyPage() {
 
                 {/* Primary Impact Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <ImpactCard 
-                        label="Annual climate impact" 
-                        value={tco2e} 
-                        unit="tCO2e" 
-                        color="bg-[rgb(32,38,130)]" 
+                    <ImpactCard
+                        label="Annual climate impact"
+                        value={tco2e}
+                        unit="tCO2e"
+                        color="bg-[rgb(32,38,130)]"
                         description="Total annual GHG reduction claim."
                     />
-                    <ImpactCard 
-                        label="Atmanirbhar Index" 
-                        value={`${school.atmanirbhar_pct || 0}%`} 
-                        unit="Renewable" 
-                        color="bg-orange-600" 
+                    <ImpactCard
+                        label="Atmanirbhar Index"
+                        value={`${school.atmanirbhar_pct || 0}%`}
+                        unit="Renewable"
+                        color="bg-orange-600"
                         description="Portion of energy from renewable sources."
                     />
-                    <ImpactCard 
-                        label="Circularity Score" 
-                        value={`${school.circularity_pct || 0}%`} 
-                        unit="Diverted" 
-                        color="bg-emerald-600" 
+                    <ImpactCard
+                        label="Circularity Score"
+                        value={`${school.circularity_pct || 0}%`}
+                        unit="Diverted"
+                        color="bg-emerald-600"
                         description="Portion of waste diverted from landfill."
                     />
                 </div>
@@ -144,9 +141,9 @@ export default function SchoolVerifyPage() {
                             <div className="p-6 space-y-5">
                                 <DetailItem label="Location" value={`${school.address}, ${school.city} - ${school.pincode}`} />
                                 {school.lat && school.lng && (
-                                    <a 
-                                        href={`https://www.google.com/maps?q=${school.lat},${school.lng}`} 
-                                        target="_blank" 
+                                    <a
+                                        href={`https://www.google.com/maps?q=${school.lat},${school.lng}`}
+                                        target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 text-[10px] font-bold text-[rgb(32,38,130)] hover:underline"
                                     >
@@ -174,7 +171,7 @@ export default function SchoolVerifyPage() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="flex flex-col sm:flex-row items-center gap-6 pt-2">
                             <QRCode registryId={school.registryId} size={110} type="school" />
                             <div className="space-y-4 w-full text-center sm:text-left">
@@ -228,18 +225,17 @@ function DetailItem({ label, value }: any) {
 
 function ShareButton({ platform, text, url }: any) {
     const isWA = platform === "wa";
-    const href = isWA 
+    const href = isWA
         ? `https://wa.me/?text=${encodeURIComponent(text)}`
         : `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
-    
+
     return (
-        <a 
+        <a
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[10px] font-black transition-all ${
-                isWA ? "bg-[#25D366] text-white hover:bg-[#20bd5c] shadow-lg shadow-green-500/20" : "bg-[#0A66C2] text-white hover:bg-[#09529d] shadow-lg shadow-blue-500/20"
-            }`}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[10px] font-black transition-all ${isWA ? "bg-[#25D366] text-white hover:bg-[#20bd5c] shadow-lg shadow-green-500/20" : "bg-[#0A66C2] text-white hover:bg-[#09529d] shadow-lg shadow-blue-500/20"
+                }`}
         >
             {isWA ? "WhatsApp Share" : "LinkedIn Share"}
         </a>
