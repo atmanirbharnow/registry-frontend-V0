@@ -85,7 +85,7 @@ export default function MyActionsPage() {
                                         : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
-                                    Climate Action
+                                    Individuals
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("school")}
@@ -94,7 +94,7 @@ export default function MyActionsPage() {
                                         : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
-                                    School Action
+                                    Schools/Education Institutes
                                 </button>
                             </div>
                             <Link href="/profile">
@@ -106,7 +106,7 @@ export default function MyActionsPage() {
                     </div>
                 )}
 
-                {/* Performance Metrics (Only for Climate Actions for now) */}
+                {/* Performance Metrics (Only for Individual Actions for now) */}
                 {activeTab === "climate" && portfolio && portfolio.totalTCO2e > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] rounded-2xl p-5 text-white">
@@ -124,7 +124,7 @@ export default function MyActionsPage() {
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-bold text-gray-800">
-                            {activeTab === "climate" ? "My Registered Climate Actions" : "My Registered School Actions"}
+                            {activeTab === "climate" ? "My Registered Individual Actions" : "My Registered School/Institute Actions"}
                         </h2>
                     </div>
 
@@ -145,7 +145,7 @@ export default function MyActionsPage() {
                                         <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
                                     </svg>
                                     <h3 className="text-gray-500 font-semibold text-lg">No actions registered yet</h3>
-                                    <p className="text-gray-400 text-sm mt-1">Visit the profile page to register your first climate action.</p>
+                                    <p className="text-gray-400 text-sm mt-1">Visit the profile page to register your first action.</p>
                                 </div>
                             ) : (
                                 <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">

@@ -34,7 +34,7 @@ export default function SchoolRegisterPage() {
                             className="text-2xl md:text-3xl lg:text-4xl font-black text-slate-800 tracking-tight leading-tight"
                             style={{ wordSpacing: '0.15em' }}
                         >
-                            School Climate Action Module
+                            Schools/Education Institutes Module
                         </h1>
                         <div className="flex justify-center">
                             <p className="text-slate-500 font-black uppercase text-[10px] md:text-xs tracking-[0.2em] bg-white px-4 py-2 rounded-2xl shadow-sm border border-slate-100/50">

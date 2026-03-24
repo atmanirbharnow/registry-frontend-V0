@@ -43,7 +43,7 @@ export default function SchoolPublicCard({ school }: SchoolPublicCardProps) {
                 <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Earth Carbon Registry • {new Date().getFullYear()}</span>
                 <span className="text-[10px] font-black text-white uppercase tracking-widest italic flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                    Verified Climate Action
+                    Verified School Action
                 </span>
             </div>
         </div>

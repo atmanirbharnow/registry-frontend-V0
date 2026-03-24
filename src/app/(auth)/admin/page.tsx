@@ -54,7 +54,7 @@ export default function AdminPage() {
                                 : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
                                 }`}
                         >
-                            Climate Action
+                            Individuals
                         </button>
                         <button
                             onClick={() => setActiveTab("schools")}
@@ -63,7 +63,7 @@ export default function AdminPage() {
                                 : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
                                 }`}
                         >
-                            School Action
+                            Schools/Education Institutes
                         </button>
                         <button
                             onClick={() => setActiveTab("users")}

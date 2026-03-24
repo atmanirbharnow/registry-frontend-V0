@@ -66,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
+      toast.success("Successfully logged in with Google!");
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       if (firebaseError.code === "auth/popup-closed-by-user") {
