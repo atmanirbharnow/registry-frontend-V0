@@ -1,19 +1,25 @@
 export const ACTION_TYPES = [
-  // From client's emission factors table
-  { value: "solar_rooftop", label: "Solar Rooftop", unit: "kW" },
-  { value: "refrigerator_upgrade", label: "Refrigerator Upgrade (2→5 Star)", unit: "units" },
-  { value: "geyser_temp_reduction", label: "Geyser Temperature Reduction (60→40°C)", unit: "units" },
-  { value: "led_replacement", label: "LED vs ICL Bulb (100W→5W)", unit: "bulbs" },
-  { value: "rwh", label: "Rainwater Harvesting", unit: "kL" },
-  { value: "biogas", label: "Biogas Plant (2m³)", unit: "plants" },
-  { value: "composting", label: "Composting", unit: "kg waste" },
-  { value: "plastic_recycling", label: "Plastic Recycling", unit: "kg" },
+  // Solar
+  { value: "solar_rooftop", label: "Solar Rooftop (1 kW)", unit: "kW" },
+  { value: "solar_water_heater", label: "Solar Water Heater (100 LPD)", unit: "units" },
 
-  // Legacy types (kept for backward compatibility)
-  { value: "swh", label: "Solar Water Heater", unit: "liters" },
-  { value: "waterless_urinal", label: "Waterless Urinal", unit: "units" },
-  { value: "wastewater_recycling", label: "Wastewater Recycling", unit: "kL/day" },
-  { value: "tree_plantation", label: "Tree Plantation", unit: "trees" },
+  // Water
+  { value: "borewell_water", label: "Water Borewell (1 kL)", unit: "kL" },
+  { value: "rainwater_harvesting", label: "Water Rainwater (1000 L/day)", unit: "units" },
+
+  // Biogas
+  { value: "biogas", label: "Biogas (2m³ Plant)", unit: "plants" },
+
+  // Waste & Recycling
+  { value: "composting", label: "Waste Composting (1 kg food)", unit: "kg" },
+  { value: "plastic_recycling", label: "Waste Plastic Recycling (1 kg)", unit: "kg" },
+  { value: "paper_recycling", label: "Waste Paper Recycling (1 kg)", unit: "kg" },
+  { value: "textile_recycling", label: "Waste Textile Recycling (1 kg)", unit: "kg" },
+  { value: "metal_recycling", label: "Waste Metal Recycling (1 kg)", unit: "kg" },
+
+  // Lighting
+  { value: "turn_off_bulb", label: "Lighting Turn Off Bulb (1 hr/day)", unit: "bulbs" },
+  { value: "turn_off_fan", label: "Lighting Turn Off Fan (1 hr/day)", unit: "fans" },
 ];
 
 export const ACTION_LABELS: Record<string, string> = ACTION_TYPES.reduce(
@@ -54,12 +60,17 @@ export const PIPELINE_STATUS_OPTIONS = [
 export const ACTION_PILLAR_MAP: Record<string, "energy" | "water" | "waste" | "other"> = {
   // Energy
   solar_rooftop: "energy",
+  solar_water_heater: "energy",
+  turn_off_bulb: "energy",
+  turn_off_fan: "energy",
+  led_replacement: "energy",
   refrigerator_upgrade: "energy",
   geyser_temp_reduction: "energy",
-  led_replacement: "energy",
   swh: "energy",
 
   // Water
+  borewell_water: "water",
+  rainwater_harvesting: "water",
   rwh: "water",
   waterless_urinal: "water",
   wastewater_recycling: "water",
@@ -68,6 +79,9 @@ export const ACTION_PILLAR_MAP: Record<string, "energy" | "water" | "waste" | "o
   biogas: "waste",
   composting: "waste",
   plastic_recycling: "waste",
+  paper_recycling: "waste",
+  textile_recycling: "waste",
+  metal_recycling: "waste",
 
   // Other
   tree_plantation: "other",

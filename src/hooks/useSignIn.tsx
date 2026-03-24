@@ -10,14 +10,14 @@ export const useSignIn = () => {
 
   useEffect(() => {
     if (user && !loading) {
-      router.push("/profile");
+      router.replace("/profile");
     }
   }, [user, loading, router]);
 
   const handleSignIn = async () => {
     try {
       await loginWithGoogle();
-      // Redirect is handled by the useEffect above
+      // Redirect is handled by the useEffect above once loading is false
     } catch (error) {
       console.error("Sign in failed:", error);
     }

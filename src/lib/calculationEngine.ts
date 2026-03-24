@@ -77,48 +77,23 @@ function calculateCO2ePhase2(input: CalculationInput): number {
     let co2eKg = 0;
 
     switch (actionType) {
-        case 'solar_rooftop': {
-            // Use client's exact factor: 1.23 tCO2e/yr per kW
-            const annualTonnes = quantity * EMISSION_FACTORS_PHASE2.SOLAR_ROOFTOP.factor;
-            co2eKg = annualTonnes * 1000; // Convert to kg
-
-            // If baseline energy provided, cap at actual consumption
-            if (baselineEnergyKwh && baselineEnergyKwh > 0) {
-                const annualGeneration = quantity * EMISSION_FACTORS_PHASE2.SOLAR_ROOFTOP.annualGeneration;
-                const actualSavings = Math.min(annualGeneration, baselineEnergyKwh);
-                co2eKg = actualSavings * EMISSION_FACTORS_PHASE2.GRID_ELECTRICITY.factor;
-            }
+        case 'solar_water_heater': {
+            // Factor: 800 kg/yr per 100 LPD
+            co2eKg = (quantity / 100) * EMISSION_FACTORS_PHASE2.SOLAR_WATER_HEATER.factor;
             break;
         }
 
-        case 'refrigerator_upgrade': {
-            // Use client's factor: 100 kg/yr for 2→5 star upgrade
-            co2eKg = EMISSION_FACTORS_PHASE2.REFRIGERATOR_UPGRADE.factor * quantity;
+        case 'borewell_water': {
+            // factor: 0.67 kg per kL
+            co2eKg = quantity * EMISSION_FACTORS_PHASE2.BOREWELL_WATER.factor;
             break;
         }
 
-        case 'geyser_temp_reduction': {
-            // Use client's factor: 172 kg/yr for 60→40°C
-            co2eKg = EMISSION_FACTORS_PHASE2.GEYSER_TEMP_REDUCTION.factor * quantity;
-            break;
-        }
-
-        case 'led_replacement': {
-            // Use client's factor: 57 kg/yr per bulb (100W→5W, 2hrs/day)
-            co2eKg = EMISSION_FACTORS_PHASE2.LED_VS_ICL.factor * quantity;
-            break;
-        }
-
-        case 'rwh': {
-            // Rainwater harvesting - use mid-point of range
+        case 'rainwater_harvesting': {
+            // Use mid-point of 26.8 - 68.0 kg/yr for 1000L/day
             const avgFactor = (EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMin +
                 EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMax) / 2;
             co2eKg = quantity * avgFactor;
-
-            if (baselineWaterM3 && baselineWaterM3 > 0) {
-                const actualSavings = Math.min(quantity, baselineWaterM3);
-                co2eKg = actualSavings * avgFactor;
-            }
             break;
         }
 
@@ -129,19 +104,48 @@ function calculateCO2ePhase2(input: CalculationInput): number {
         }
 
         case 'composting': {
-            // Use client's factor: 0.45 kg per kg waste
+            // Use client's factor: 0.45 kg per kg food waste
             co2eKg = quantity * EMISSION_FACTORS_PHASE2.COMPOSTING.factor;
-
-            if (baselineWasteKg && baselineWasteKg > 0) {
-                const actualWaste = Math.min(quantity, baselineWasteKg);
-                co2eKg = actualWaste * EMISSION_FACTORS_PHASE2.COMPOSTING.factor;
-            }
             break;
         }
 
         case 'plastic_recycling': {
-            // Use client's factor: 1.5 kg per kg plastic
             co2eKg = quantity * EMISSION_FACTORS_PHASE2.PLASTIC_RECYCLING.factor;
+            break;
+        }
+
+        case 'paper_recycling': {
+            co2eKg = quantity * EMISSION_FACTORS_PHASE2.PAPER_RECYCLING.factor;
+            break;
+        }
+
+        case 'textile_recycling': {
+            co2eKg = quantity * EMISSION_FACTORS_PHASE2.TEXTILE_RECYCLING.factor;
+            break;
+        }
+
+        case 'metal_recycling': {
+            co2eKg = quantity * EMISSION_FACTORS_PHASE2.METAL_RECYCLING.factor;
+            break;
+        }
+
+        case 'turn_off_bulb': {
+            // Factor: 17.96 kg/yr per bulb (1 hr/day reduction)
+            co2eKg = quantity * EMISSION_FACTORS_PHASE2.LIGHTING_BULB.factor;
+            break;
+        }
+
+        case 'turn_off_fan': {
+            // Factor: 7.68 kg/yr per fan (1 hr/day reduction)
+            co2eKg = quantity * EMISSION_FACTORS_PHASE2.LIGHTING_FAN.factor;
+            break;
+        }
+
+        // Keep legacy for safety but these are new primary handlers
+        case 'rwh': {
+            const avgFactor = (EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMin +
+                EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMax) / 2;
+            co2eKg = quantity * avgFactor;
             break;
         }
 
@@ -229,14 +233,18 @@ function calculateAtmanirbharPhase2(input: CalculationInput): number {
 
 function getEmissionFactorDescription(actionType: string): string {
     const descriptions: Record<string, string> = {
-        solar_rooftop: '1.23 tCO2e/yr per kW (1500 kWh × 0.82 kg)',
-        refrigerator_upgrade: '100 kg/yr (2→5 Star, BEE data)',
-        geyser_temp_reduction: '172 kg/yr (60→40°C)',
-        led_replacement: '57 kg/yr (100W→5W, 2hrs/day)',
-        rwh: '0.67-1.69 kg/kL (displaced source)',
-        biogas: '1.2 tCO2e/yr per plant (methane avoidance)',
-        composting: '0.45 kg per kg waste (landfill methane)',
-        plastic_recycling: '1.5 kg per kg (virgin production)',
+        solar_rooftop: '1.23 tCO2e/yr per kW',
+        solar_water_heater: '800 kg/yr per 100 LPD',
+        borewell_water: '0.67 kg per kL (pumping 150m)',
+        rainwater_harvesting: '26.8-68 kg/yr per 1000L/day',
+        biogas: '1.2 tCO2e/yr (2m³ Plant)',
+        composting: '0.45 kg per kg food waste',
+        plastic_recycling: '1.5 kg per kg plastic',
+        paper_recycling: '0.9 kg per kg paper',
+        textile_recycling: '2.2 kg per kg textile',
+        metal_recycling: '3.0 kg per kg metal',
+        turn_off_bulb: '17.96 kg/yr per bulb (1 hr/day)',
+        turn_off_fan: '7.68 kg/yr per fan (1 hr/day)',
     };
 
     return descriptions[actionType] || 'Standard emission factor';
@@ -291,17 +299,17 @@ export function validateCalculationInput(input: CalculationInput): {
  */
 export function getAvailableActionTypes(): Array<{ value: string; label: string; unit: string }> {
     return [
-        { value: 'solar_rooftop', label: 'Solar Rooftop', unit: 'kW' },
-        { value: 'refrigerator_upgrade', label: 'Refrigerator Upgrade (2→5 Star)', unit: 'units' },
-        { value: 'geyser_temp_reduction', label: 'Geyser Temperature Reduction (60→40°C)', unit: 'units' },
-        { value: 'led_replacement', label: 'LED vs ICL Bulb (100W→5W)', unit: 'bulbs' },
-        { value: 'rwh', label: 'Rainwater Harvesting', unit: 'kL' },
-        { value: 'biogas', label: 'Biogas Plant (2m³)', unit: 'plants' },
-        { value: 'composting', label: 'Composting', unit: 'kg waste' },
-        { value: 'plastic_recycling', label: 'Plastic Recycling', unit: 'kg' },
-        { value: 'swh', label: 'Solar Water Heater', unit: 'liters' },
-        { value: 'waterless_urinal', label: 'Waterless Urinal', unit: 'units' },
-        { value: 'wastewater_recycling', label: 'Wastewater Recycling', unit: 'kL/day' },
-        { value: 'tree_plantation', label: 'Tree Plantation', unit: 'trees' },
+        { value: 'solar_rooftop', label: 'Solar Rooftop (1 kW)', unit: 'kW' },
+        { value: 'solar_water_heater', label: 'Solar Water Heater (100 LPD)', unit: 'units' },
+        { value: 'borewell_water', label: 'Water Borewell (1 kL)', unit: 'kL' },
+        { value: 'rainwater_harvesting', label: 'Water Rainwater (1000 L/day)', unit: 'units' },
+        { value: 'biogas', label: 'Biogas (2m³ Plant)', unit: 'plants' },
+        { value: 'composting', label: 'Waste Composting (1 kg food)', unit: 'kg' },
+        { value: 'plastic_recycling', label: 'Waste Plastic Recycling (1 kg)', unit: 'kg' },
+        { value: 'paper_recycling', label: 'Waste Paper Recycling (1 kg)', unit: 'kg' },
+        { value: 'textile_recycling', label: 'Waste Textile Recycling (1 kg)', unit: 'kg' },
+        { value: 'metal_recycling', label: 'Waste Metal Recycling (1 kg)', unit: 'kg' },
+        { value: 'turn_off_bulb', label: 'Lighting Turn Off Bulb (1 hr/day)', unit: 'bulbs' },
+        { value: 'turn_off_fan', label: 'Lighting Turn Off Fan (1 hr/day)', unit: 'fans' },
     ];
 }

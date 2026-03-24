@@ -34,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
+        setLoading(true);
         setUser(firebaseUser);
         if (firebaseUser) {
           let role = "user";
