@@ -29,6 +29,10 @@ export interface CalculationInput {
     communityPercent?: number;
     jobsCreated?: number;
 
+    // Optional circularity data (waste)
+    wasteGeneratedKg?: number;
+    wasteDivertedKg?: number;
+
     // Optional action-specific parameters
     oldStarRating?: number;  // For refrigerator upgrade
     newStarRating?: number;
@@ -42,6 +46,7 @@ export interface CalculationInput {
 export interface CalculationResult {
     tCO2e: number;
     atmanirbharScore: number;
+    circularityScore: number;
     calculationVersion: string;
     methodology: string;
     emissionFactorUsed?: string;
@@ -57,14 +62,31 @@ export interface CalculationResult {
 export function calculateImpactPhase2(input: CalculationInput): CalculationResult {
     const co2eKg = calculateCO2ePhase2(input);
     const atmanirbharScore = calculateAtmanirbharPhase2(input);
+    const circularityScore = calculateCircularityScore(input);
 
     return {
         tCO2e: co2eKg / 1000, // Convert kg to tonnes
         atmanirbharScore,
+        circularityScore,
         calculationVersion: 'v1.0-phase2',
         methodology: 'ECF Simplified Factors',
         emissionFactorUsed: getEmissionFactorDescription(input.actionType),
     };
+}
+
+// ============================================
+// CIRCULARITY CALCULATION
+// ============================================
+
+/**
+ * Circularity Score = (waste diverted from landfill / waste generated) * 100
+ * Same formula as school action module. Capped at 100%.
+ */
+function calculateCircularityScore(input: CalculationInput): number {
+    const { wasteGeneratedKg, wasteDivertedKg } = input;
+    if (!wasteGeneratedKg || wasteGeneratedKg <= 0) return 0;
+    const score = ((wasteDivertedKg ?? 0) / wasteGeneratedKg) * 100;
+    return Math.round(Math.min(100, score) * 10) / 10;
 }
 
 // ============================================

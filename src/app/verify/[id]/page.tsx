@@ -100,6 +100,7 @@ export default function VerifyPage() {
 
     const tco2e = action.co2eKg != null ? (action.co2eKg / 1000).toFixed(2) : null;
     const atmanirbhar = action.atmanirbharPercent != null ? action.atmanirbharPercent.toFixed(0) : null;
+    const circularity = action.circularityPercent != null ? action.circularityPercent.toFixed(1) : null;
     const year = new Date().getFullYear();
     const verifyUrl = `${APP_URL}/verify/${action.registryId}`;
 
@@ -187,6 +188,17 @@ export default function VerifyPage() {
                                         : <span className="text-gray-400">N/A</span>}
                                 </p>
                                 <p className="text-xs text-blue-500">{year}</p>
+                            </div>
+                            <div className="md:col-span-2 bg-emerald-50 rounded-[2rem] border border-emerald-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] px-8 py-6 space-y-3">
+                                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">
+                                    Circularity Score
+                                </h3>
+                                <p className="text-3xl font-black text-emerald-600">
+                                    {circularity != null
+                                        ? <>{circularity}<span className="text-lg font-bold text-emerald-500">%</span></>
+                                        : <span className="text-gray-400">N/A</span>}
+                                </p>
+                                <p className="text-xs text-emerald-500">Waste diverted from landfill — (Waste Recycled ÷ Waste Generated) × 100</p>
                             </div>
                         </div>
 

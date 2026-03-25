@@ -23,6 +23,9 @@ export interface Action {
     status: ActionStatus;
     co2eKg: number | null;
     atmanirbharPercent: number | null;
+    circularityPercent: number | null;
+    wasteGeneratedKg: number | null;
+    wasteDivertedKg: number | null;
     sha256Hash: string;
     meterPhotos: string[];
     sitePhoto: string | null;
@@ -62,6 +65,8 @@ export interface ActionFormData {
     indigenousPercent: number | string;
     communityPercent: number | string;
     jobsCreated: number | string;
+    wasteGeneratedKg: number | string;
+    wasteDivertedKg: number | string;
     consentGiven: boolean;
     disclaimerAccepted: boolean;
 }

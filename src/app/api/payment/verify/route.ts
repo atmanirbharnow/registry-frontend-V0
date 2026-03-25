@@ -187,10 +187,13 @@ export async function POST(request: NextRequest) {
             indigenousPercent: formData.indigenousPercent ? Number(formData.indigenousPercent) : undefined,
             communityPercent: formData.communityPercent ? Number(formData.communityPercent) : undefined,
             jobsCreated: formData.jobsCreated ? Number(formData.jobsCreated) : undefined,
+            wasteGeneratedKg: formData.wasteGeneratedKg ? Number(formData.wasteGeneratedKg) : undefined,
+            wasteDivertedKg: formData.wasteDivertedKg ? Number(formData.wasteDivertedKg) : undefined,
         });
 
         const co2eKg = impact.tCO2e * 1000;
         const atmanirbharPercent = impact.atmanirbharScore;
+        const circularityPercent = impact.circularityScore;
 
         const sha256Hash = generateActionHash({
             registryId,
@@ -221,6 +224,9 @@ export async function POST(request: NextRequest) {
             status: "pending",
             co2eKg,
             atmanirbharPercent,
+            circularityPercent,
+            wasteGeneratedKg: formData.wasteGeneratedKg ? Number(formData.wasteGeneratedKg) : null,
+            wasteDivertedKg: formData.wasteDivertedKg ? Number(formData.wasteDivertedKg) : null,
             sha256Hash,
             meterPhotos: (formData.meterPhotos || []).filter(Boolean),
             sitePhoto: formData.sitePhoto || null,

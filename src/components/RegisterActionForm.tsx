@@ -42,6 +42,8 @@ const validationSchema = Yup.object().shape({
     indigenousPercent: Yup.number().min(0).max(100).typeError("Must be a number"),
     communityPercent: Yup.number().min(0).max(100).typeError("Must be a number"),
     jobsCreated: Yup.number().min(0).typeError("Must be a number"),
+    wasteGeneratedKg: Yup.number().min(0).typeError("Must be a number"),
+    wasteDivertedKg: Yup.number().min(0).typeError("Must be a number"),
     consentGiven: Yup.boolean().oneOf([true], "You must verify this data is correct"),
     disclaimerAccepted: Yup.boolean().oneOf([true], "You must accept the disclaimer to proceed"),
 });
@@ -93,6 +95,8 @@ export default function RegisterActionForm() {
                         indigenousPercent: Number(values.indigenousPercent) || 0,
                         communityPercent: Number(values.communityPercent) || 0,
                         jobsCreated: Number(values.jobsCreated) || 0,
+                        wasteGeneratedKg: Number(values.wasteGeneratedKg) || null,
+                        wasteDivertedKg: Number(values.wasteDivertedKg) || null,
                         meterPhotos: meterPhotos.filter(Boolean),
                         sitePhoto,
                         userId: user?.uid,
@@ -135,6 +139,8 @@ export default function RegisterActionForm() {
             indigenousPercent: "",
             communityPercent: "",
             jobsCreated: "",
+            wasteGeneratedKg: "",
+            wasteDivertedKg: "",
             consentGiven: false,
             disclaimerAccepted: false,
         },
@@ -454,6 +460,36 @@ export default function RegisterActionForm() {
                                     placeholder="Number of jobs"
                                     error={formik.touched.jobsCreated ? formik.errors.jobsCreated : undefined}
                                 />
+                            </div>
+
+                            {/* Circularity divider */}
+                            <div className="border-t border-gray-100 pt-6">
+                                <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 mb-4">Circularity Data</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <Input
+                                        label="Waste Generated (kg/yr)"
+                                        name="wasteGeneratedKg"
+                                        type="number"
+                                        className="!py-4 !rounded-xl !font-bold"
+                                        value={formik.values.wasteGeneratedKg}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        placeholder="Total waste generated"
+                                        error={formik.touched.wasteGeneratedKg ? formik.errors.wasteGeneratedKg : undefined}
+                                    />
+                                    <Input
+                                        label="Waste Diverted / Recycled (kg/yr)"
+                                        name="wasteDivertedKg"
+                                        type="number"
+                                        className="!py-4 !rounded-xl !font-bold"
+                                        value={formik.values.wasteDivertedKg}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        placeholder="Waste recycled or composted"
+                                        error={formik.touched.wasteDivertedKg ? formik.errors.wasteDivertedKg : undefined}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-400 mt-2 ml-1">Used to calculate your Circularity Score — the % of waste diverted from landfill.</p>
                             </div>
                         </Card>
 

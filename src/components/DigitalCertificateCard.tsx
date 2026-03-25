@@ -87,6 +87,20 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                             <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
                         )}
                     </div>
+                    <div className="col-span-2 bg-emerald-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[70px]">
+                        <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Circularity Score</div>
+                        {action.status === "verified" ? (
+                            <>
+                                <div className="text-xl sm:text-2xl font-black text-emerald-600">
+                                    {action.circularityPercent != null ? action.circularityPercent.toFixed(0) : "N/A"}
+                                    {action.circularityPercent != null && <span className="text-sm font-bold text-emerald-500">%</span>}
+                                </div>
+                                <div className="text-[10px] sm:text-xs font-bold text-emerald-500">Waste Diverted from Landfill</div>
+                            </>
+                        ) : (
+                            <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
