@@ -120,26 +120,36 @@ export async function getSchoolActions(projectId: string) {
         const snap = await getDocs(q);
         if (snap.empty) {
             return [
-                { id: "ACT-001", type: "Solar Installation" },
-                { id: "ACT-002", type: "Tree Plantation" },
-                { id: "ACT-003", type: "Waste Management" },
-                { id: "ACT-004", type: "Energy Efficiency" },
-                { id: "ACT-005", type: "Water Conservation" },
-                { id: "ACT-006", type: "Biodiversity Conservation" },
-                { id: "ACT-007", type: "EV Integration" }
+                { id: "ACT-001", type: "Solar Rooftop 1 kW" },
+                { id: "ACT-002", type: "Solar Water Heater 100 LPD" },
+                { id: "ACT-003", type: "Water Borewell 1 kL" },
+                { id: "ACT-004", type: "Water Rainwater 1000 L/day" },
+                { id: "ACT-005", type: "Biogas 2m³ Plant" },
+                { id: "ACT-006", type: "Waste Composting 1 kg food" },
+                { id: "ACT-007", type: "Waste Plastic Recycling 1 kg" },
+                { id: "ACT-008", type: "Waste Paper Recycling 1 kg" },
+                { id: "ACT-009", type: "Waste Textile Recycling 1 kg" },
+                { id: "ACT-010", type: "Waste Metal Recycling 1 kg" },
+                { id: "ACT-011", type: "Lighting Turn Off Bulb 1 hr/day" },
+                { id: "ACT-012", type: "Lighting Turn Off Fan 1 hr/day" }
             ];
         }
         return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (error) {
         console.error("Error fetching actions:", error);
         return [
-            { id: "ACT-001", type: "Solar Installation" },
-            { id: "ACT-002", type: "Tree Plantation" },
-            { id: "ACT-003", type: "Waste Management" },
-            { id: "ACT-004", type: "Energy Efficiency" },
-            { id: "ACT-005", type: "Water Conservation" },
-            { id: "ACT-006", type: "Biodiversity Conservation" },
-            { id: "ACT-007", type: "EV Integration" }
+            { id: "ACT-001", type: "Solar Rooftop 1 kW" },
+            { id: "ACT-002", type: "Solar Water Heater 100 LPD" },
+            { id: "ACT-003", type: "Water Borewell 1 kL" },
+            { id: "ACT-004", type: "Water Rainwater 1000 L/day" },
+            { id: "ACT-005", type: "Biogas 2m³ Plant" },
+            { id: "ACT-006", type: "Waste Composting 1 kg food" },
+            { id: "ACT-007", type: "Waste Plastic Recycling 1 kg" },
+            { id: "ACT-008", type: "Waste Paper Recycling 1 kg" },
+            { id: "ACT-009", type: "Waste Textile Recycling 1 kg" },
+            { id: "ACT-010", type: "Waste Metal Recycling 1 kg" },
+            { id: "ACT-011", type: "Lighting Turn Off Bulb 1 hr/day" },
+            { id: "ACT-012", type: "Lighting Turn Off Fan 1 hr/day" }
         ];
     }
 }

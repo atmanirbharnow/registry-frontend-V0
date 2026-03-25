@@ -63,8 +63,8 @@ export const RECYCLING_PROGRAM_OPTIONS = [
 export const ACTION_TYPE_OPTIONS = [
     { value: "Solar", label: "Solar" },
     { value: "Biogas", label: "Biogas" },
-    { value: "Waste", label: "Waste" },
+    { value: "Waste", label: "Waste & Recycling" },
     { value: "Water", label: "Water" },
-    { value: "Efficiency", label: "Efficiency" },
+    { value: "Efficiency", label: "Efficiency & Lighting" },
 ] as const;
 

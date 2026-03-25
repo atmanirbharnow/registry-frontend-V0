@@ -1,25 +1,97 @@
 export const ACTION_TYPES = [
   // Solar
-  { value: "solar_rooftop", label: "Solar Rooftop (1 kW)", unit: "kW" },
-  { value: "solar_water_heater", label: "Solar Water Heater (100 LPD)", unit: "units" },
+  { 
+    value: "solar_rooftop", 
+    label: "Solar Rooftop 1 kW", 
+    unit: "kW", 
+    source: "1500 kWh × 0.82 kg", 
+    notes: "India average generation" 
+  },
+  { 
+    value: "solar_water_heater", 
+    label: "Solar Water Heater 100 LPD", 
+    unit: "100 LPD", 
+    source: "Electric geyser displacement", 
+    notes: "Per 100 liters/day" 
+  },
 
   // Water
-  { value: "borewell_water", label: "Water Borewell (1 kL)", unit: "kL" },
-  { value: "rainwater_harvesting", label: "Water Rainwater (1000 L/day)", unit: "units" },
+  { 
+    value: "borewell_water", 
+    label: "Water Borewell 1 kL", 
+    unit: "kL", 
+    source: "Pumping 150m", 
+    notes: "Energy for extraction" 
+  },
+  { 
+    value: "rainwater_harvesting", 
+    label: "Water Rainwater 1000 L/day", 
+    unit: "1000L/day", 
+    source: "Borewell-Municipal", 
+    notes: "Monsoon harvesting" 
+  },
 
   // Biogas
-  { value: "biogas", label: "Biogas (2m³ Plant)", unit: "plants" },
+  { 
+    value: "biogas", 
+    label: "Biogas 2m³ Plant", 
+    unit: "1 plant", 
+    source: "Methane + LPG", 
+    notes: "Includes manure" 
+  },
 
   // Waste & Recycling
-  { value: "composting", label: "Waste Composting (1 kg food)", unit: "kg" },
-  { value: "plastic_recycling", label: "Waste Plastic Recycling (1 kg)", unit: "kg" },
-  { value: "paper_recycling", label: "Waste Paper Recycling (1 kg)", unit: "kg" },
-  { value: "textile_recycling", label: "Waste Textile Recycling (1 kg)", unit: "kg" },
-  { value: "metal_recycling", label: "Waste Metal Recycling (1 kg)", unit: "kg" },
+  { 
+    value: "composting", 
+    label: "Waste Composting 1 kg food", 
+    unit: "kg food", 
+    source: "Landfill methane avoidance", 
+    notes: "Monthly household" 
+  },
+  { 
+    value: "plastic_recycling", 
+    label: "Waste Plastic Recycling 1 kg", 
+    unit: "kg", 
+    source: "Virgin production", 
+    notes: "Per kg recycled" 
+  },
+  { 
+    value: "paper_recycling", 
+    label: "Waste Paper Recycling 1 kg", 
+    unit: "kg", 
+    source: "Virgin production", 
+    notes: "17kg = 1 tree" 
+  },
+  { 
+    value: "textile_recycling", 
+    label: "Waste Textile Recycling 1 kg", 
+    unit: "kg", 
+    source: "New production", 
+    notes: "Per kg recycled" 
+  },
+  { 
+    value: "metal_recycling", 
+    label: "Waste Metal Recycling 1 kg", 
+    unit: "kg", 
+    source: "Aluminum average", 
+    notes: "Per kg recycled" 
+  },
 
   // Lighting
-  { value: "turn_off_bulb", label: "Lighting Turn Off Bulb (1 hr/day)", unit: "bulbs" },
-  { value: "turn_off_fan", label: "Lighting Turn Off Fan (1 hr/day)", unit: "fans" },
+  { 
+    value: "turn_off_bulb", 
+    label: "Lighting Turn Off Bulb 1 hr/day", 
+    unit: "60W bulb", 
+    source: "1 hr/day reduction", 
+    notes: "Per hour reduction" 
+  },
+  { 
+    value: "turn_off_fan", 
+    label: "Lighting Turn Off Fan 1 hr/day", 
+    unit: "52W fan", 
+    source: "1 hr/day reduction", 
+    notes: "Per hour reduction" 
+  },
 ];
 
 export const ACTION_LABELS: Record<string, string> = ACTION_TYPES.reduce(
@@ -66,14 +138,10 @@ export const ACTION_PILLAR_MAP: Record<string, "energy" | "water" | "waste" | "o
   led_replacement: "energy",
   refrigerator_upgrade: "energy",
   geyser_temp_reduction: "energy",
-  swh: "energy",
 
   // Water
   borewell_water: "water",
   rainwater_harvesting: "water",
-  rwh: "water",
-  waterless_urinal: "water",
-  wastewater_recycling: "water",
 
   // Waste
   biogas: "waste",
