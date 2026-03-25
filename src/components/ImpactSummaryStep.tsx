@@ -1,0 +1,274 @@
+"use client";
+
+import React from "react";
+import { ACTION_LABELS } from "@/lib/constants";
+
+interface ImpactSummaryStepProps {
+    isSchool?: boolean;
+    formValues: Record<string, any>;
+    userProfile?: any;
+    agreed: boolean;
+    onAgreeChange: (checked: boolean) => void;
+}
+
+export default function ImpactSummaryStep({
+    isSchool = false,
+    formValues,
+    userProfile,
+    agreed,
+    onAgreeChange,
+}: ImpactSummaryStepProps) {
+    const heading = isSchool
+        ? "School Action — Impact Summary"
+        : "Individual Action — Impact Summary";
+
+    const subheading = isSchool
+        ? "Review your school's submitted data and understand the benefits of registering on the Earth Carbon Registry."
+        : "Review your submitted data and understand the benefits of registering on the Earth Carbon Registry.";
+
+    return (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {/* Header */}
+            <div className="bg-[rgb(32,38,130)] text-white p-5 rounded-xl">
+                <div className="flex items-center gap-3 mb-2">
+                    <span className="p-2 bg-white/15 rounded-lg">
+                        <SummaryIcon />
+                    </span>
+                    <h2 className="text-lg font-bold">{heading}</h2>
+                </div>
+                <p className="text-sm text-blue-200 leading-relaxed">{subheading}</p>
+            </div>
+
+            {/* Sections Grid - Stacked Vertically */}
+            <div className="flex flex-col gap-6">
+                {/* Personal Details */}
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Personal Details</h3>
+                    </div>
+                    <div className="p-5">
+                        <PersonalDetailsGrid userProfile={userProfile} />
+                    </div>
+                </div>
+
+                {/* Submitted Details */}
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                            {isSchool ? "School Details" : "Action Details"}
+                        </h3>
+                    </div>
+                    <div className="p-5">
+                        {isSchool ? (
+                            <SchoolDetailsGrid values={formValues} />
+                        ) : (
+                            <IndividualDetailsGrid values={formValues} />
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* What You Will Receive */}
+            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+                <div className="px-5 py-3 bg-gray-50/50 border-b border-gray-100">
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Benefits of Registration</h3>
+                </div>
+                <div className="p-4 sm:p-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+                        <BenefitCard
+                            icon={<CertificateIcon />}
+                            title="Digital Certificate"
+                            description="Tamper-proof certificate with unique QR code."
+                            bgColor="bg-blue-50"
+                            iconColor="text-blue-600"
+                        />
+                        <BenefitCard
+                            icon={<CO2Icon />}
+                            title="CO2e Carbon Reduction Score"
+                            description="Calculated carbon reduction impact."
+                            bgColor="bg-emerald-50"
+                            iconColor="text-emerald-600"
+                        />
+                        <BenefitCard
+                            icon={<AtmanirbharIcon />}
+                            title="Atmanirbhar % Score"
+                            description="Your Atmanirbhar (Self-Reliance) score."
+                            bgColor="bg-cyan-50"
+                            iconColor="text-cyan-600"
+                        />
+                        <BenefitCard
+                            icon={<CircularityIcon />}
+                            title="Circularity Score"
+                            description="Percentage of waste diverted from landfill."
+                            bgColor="bg-indigo-50"
+                            iconColor="text-indigo-600"
+                        />
+                        <BenefitCard
+                            icon={<SignatureIcon />}
+                            title="Secure Signature"
+                            description="Cryptographic hash for data integrity."
+                            bgColor="bg-violet-50"
+                            iconColor="text-violet-600"
+                        />
+                        <BenefitCard
+                            icon={<ShareIcon />}
+                            title="Social Share"
+                            description="Easily share your verified climate action."
+                            bgColor="bg-rose-50"
+                            iconColor="text-rose-600"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Impact Message */}
+            <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100">
+                <p className="text-sm text-blue-700 font-medium leading-relaxed">
+                    By registering, you join a transparent record of climate-positive activities in India. 
+                    Your {isSchool ? "school's" : "individual"} action helps build a national baseline for grassroots environmental impact, 
+                    verified using standardized methodologies.
+                </p>
+            </div>
+
+            {/* Agreement Checkbox */}
+            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                <label className="flex items-start gap-4 cursor-pointer group">
+                    <div className="mt-0.5 relative flex-shrink-0">
+                        <input
+                            type="checkbox"
+                            checked={agreed}
+                            onChange={(e) => onAgreeChange(e.target.checked)}
+                            className="peer appearance-none w-6 h-6 border-2 border-gray-200 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                        />
+                        <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                    </div>
+                    <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
+                        I have reviewed all the details and agree to proceed with the registration and payment.
+                    </span>
+                </label>
+            </div>
+        </div>
+    );
+}
+
+/* ===== Detail Grids ===== */
+
+function PersonalDetailsGrid({ userProfile }: { userProfile: any }) {
+    const rows: [string, string][] = [
+        ["Contact Name", userProfile?.displayName || "—"],
+        ["Email Address", userProfile?.email || "—"],
+        ["Phone Number", userProfile?.phone || "—"],
+        ["Contact Person", userProfile?.contactPerson || "—"],
+    ];
+
+    return <DetailTable rows={rows} />;
+}
+
+function IndividualDetailsGrid({ values }: { values: Record<string, any> }) {
+    const actionLabel = ACTION_LABELS[values.actionType] || values.actionType || "—";
+    const rows: [string, string][] = [
+        ["Action Type", actionLabel],
+        ["Capacity / Quantity", values.quantity ? `${values.quantity} ${values.unit || "units"}` : "—"],
+        ["Location", values.address || "—"],
+        ["Atmanirbhar Score", `${values.localPercent || 0}% Local Input, ${values.indigenousPercent || 0}% Indigenous Tech`],
+        ["Circularity Impact", `${values.wasteDivertedKg || 0}kg Diverted from ${values.wasteGeneratedKg || 0}kg Waste`],
+    ];
+
+    return <DetailTable rows={rows} />;
+}
+
+function SchoolDetailsGrid({ values }: { values: Record<string, any> }) {
+    const rows: [string, string][] = [
+        ["School", values.schoolName || "—"],
+        ["Location", `${values.city || ""}, ${values.pincode || ""}`],
+        ["Energy", `${values.electricity_kWh_year || 0} kWh (Fuel: ${values.fuel_type || 'None'})`],
+        ["Resources", `Waste: ${values.waste_generated_kg || 0}kg, Water: ${values.water_consumption_m3 || 0}m³`],
+    ];
+
+    return <DetailTable rows={rows} />;
+}
+
+function DetailTable({ rows }: { rows: [string, string][] }) {
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4">
+            {rows.map(([label, value], i) => (
+                <div key={i} className="flex flex-col py-1 border-b border-gray-50 last:border-0 sm:last:border-b">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{label}</span>
+                    <span className="text-sm font-black text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+/* ===== Benefit Card ===== */
+
+function BenefitCard({ icon, title, description, bgColor, iconColor }: { icon: React.ReactNode; title: string; description: string; bgColor: string; iconColor: string }) {
+    return (
+        <div className={`flex flex-col gap-2 p-4 rounded-2xl ${bgColor} transition-transform hover:scale-[1.02] border border-white shadow-sm`}>
+            <div className={`w-10 h-10 rounded-xl bg-white flex items-center justify-center ${iconColor} shadow-sm`}>
+                {icon}
+            </div>
+            <div>
+                <h4 className="text-xs font-black text-gray-800 mb-1 uppercase tracking-tight">{title}</h4>
+                <p className="text-[10px] text-gray-500 font-bold leading-tight line-clamp-2">{description}</p>
+            </div>
+        </div>
+    );
+}
+
+/* ===== SVG Icons ===== */
+
+const SummaryIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" />
+    </svg>
+);
+
+const CertificateIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M7 7h10" /><path d="M7 12h10" /><path d="M7 17h6" />
+    </svg>
+);
+
+const CO2Icon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 12a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V7H2Z" /><path d="M6 11c1.5 0 3-0.5 3-2 0-1.5-1-2-2-2S5 7.5 5 9c0 1.5 1.5 2 3 2" />
+    </svg>
+);
+
+const AtmanirbharIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+);
+
+const CircularityIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 4 23 10 17 10" /><polyline points="1 20 1 14 7 14" /><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10" /><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14" />
+    </svg>
+);
+
+const SignatureIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+);
+
+const RegistryIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+);
+
+const ShareIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+);
+
+const VerifyIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+    </svg>
+);

@@ -110,6 +110,7 @@ export interface SchoolFormData {
     target_date?: string;
     
     consent_confirmed: boolean;
+    summaryAgreed: boolean;
     lat: number | null;
     lng: number | null;
 }

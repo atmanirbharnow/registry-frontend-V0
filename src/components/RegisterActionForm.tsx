@@ -9,6 +9,7 @@ import ActionTypeSelector from "./forms/ActionTypeSelector";
 import ActorDetailsSection from "./forms/ActorDetailsSection";
 import LocationPickerSection from "./forms/LocationPickerSection";
 import PhotoUploadSection from "./forms/PhotoUploadSection";
+import ImpactSummaryStep from "./ImpactSummaryStep";
 import Input from "./ui/Input";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
@@ -46,6 +47,7 @@ const validationSchema = Yup.object().shape({
     wasteDivertedKg: Yup.number().min(0).typeError("Must be a number"),
     consentGiven: Yup.boolean().oneOf([true], "You must verify this data is correct"),
     disclaimerAccepted: Yup.boolean().oneOf([true], "You must accept the disclaimer to proceed"),
+    summaryAgreed: Yup.boolean().oneOf([true], "You must agree to proceed"),
 });
 
 export default function RegisterActionForm() {
@@ -57,7 +59,7 @@ export default function RegisterActionForm() {
     const [meterPhotos, setMeterPhotos] = useState<string[]>(["", "", ""]);
     const [sitePhoto, setSitePhoto] = useState<string | null>(null);
     const [currentStep, setCurrentStep] = useState(1);
-    const totalSteps = 3;
+    const totalSteps = 5;
 
     useEffect(() => {
         const existing = document.querySelector(
@@ -143,6 +145,7 @@ export default function RegisterActionForm() {
             wasteDivertedKg: "",
             consentGiven: false,
             disclaimerAccepted: false,
+            summaryAgreed: false,
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -230,7 +233,9 @@ export default function RegisterActionForm() {
         const stepFields: Record<number, string[]> = {
             1: ["actionType", "quantity", "unit", "commissioningDate"],
             2: ["address"],
-            3: ["consentGiven", "disclaimerAccepted"]
+            3: ["localPercent", "indigenousPercent", "communityPercent", "jobsCreated", "wasteGeneratedKg", "wasteDivertedKg"], // Assessment Details
+            4: ["summaryAgreed"], // Impact Summary
+            5: ["consentGiven", "disclaimerAccepted"] // Finalize/Payment
         };
 
         const currentStepFields = stepFields[currentStep];
@@ -270,12 +275,14 @@ export default function RegisterActionForm() {
             {/* Progress Bar */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
-                    {[1, 2, 3].map((step) => (
-                        <div key={step} className="flex flex-col items-center min-w-[100px]">
+                    {[1, 2, 3, 4, 5].map((step) => (
+                        <div key={step} className="flex flex-col items-center min-w-[80px]">
                             <span className={`text-[10px] font-black mb-2 whitespace-nowrap uppercase tracking-widest ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-300"}`}>
                                 {step === 1 && "Action Details"}
                                 {step === 2 && "Location & Photos"}
-                                {step === 3 && "Finalize"}
+                                {step === 3 && "Assessment Details"}
+                                {step === 4 && "Impact Summary"}
+                                {step === 5 && "Payment"}
                             </span>
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" :
                                     currentStep > step ? "bg-green-500 border-green-100 text-white" :
@@ -311,7 +318,7 @@ export default function RegisterActionForm() {
                 )}
 
                 {currentStep === 1 && (
-                    <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-blue-50 rounded-lg text-blue-600">⚡</span> <h3 className="text-xl font-bold text-gray-800">Action Details</h3></div>}>
+                    <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-blue-50 rounded-lg text-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Action Details</h3></div>}>
                         <div className="space-y-8">
                             <ActionTypeSelector
                                 value={formik.values.actionType}
@@ -375,7 +382,7 @@ export default function RegisterActionForm() {
 
                 {currentStep === 2 && (
                     <div className="space-y-8">
-                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-green-50 rounded-lg text-green-600">📍</span> <h3 className="text-xl font-bold text-gray-800">Location</h3></div>}>
+                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-green-50 rounded-lg text-green-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Location</h3></div>}>
                             <LocationPickerSection
                                 address={formik.values.address}
                                 lat={formik.values.lat}
@@ -391,7 +398,7 @@ export default function RegisterActionForm() {
                             />
                         </Card>
 
-                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-indigo-50 rounded-lg text-indigo-600">📸</span> <h3 className="text-xl font-bold text-gray-800">Verification Photos</h3></div>}>
+                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-indigo-50 rounded-lg text-indigo-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Verification Photos</h3></div>}>
                             <PhotoUploadSection
                                 meterPhotos={meterPhotos}
                                 sitePhoto={sitePhoto}
@@ -408,7 +415,9 @@ export default function RegisterActionForm() {
                         <Card header={
                             <div className="flex items-center justify-between group cursor-default">
                                 <div className="flex items-center gap-3">
-                                    <span className="p-2 bg-cyan-50 rounded-lg text-cyan-600">🇮🇳</span>
+                                    <span className="p-2 bg-cyan-50 rounded-lg text-cyan-600">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                                    </span>
                                     <div>
                                         <h3 className="text-xl font-bold text-gray-800">Atmanirbhar Assessment</h3>
                                     </div>
@@ -492,7 +501,21 @@ export default function RegisterActionForm() {
                                 <p className="text-xs text-gray-400 mt-2 ml-1">Used to calculate your Circularity Score — the % of waste diverted from landfill.</p>
                             </div>
                         </Card>
+                    </div>
+                )}
 
+                {currentStep === 4 && (
+                    <ImpactSummaryStep
+                        isSchool={false}
+                        formValues={formik.values}
+                        userProfile={profile}
+                        agreed={formik.values.summaryAgreed}
+                        onAgreeChange={(checked) => formik.setFieldValue("summaryAgreed", checked)}
+                    />
+                )}
+
+                {currentStep === 5 && (
+                    <div className="space-y-8">
                         <Card>
                             <div className="space-y-8">
                                 <div className="bg-slate-50 p-6 rounded-[2rem] border border-gray-100 space-y-4">

@@ -20,6 +20,7 @@ import { auth } from "@/lib/firebaseConfig";
 import SchoolAutocomplete from "./SchoolAutocomplete";
 import { getProjects, getSchoolActions, checkDuplicateSchool } from "@/lib/schoolFirestoreService";
 import CustomDropdown from "./ui/CustomDropdown";
+import ImpactSummaryStep from "./ImpactSummaryStep";
 
 declare global {
     interface Window {
@@ -55,7 +56,11 @@ const validationSchema = [
         attribution_pct_water: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
         photo_file: Yup.mixed().required("Proof photo is required"),
     }),
-    // Step 4: Finalization
+    // Step 4: Impact Summary
+    Yup.object({
+        summaryAgreed: Yup.boolean().oneOf([true], "You must agree to proceed").required(),
+    }),
+    // Step 5: Finalization
     Yup.object({
         consent_confirmed: Yup.boolean().oneOf([true], "Please provide consent to proceed").required(),
         installation_date: Yup.date()
@@ -76,7 +81,7 @@ export default function SchoolRegistrationForm() {
     const [projects, setProjects] = useState<any[]>([]);
     const [actions, setActions] = useState<any[]>([]);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-    const totalSteps = 4;
+    const totalSteps = 5;
 
     useEffect(() => {
         // Load Razorpay Script
@@ -149,6 +154,7 @@ export default function SchoolRegistrationForm() {
             target_date: "",
             
             consent_confirmed: false,
+            summaryAgreed: false,
             lat: null,
             lng: null,
         },
@@ -348,20 +354,23 @@ export default function SchoolRegistrationForm() {
             {/* Step Progress Bar */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
-                    {[1, 2, 3, 4].map((step) => (
-                        <div key={step} className="flex flex-col items-center min-w-[100px]">
-                            <span className={`text-[10px] sm:text-xs font-bold mb-2 whitespace-nowrap uppercase tracking-widest ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
+                    {[1, 2, 3, 4, 5].map((step) => (
+                        <div key={step} className="flex flex-col items-center min-w-[70px]">
+                            <span className={`text-[9px] sm:text-[10px] font-bold mb-2 whitespace-nowrap uppercase tracking-widest ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
                                 {step === 1 && "Identity"}
                                 {step === 2 && "Energy & Fuel"}
                                 {step === 3 && "Waste & Water"}
-                                {step === 4 && "Finalize"}
+                                {step === 4 && "Impact Summary"}
+                                {step === 5 && "Payment"}
                             </span>
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${
                                 currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" : 
                                 currentStep > step ? "bg-green-500 border-green-100 text-white" : 
                                 "bg-white border-gray-100 text-gray-300"
                             }`}>
-                                {currentStep > step ? "✓" : step}
+                                {currentStep > step ? (
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                ) : step}
                             </div>
                         </div>
                     ))}
@@ -484,7 +493,7 @@ export default function SchoolRegistrationForm() {
                                         <img src={photoPreview} alt="Preview" className="h-40 w-auto rounded-xl object-cover shadow-xl" />
                                     ) : (
                                         <div className="text-center space-y-3">
-                                            <span className="text-4xl">📷</span>
+                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
                                             <p className="text-sm font-bold text-gray-400">Click to upload photo of the action</p>
                                         </div>
                                     )}
@@ -495,9 +504,19 @@ export default function SchoolRegistrationForm() {
                 )}
 
                 {currentStep === 4 && (
-                    <StepWrapper title="Step 4: Registry Finalization" icon={<RegistryIcon />}>
+                    <ImpactSummaryStep
+                        isSchool={true}
+                        formValues={formik.values}
+                        userProfile={profile}
+                        agreed={formik.values.summaryAgreed}
+                        onAgreeChange={(checked) => formik.setFieldValue("summaryAgreed", checked)}
+                    />
+                )}
+
+                {currentStep === 5 && (
+                    <StepWrapper title="Step 5: Registry Finalization" icon={<RegistryIcon />}>
                         <div className="space-y-8">
-                            <div className="bg-slate-50 p-6 rounded-[2rem] border border-gray-100 space-y-6">
+                            <div className="bg-slate-50 p-6 rounded-xl border border-gray-100 space-y-6">
                                 <div className="flex items-center justify-between">
                                     <span className="font-bold text-gray-700">Has existing low-carbon actions?</span>
                                     <button
@@ -538,7 +557,7 @@ export default function SchoolRegistrationForm() {
                                 </label>
                             </div>
 
-                            <div className="bg-slate-50 border border-gray-100 p-6 rounded-[2rem] flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl shadow-gray-200/50">
+                            <div className="bg-slate-50 border border-gray-100 p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl shadow-gray-200/50">
                                 <div className="space-y-1 text-center sm:text-left font-bold">
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Onboarding Fee</span>
                                     <div className="flex items-baseline justify-center sm:justify-start gap-1">
@@ -550,7 +569,7 @@ export default function SchoolRegistrationForm() {
                                     type="button"
                                     onClick={() => formik.handleSubmit()}
                                     disabled={submitting}
-                                    className="w-full sm:w-auto px-10 py-4 bg-[rgb(32,38,130)] text-white rounded-2xl font-black shadow-xl shadow-blue-900/20 hover:scale-[1.05] transition-all active:scale-[0.98] disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
+                                    className="w-full sm:w-auto px-10 py-4 bg-[rgb(32,38,130)] text-white rounded-xl font-black shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
                                 >
                                     {submitting ? <Spinner size="sm" /> : "Pay & Register"}
                                 </button>
