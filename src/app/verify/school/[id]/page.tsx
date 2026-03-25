@@ -10,6 +10,8 @@ import Spinner from "@/components/ui/Spinner";
 import PublicShell from "@/components/PublicShell";
 import Link from "next/link";
 import { APP_URL } from "@/lib/constants";
+import ImpactCertificate, { Highlight } from "@/components/ImpactCertificate";
+import ShareButtons from "@/components/ShareButtons";
 
 export default function SchoolVerifyPage() {
     const params = useParams();
@@ -68,58 +70,50 @@ export default function SchoolVerifyPage() {
     const verifyUrl = `${APP_URL}/verify/school/${school.registryId}`;
     const shareText = `Check out ${school.schoolName}'s climate action on the Earth Carbon Registry: ${verifyUrl}`;
 
+    const highlights: Highlight[] = [
+        { icon: "🏫", text: `Educational Institution: ${school.students_count || 0} Students` },
+        { icon: "⚡", text: `${school.electricity_kWh_year || 0} kWh Energy consumed / yr` },
+        { icon: "♻️", text: `${school.waste_diverted_kg || 0} kg Waste diverted from landfill` }
+    ];
+
     return (
         <PublicShell>
-            <div className="max-w-4xl mx-auto space-y-8 pb-20 px-4 sm:px-0">
-                <div className="text-center space-y-4">
-                    <div className="inline-block px-4 py-1.5 bg-green-50 rounded-full text-green-700 text-[10px] font-black uppercase tracking-widest mb-2">
-                        CLIMATE ASSET REGISTRY • SCHOOL MODULE
-                    </div>
-                    <h1 className="text-3xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight">
-                        {school.schoolName}
-                    </h1>
-                    <div className="flex flex-col items-center gap-2">
-                        <p className="text-base sm:text-lg font-mono font-bold text-[rgb(32,38,130)]">
-                            {school.registryId}
+            <div className="max-w-4xl mx-auto space-y-12 pb-20 px-4 sm:px-0">
+                <ImpactCertificate
+                    registryId={school.registryId}
+                    clientDetails={{
+                        name: school.schoolName || "School Name",
+                        email: school.email,
+                        contact: school.phone,
+                        type: 'Education Institute / School'
+                    }}
+                    sector="Education Institute / School"
+                    location={`${school.city || 'City'}, ${school.pincode || ''}`}
+                    reportingPeriod={`Year ${new Date().getFullYear()}`}
+                    verificationStatus={school.status || "pledged"}
+                    tco2e={tco2e}
+                    atmanirbhar={school.atmanirbhar_pct != null ? school.atmanirbhar_pct.toFixed(0) : "N/A"}
+                    circularity={school.circularity_pct != null ? school.circularity_pct.toFixed(1) : "N/A"}
+                    highlights={highlights}
+                    methodology="Earth Carbon Verified Registry Protocol (School Module)"
+                    emissionFactors="MoEF&CC Guidelines / Custom Registry Factors"
+                    verifyUrl={verifyUrl}
+                    sha256Hash={school.sha256Hash}
+                    qrCodeType="school"
+                />
+
+                {school.status === "pledged" && (
+                    <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200 flex items-center gap-3">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-yellow-600 flex-shrink-0">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <p className="text-sm text-yellow-800">
+                            <strong>Under Review</strong> — This action is awaiting verification. The certificate shows provisional data until formally verified.
                         </p>
-                        <div className="space-y-3 flex flex-col items-center">
-                            <VerificationBadge status={school.status} />
-                            <div className="bg-blue-50/50 px-4 py-2 rounded-xl border border-blue-100/50">
-                                <p className="text-[10px] sm:text-xs font-bold text-blue-600 flex items-center gap-2">
-                                    <span className="animate-pulse">⏱️</span>
-                                    Your action will be verified within 48 hours and you will get a verified certificate.
-                                </p>
-                            </div>
-                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Primary Impact Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <ImpactCard
-                        label="Annual climate impact"
-                        value={tco2e}
-                        unit="tCO2e"
-                        color="bg-[rgb(32,38,130)]"
-                        description="Total annual GHG reduction claim."
-                    />
-                    <ImpactCard
-                        label="Atmanirbhar Index"
-                        value={`${school.atmanirbhar_pct || 0}%`}
-                        unit="Renewable"
-                        color="bg-orange-600"
-                        description="Portion of energy from renewable sources."
-                    />
-                    <ImpactCard
-                        label="Circularity Score"
-                        value={`${school.circularity_pct || 0}%`}
-                        unit="Diverted"
-                        color="bg-emerald-600"
-                        description="Portion of waste diverted from landfill."
-                    />
-                </div>
-
-                {/* Efficiency Indicator */}
                 <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="space-y-0.5 text-center sm:text-left">
                         <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Carbon Intensity</h3>
@@ -131,61 +125,9 @@ export default function SchoolVerifyPage() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Details section */}
-                    <div className="space-y-6">
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden h-full">
-                            <div className="px-6 py-4 bg-gray-50/50 border-b border-gray-100">
-                                <h2 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">School Particulars</h2>
-                            </div>
-                            <div className="p-6 space-y-5">
-                                <DetailItem label="Location" value={`${school.address}, ${school.city} - ${school.pincode}`} />
-                                {school.lat && school.lng && (
-                                    <a
-                                        href={`https://www.google.com/maps?q=${school.lat},${school.lng}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 text-[10px] font-bold text-[rgb(32,38,130)] hover:underline"
-                                    >
-                                        📍 View Geo-Map
-                                    </a>
-                                )}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <DetailItem label="Contact Person" value={school.contactPerson} />
-                                    <DetailItem label="Verified At" value={school.verifiedAt ? new Date(school.verifiedAt).toLocaleDateString() : "Pending"} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    {/* QR & Verification Artifacts */}
-                    <div className="bg-gray-900 rounded-2xl p-6 text-white space-y-6 flex flex-col justify-between">
-                        <div>
-                            <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">Verification Registry</h3>
-                            <div className="space-y-3">
-                                <div className="space-y-2">
-                                    <span className="text-[9px] font-bold text-gray-600 uppercase">SHA-256 Fingerprint</span>
-                                    <div className="font-mono text-[9px] break-all bg-white/5 p-3 rounded-xl border border-white/10 text-gray-400">
-                                        {school.sha256Hash}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div className="flex flex-col sm:flex-row items-center gap-6 pt-2">
-                            <QRCode registryId={school.registryId} size={110} type="school" />
-                            <div className="space-y-4 w-full text-center sm:text-left">
-                                <p className="text-xs font-medium text-gray-400 italic leading-relaxed">
-                                    "This digital registry entry validates this school's climate commitment for the reporting year."
-                                </p>
-                                <div className="flex gap-2">
-                                    <ShareButton platform="wa" text={shareText} url={verifyUrl} />
-                                    <ShareButton platform="li" text={shareText} url={verifyUrl} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <ShareButtons shareText={shareText} verifyUrl={verifyUrl} />
 
                 <div className="text-center pt-8">
                     <Link href="https://climateassetregistry.org" className="text-sm font-bold text-gray-400 hover:text-[rgb(32,38,130)] transition-colors">
@@ -197,48 +139,8 @@ export default function SchoolVerifyPage() {
     );
 }
 
-function ImpactCard({ label, value, unit, color, description }: any) {
-    return (
-        <div className={`${color} rounded-2xl p-5 text-white shadow-xl shadow-blue-900/10 h-full flex flex-col justify-between`}>
-            <div>
-                <h3 className="text-[9px] font-black uppercase tracking-widest opacity-80 mb-2">{label}</h3>
-                <div className="flex items-baseline gap-1.5">
-                    <span className="text-3xl font-black">{value}</span>
-                    <span className="text-[11px] font-bold opacity-80">{unit}</span>
-                </div>
-            </div>
-            <p className="text-[9px] font-medium mt-3 opacity-70 leading-relaxed uppercase tracking-wider italic">
-                {description}
-            </p>
-        </div>
-    );
-}
+// Remove previously unused subcomponents
 
-function DetailItem({ label, value }: any) {
-    return (
-        <div className="space-y-0.5">
-            <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{label}</span>
-            <p className="text-xs font-bold text-gray-700 leading-relaxed">{value || "N/A"}</p>
-        </div>
-    );
-}
 
-function ShareButton({ platform, text, url }: any) {
-    const isWA = platform === "wa";
-    const href = isWA
-        ? `https://wa.me/?text=${encodeURIComponent(text)}`
-        : `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`;
 
-    return (
-        <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl text-[10px] font-black transition-all ${isWA ? "bg-[#25D366] text-white hover:bg-[#20bd5c] shadow-lg shadow-green-500/20" : "bg-[#0A66C2] text-white hover:bg-[#09529d] shadow-lg shadow-blue-500/20"
-                }`}
-        >
-            {isWA ? "WhatsApp Share" : "LinkedIn Share"}
-        </a>
-    );
-}
 

@@ -55,7 +55,7 @@ export default function RegisterSuccessPage() {
                     No registry ID was provided or the action could not be found.
                 </p>
                 <Link href="/register">
-                    <Button>Register New Action</Button>
+                    <Button>Register Current Usage</Button>
                 </Link>
             </div>
         );

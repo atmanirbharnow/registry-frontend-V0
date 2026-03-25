@@ -9,7 +9,7 @@ export default function RegisterPage() {
             <div className="max-w-3xl mx-auto space-y-6">
                 <div>
                     <h1 className="text-2xl font-black text-gray-800 tracking-tight">
-                        Register New Action
+                        Register Current Usage
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
                         Fill in the details below to register your carbon action. A ₹1 registration fee applies.
