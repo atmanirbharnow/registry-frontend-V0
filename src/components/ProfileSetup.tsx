@@ -45,7 +45,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
     
     // Check if profile is complete
     const isProfileIncomplete = !profile || 
-        !profile.phone || 
+        !profile.phone || profile.phone === '+91' ||
         !profile.contactPerson || 
         !profile.institutionType || 
         !profile.state || 
@@ -62,8 +62,8 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
         pincode: profile?.pincode || "",
         address: profile?.address || "",
         city: profile?.city || "",
-        lat: profile?.lat || null as number | null,
-        lng: profile?.lng || null as number | null,
+        lat: profile?.lat ?? null,
+        lng: profile?.lng ?? null,
         place_id: profile?.place_id || "",
         sector: profile?.sector || "",
         consentVerified: !!profile?.consentVerified,
@@ -88,9 +88,13 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                 socialHandles: profile.socialHandles || prev.socialHandles,
                 consentVerified: !!profile.consentVerified,
             }));
-            setIsEditing(false);
+            
+            // Only exit editing mode if the fetched profile is actually complete
+            if (!isProfileIncomplete) {
+                setIsEditing(false);
+            }
         }
-    }, [profile]);
+    }, [profile, isProfileIncomplete]);
 
     const handleChange = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -152,8 +156,8 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                 pincode: formData.pincode,
                 address: trimmedAddress,
                 city: trimmedCity,
-                lat: formData.lat || undefined,
-                lng: formData.lng || undefined,
+                ...(formData.lat !== null && { lat: formData.lat }),
+                ...(formData.lng !== null && { lng: formData.lng }),
                 place_id: formData.place_id,
                 sector: formData.sector || formData.institutionType,
                 consentVerified: formData.consentVerified,
@@ -210,7 +214,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                     <div className="space-y-8 sm:space-y-10">
                         <div className="flex justify-between items-center border-b border-slate-100 pb-6">
                             <h2 className="text-2xl font-black text-slate-800 uppercase tracking-wider">
-                                {isEditing ? "Edit Information" : "Identity Details"}
+                                {isProfileIncomplete ? "Fill Information" : (isEditing ? "Edit Information" : "Identity Details")}
                             </h2>
                             {profile && !isEditing && (
                                 <button

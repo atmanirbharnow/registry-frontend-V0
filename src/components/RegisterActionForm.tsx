@@ -13,6 +13,7 @@ import ImpactSummaryStep from "./ImpactSummaryStep";
 import Input from "./ui/Input";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
+import CustomDropdown from "./ui/CustomDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { PAYMENT_AMOUNT_DISPLAY } from "@/lib/constants";
@@ -172,7 +173,7 @@ export default function RegisterActionForm() {
             // Organisation Details
             entityType: "",
             sector: "",
-            reportingYear: "2024",
+            reportingYear: "2026",
             beneficiariesCount: "",
 
             // Baseline Usage (Monthly)
@@ -373,14 +374,19 @@ export default function RegisterActionForm() {
 
                 {currentStep === 1 && (
                     <StepWrapper title="Step 1: Organisation & Baseline Usage" icon={<EnergyIcon />}>
-                        <div className="space-y-10">
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputField label="Number of Beneficiaries" name="beneficiariesCount" type="number" formik={formik} placeholder="e.g. 1 for self, 4 for family" />
+                                <DropdownField label="Reporting Year" name="reportingYear" options={[{ value: "2024", label: "2024" }, { value: "2025", label: "2025" }, { value: "2026", label: "2026" }]} formik={formik} />
+                            </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
                                         Energy Usage (Monthly)
                                     </h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
-                                        <InputField label="Electricity in kWh" name="baselineEnergyGrid" type="number" formik={formik} />
+                                        <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
                                         <InputField label="Fuel (Liters)" name="baselineEnergyDiesel" type="number" formik={formik} />
                                         <InputField label="Solar (kWh)" name="baselineEnergySolar" type="number" formik={formik} />
                                     </div>
@@ -391,15 +397,15 @@ export default function RegisterActionForm() {
                                         Water Usage (Monthly)
                                     </h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
-                                        <InputField label="Municipal (L)" name="baselineWaterMunicipal" type="number" formik={formik} />
-                                        <InputField label="Rainwater (L)" name="baselineWaterRain" type="number" formik={formik} />
-                                        <InputField label="Recycled (L)" name="baselineWaterWaste" type="number" formik={formik} />
+                                        <InputField label="Municipal (AMC) (L)" name="baselineWaterMunicipal" type="number" formik={formik} />
+                                        <InputField label="Borewell (L)" name="baselineWaterRain" type="number" formik={formik} />
+                                        <InputField label="Community Source (L)" name="baselineWaterWaste" type="number" formik={formik} />
                                     </div>
                                 </div>
 
                                 <div className="md:col-span-2 mt-4">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                        Waste Management (Monthly)
+                                        Waste Generated: Organic, Plastic, Packaging and paper waste in Kgs.
                                     </h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
                                         <InputField label="Organic (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
@@ -707,18 +713,3 @@ const EnergyIcon = () => (
 const RegistryIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
 );
-
-const CustomDropdown = ({ options, value, onChange, placeholder, className }: any) => {
-    return (
-        <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className={`w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl font-bold text-gray-900 outline-none focus:border-[rgb(32,38,130)] focus:bg-white transition-all ${className}`}
-        >
-            <option value="" disabled>{placeholder}</option>
-            {options.map((opt: any) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-        </select>
-    );
-};

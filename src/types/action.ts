@@ -27,6 +27,8 @@ export interface Action {
     co2eKg: number | null;
     atmanirbharPercent: number | null;
     circularityPercent: number | null;
+    actionImpactTCO2e?: number | null;
+    carbonIntensity?: number | null;
     wasteGeneratedKg: number | null;
     wasteDivertedKg: number | null;
     sha256Hash: string;
@@ -59,6 +61,7 @@ export interface Action {
     baselineWasteInorganic?: number | null;
     baselineWasteHazardous?: number | null;
     studentsCount?: number | null;
+    beneficiariesCount?: number | null;
     createdAt: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -99,6 +102,7 @@ export interface ActionFormData {
     baselineWasteInorganic: number | string;
     baselineWasteHazardous: number | string;
     studentsCount: number | string;
+    beneficiariesCount: number | string;
     consentGiven: boolean;
     disclaimerAccepted: boolean;
 }

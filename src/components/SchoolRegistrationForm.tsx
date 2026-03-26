@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { SchoolFormData } from "@/types/school";
-import { 
-    BASELINE_SOURCE_OPTIONS, 
+import {
+    BASELINE_SOURCE_OPTIONS,
     REPORTING_YEAR_OPTIONS,
 } from "@/lib/constants/schoolConstants";
 import { ACTION_TYPES, ACTION_PHOTO_LABELS } from "@/lib/constants";
@@ -154,7 +154,7 @@ export default function SchoolRegistrationForm() {
 
             consent_confirmed: false,
             summaryAgreed: false,
-            
+
             // Legacy/Unused
             projectId: "",
             action_id: "",
@@ -168,7 +168,7 @@ export default function SchoolRegistrationForm() {
             attribution_pct_energy: "100",
             attribution_pct_waste: "100",
             attribution_pct_water: "100",
-            
+
             // Verification Photos
             energyBillCopy: "",
             meterPhoto: "",
@@ -292,7 +292,7 @@ export default function SchoolRegistrationForm() {
                     formData.append(key, typeof val === 'object' ? JSON.stringify(val) : String(val));
                 }
             });
-            
+
             formData.append("razorpay_order_id", paymentDetails.razorpay_order_id);
             formData.append("razorpay_payment_id", paymentDetails.razorpay_payment_id);
             formData.append("razorpay_signature", paymentDetails.razorpay_signature);
@@ -355,11 +355,10 @@ export default function SchoolRegistrationForm() {
                                 {step === 3 && "Impact Summary"}
                                 {step === 4 && "Payment"}
                             </div>
-                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${
-                                currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" : 
-                                currentStep > step ? "bg-green-500 border-green-100 text-white" : 
-                                "bg-white border-gray-100 text-gray-300"
-                            }`}>
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" :
+                                    currentStep > step ? "bg-green-500 border-green-100 text-white" :
+                                        "bg-white border-gray-100 text-gray-300"
+                                }`}>
                                 {currentStep > step ? (
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                 ) : step}
@@ -368,7 +367,7 @@ export default function SchoolRegistrationForm() {
                     ))}
                 </div>
                 <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
-                    <div 
+                    <div
                         className="h-full bg-gradient-to-r from-[rgb(32,38,130)] to-blue-500 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(32,38,130,0.4)]"
                         style={{ width: `${progress}%` }}
                     />
@@ -388,7 +387,7 @@ export default function SchoolRegistrationForm() {
                                     Energy Usage (Monthly)
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
-                                    <InputField label="Electricity in kWh" name="baselineEnergyGrid" type="number" formik={formik} />
+                                    <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
                                     <InputField label="Diesel/Fuel (Liters)" name="baselineEnergyDiesel" type="number" formik={formik} />
                                     <InputField label="Solar/Biomass (kWh)" name="baselineEnergySolar" type="number" formik={formik} />
                                 </div>
@@ -399,15 +398,15 @@ export default function SchoolRegistrationForm() {
                                     Water Usage (Monthly)
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
-                                    <InputField label="Municipal Intake (Liters)" name="baselineWaterMunicipal" type="number" formik={formik} />
-                                    <InputField label="Rainwater (Liters)" name="baselineWaterRain" type="number" formik={formik} />
-                                    <InputField label="Wastewater (Liters)" name="baselineWaterWaste" type="number" formik={formik} />
+                                    <InputField label="Municipal Intake (AMC) (Liters)" name="baselineWaterMunicipal" type="number" formik={formik} />
+                                    <InputField label="Borewell (Liters)" name="baselineWaterRain" type="number" formik={formik} />
+                                    <InputField label="Community Source (Liters)" name="baselineWaterWaste" type="number" formik={formik} />
                                 </div>
                             </div>
 
                             <div className="md:col-span-2 mt-4">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Waste Management (Monthly)
+                                    Waste Generated: Organic, Plastic, Packaging and paper waste in Kgs.
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
@@ -423,34 +422,34 @@ export default function SchoolRegistrationForm() {
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <StepWrapper title="Low-Carbon Action Details" icon={<RegistryIcon />}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <DropdownField 
-                                    label="Select Action Type" 
-                                    name="action_type" 
-                                    options={ACTION_TYPES.map(a => ({ value: a.value, label: a.label }))} 
-                                    formik={formik} 
+                                <DropdownField
+                                    label="Select Action Type"
+                                    name="action_type"
+                                    options={ACTION_TYPES.map(a => ({ value: a.value, label: a.label }))}
+                                    formik={formik}
                                 />
-                                <InputField 
-                                    label="Installed Capacity / Quantity" 
-                                    name="actionQuantity" 
-                                    type="number" 
-                                    formik={formik} 
+                                <InputField
+                                    label="Installed Capacity / Quantity"
+                                    name="actionQuantity"
+                                    type="number"
+                                    formik={formik}
                                     suffix={ACTION_TYPES.find(a => a.value === formik.values.action_type)?.unit || "Units"}
                                 />
-                                <InputField 
-                                    label="Commissioning Date" 
-                                    name="installation_date" 
-                                    type="date" 
-                                    formik={formik} 
+                                <InputField
+                                    label="Commissioning Date"
+                                    name="installation_date"
+                                    type="date"
+                                    formik={formik}
                                 />
-                                
+
                                 <div className="md:col-span-2 h-px bg-gray-100 my-2" />
-                                
+
                                 <div className="md:col-span-2">
-                                    <InputField 
-                                        label="Site/Action Location" 
-                                        name="address" 
-                                        textarea 
-                                        formik={formik} 
+                                    <InputField
+                                        label="Site/Action Location"
+                                        name="address"
+                                        textarea
+                                        formik={formik}
                                         placeholder="Enter the specific address where the action is installed..."
                                     />
                                 </div>
@@ -496,12 +495,12 @@ export default function SchoolRegistrationForm() {
                             <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 space-y-4">
                                 <label className="flex items-start gap-4 cursor-pointer group">
                                     <div className="mt-1 relative">
-                                        <input 
-                                            type="checkbox" 
+                                        <input
+                                            type="checkbox"
                                             name="consent_confirmed"
-                                            checked={formik.values.consent_confirmed} 
-                                            onChange={formik.handleChange} 
-                                            className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer" 
+                                            checked={formik.values.consent_confirmed}
+                                            onChange={formik.handleChange}
+                                            className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
                                         />
                                         <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
@@ -539,7 +538,7 @@ export default function SchoolRegistrationForm() {
                             Back
                         </button>
                     )}
-                    
+
                     {currentStep < totalSteps && (
                         <button
                             type="button"
@@ -581,9 +580,8 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
                         name={name}
                         placeholder={placeholder}
                         maxLength={maxLength}
-                        className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 min-h-[120px] text-base ${
-                            error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[rgb(32,38,130)] focus:bg-white"
-                        }`}
+                        className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 min-h-[120px] text-base ${error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[rgb(32,38,130)] focus:bg-white"
+                            }`}
                         {...formik.getFieldProps(name)}
                     />
                 ) : (
@@ -593,9 +591,8 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
                             name={name}
                             placeholder={placeholder}
                             maxLength={maxLength}
-                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 text-base ${
-                                error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[rgb(32,38,130)] focus:bg-white"
-                            } ${suffix ? "pr-12" : ""}`}
+                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[rgb(32,38,130)] focus:bg-white"
+                                } ${suffix ? "pr-12" : ""}`}
                             {...formik.getFieldProps(name)}
                             {...props}
                         />
@@ -632,18 +629,18 @@ function DropdownField({ label, name, options, formik, placeholder = "Select opt
 
 // Icons
 const SchoolIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5 10-5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5 10-5z" /><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" /></svg>
 );
 const IdentityIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="7" r="4" /><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /></svg>
 );
 const EnergyIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
 );
 const WasteIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
 );
 const RegistryIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
 );
 

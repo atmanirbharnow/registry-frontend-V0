@@ -193,9 +193,12 @@ export async function POST(request: NextRequest) {
             baselineWasteOrganic: Number(formData.baselineWasteOrganic) || 0,
             baselineWasteInorganic: Number(formData.baselineWasteInorganic) || 0,
             baselineWasteHazardous: Number(formData.baselineWasteHazardous) || 0,
+            beneficiariesCount: Number(formData.beneficiariesCount) || 1,
         });
 
         const co2eKg = impact.tCO2e * 1000;
+        const actionImpactTCO2e = impact.actionImpactTCO2e;
+        const carbonIntensity = impact.carbonIntensity;
         const atmanirbharPercent = impact.atmanirbharScore;
         const circularityPercent = impact.circularityScore;
 
@@ -230,6 +233,8 @@ export async function POST(request: NextRequest) {
             state: formData.state || null,
             pincode: formData.pincode || null,
             co2eKg,
+            actionImpactTCO2e,
+            carbonIntensity,
             atmanirbharPercent,
             circularityPercent,
             // Usage Data (Step 2 - Comparison for summary/verification)
@@ -247,6 +252,7 @@ export async function POST(request: NextRequest) {
             baselineWasteOrganic: Number(formData.baselineWasteOrganic) || 0,
             baselineWasteInorganic: Number(formData.baselineWasteInorganic) || 0,
             baselineWasteHazardous: Number(formData.baselineWasteHazardous) || 0,
+            beneficiariesCount: Number(formData.beneficiariesCount) || null,
             // Verification Photos (Updated mapping)
             energyBillCopy: formData.energyBillCopy || null,
             meterPhoto: formData.meterPhoto || null,

@@ -28,12 +28,16 @@ export interface CalculationInput {
     baselineWasteOrganic?: number;
     baselineWasteInorganic?: number;
     baselineWasteHazardous?: number;
+    
+    beneficiariesCount?: number;
 }
 
 export interface CalculationResult {
-    tCO2e: number;
+    tCO2e: number; // Total Annual Baseline Footprint
+    actionImpactTCO2e: number; // Annual Savings from the specific action
     atmanirbharScore: number;
     circularityScore: number;
+    carbonIntensity: number; // tCO2e per beneficiary
     calculationVersion: string;
     methodology: string;
     emissionFactorUsed?: string;
@@ -47,15 +51,26 @@ export interface CalculationResult {
  * Calculate environmental impact using Phase 2 methodology
  */
 export function calculateImpactPhase2(input: CalculationInput): CalculationResult {
-    const co2eKg = calculateCO2ePhase2(input);
+    const { beneficiariesCount = 1 } = input;
+    
+    // 1. Calculate Baseline Emissions (Annualized)
+    const baselineCO2eKg = calculateBaselineCO2e(input);
+    const actionImpactKg = calculateCO2ePhase2(input);
+    
+    // 2. Scores
     const atmanirbharScore = calculateAtmanirbharPhase2(input);
     const circularityScore = calculateCircularityScore(input);
 
+    const totalTCO2e = baselineCO2eKg / 1000;
+    const carbonIntensity = totalTCO2e / Math.max(1, beneficiariesCount);
+
     return {
-        tCO2e: co2eKg / 1000, // Convert kg to tonnes
+        tCO2e: Math.round(totalTCO2e * 1000) / 1000,
+        actionImpactTCO2e: Math.round((actionImpactKg / 1000) * 1000) / 1000,
         atmanirbharScore,
         circularityScore,
-        calculationVersion: 'v1.1-phase2-sync',
+        carbonIntensity: Math.round(carbonIntensity * 100) / 100,
+        calculationVersion: 'v1.2-phase2-audit-fixed',
         methodology: 'ECF Combined Resource Ratio',
         emissionFactorUsed: getEmissionFactorDescription(input.actionType),
     };
@@ -100,7 +115,42 @@ function calculateCircularityScore(input: CalculationInput): number {
 }
 
 // ============================================
-// CO2e CALCULATION (Using Client's Factors)
+// BASELINE CO2e CALCULATION
+// ============================================
+
+/**
+ * Annual Baseline Footprint = Σ [Monthly Consumption × Factor × 12]
+ */
+function calculateBaselineCO2e(input: CalculationInput): number {
+    const {
+        baselineEnergyGrid = 0,
+        baselineEnergyDiesel = 0,
+        baselineEnergySolar = 0,
+        baselineWaterMunicipal = 0,
+        baselineWasteOrganic = 0,
+        baselineWasteInorganic = 0,
+        baselineWasteHazardous = 0
+    } = input;
+
+    // Energy: Grid (0.82), Diesel (2.68), Solar Credit (-0.82)
+    const energyCo2eMonthly = 
+        (baselineEnergyGrid * 0.82) + 
+        (baselineEnergyDiesel * 2.68) - 
+        (baselineEnergySolar * 0.82);
+
+    // Water: Municipal (0.5 kg/m3 = 0.0005 kg/L)
+    const waterCo2eMonthly = (baselineWaterMunicipal / 1000) * 0.5;
+
+    // Waste: Landfill (0.5 kg/kg)
+    const totalWasteMonthly = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
+    const wasteCo2eMonthly = totalWasteMonthly * 0.5;
+
+    const totalMonthlyKg = energyCo2eMonthly + waterCo2eMonthly + wasteCo2eMonthly;
+    return totalMonthlyKg * 12; // Annualize
+}
+
+// ============================================
+// CO2e CALCULATION (Action Specific)
 // ============================================
 
 function calculateCO2ePhase2(input: CalculationInput): number {
@@ -269,17 +319,18 @@ function calculateAtmanirbharPhase2(input: CalculationInput): number {
     } else if (type.includes("wastewater")) {
         // quantity is kL/day. 1 kL/day = 30k L/mo
         actionLocalWater = quantity * 30000;
+    } else if (type.includes("led") || type.includes("efficiency")) {
+        // Efficiency adds to local energy 'savings'
+        actionLocalEnergy = baselineEnergyGrid * 0.2; // Estimated 20% savings
     }
 
     // 2. Sum Numerator (Local Resources)
-    // We assume baseline EnergySolar, WaterRain, and WasteOrganic are 'local' by definition
     const localSum =
         (baselineEnergySolar + actionLocalEnergy) +
         (baselineWaterRain + baselineWaterWaste + actionLocalWater) +
         (baselineWasteOrganic + actionLocalWaste);
 
     // 3. Sum Denominator (Total Resources)
-    // Denominator = Baseline (Grid + Diesel + Local) + Any NEW local impact added
     const totalEnergy = baselineEnergyGrid + baselineEnergyDiesel + baselineEnergySolar + actionLocalEnergy;
     const totalWater = baselineWaterMunicipal + baselineWaterRain + baselineWaterWaste + actionLocalWater;
     const totalWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous + actionLocalWaste;

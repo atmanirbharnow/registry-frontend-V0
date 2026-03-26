@@ -29,7 +29,7 @@ export default function ImpactSummaryStep({
         : "Review your submitted data and understand the benefits of registering on the Earth Carbon Registry.";
 
     // Calculate Impact
-    let impactData = { tCO2e: 0, atmanirbhar: 0, circularity: 0 };
+    let impactData = { tCO2e: 0, atmanirbhar: 0, circularity: 0, carbonIntensity: 0, actionSavings: 0 };
     if (isSchool) {
         try {
             const res = calculateSchoolImpact({
@@ -46,7 +46,13 @@ export default function ImpactSummaryStep({
                 actionType: formValues.action_type || "",
                 actionQuantity: Number(formValues.actionQuantity || formValues.electricity_kWh_year) || 0,
             });
-            impactData = { tCO2e: res.tco2e_annual, atmanirbhar: res.atmanirbhar_pct, circularity: res.circularity_pct };
+            impactData = { 
+                tCO2e: res.tco2e_annual, 
+                atmanirbhar: res.atmanirbhar_pct, 
+                circularity: res.circularity_pct,
+                carbonIntensity: res.carbon_intensity,
+                actionSavings: res.tco2e_annual // Schools use reduction as main metric
+            };
         } catch (e) {
             console.error(e);
         }
@@ -65,8 +71,15 @@ export default function ImpactSummaryStep({
             baselineWasteOrganic: Number(formValues.baselineWasteOrganic) || 0,
             baselineWasteInorganic: Number(formValues.baselineWasteInorganic) || 0,
             baselineWasteHazardous: Number(formValues.baselineWasteHazardous) || 0,
+            beneficiariesCount: Number(formValues.beneficiariesCount) || 1,
         });
-        impactData = { tCO2e: res.tCO2e, atmanirbhar: res.atmanirbharScore, circularity: res.circularityScore };
+        impactData = { 
+            tCO2e: res.tCO2e, 
+            atmanirbhar: res.atmanirbharScore, 
+            circularity: res.circularityScore,
+            carbonIntensity: res.carbonIntensity,
+            actionSavings: res.actionImpactTCO2e
+        };
     }
 
     return (
@@ -83,23 +96,35 @@ export default function ImpactSummaryStep({
             </div>
 
             {/* Impact Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl shadow-sm">
-                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-1">PROVISIONAL Carbon REDUCTION</span>
-                    <div className="text-2xl font-black text-emerald-800">
-                        -{impactData.tCO2e.toFixed(3)} <span className="text-sm font-bold opacity-60">tCO2e</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-1">Action SAVINGS</span>
+                    <div className="text-xl font-black text-emerald-800">
+                        -{(impactData.actionSavings || 0).toFixed(3)} <span className="text-[10px] font-bold opacity-60">tCO2e/yr</span>
                     </div>
                 </div>
-                <div className="bg-cyan-50 border border-cyan-100 p-4 rounded-2xl shadow-sm">
-                    <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest block mb-1">PROVISIONAL ATMANIRBHAR</span>
-                    <div className="text-2xl font-black text-cyan-800">
-                        {impactData.atmanirbhar.toFixed(1)}%
+                <div className="bg-amber-50 border border-amber-100 p-3 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest block mb-1">TOTAL FOOTPRINT</span>
+                    <div className="text-xl font-black text-amber-800">
+                        {(impactData.tCO2e || 0).toFixed(2)} <span className="text-[10px] font-bold opacity-60">tCO2e/yr</span>
                     </div>
                 </div>
-                <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl shadow-sm">
-                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest block mb-1">PROVISIONAL CIRCULARITY</span>
-                    <div className="text-2xl font-black text-indigo-800">
-                        {impactData.circularity.toFixed(1)}%
+                <div className="bg-rose-50 border border-rose-100 p-3 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest block mb-1">CARBON INTENSITY</span>
+                    <div className="text-xl font-black text-rose-800">
+                        {(impactData.carbonIntensity || 0).toFixed(2)} <span className="text-[10px] font-bold opacity-60">tCO2e/cap</span>
+                    </div>
+                </div>
+                <div className="bg-cyan-50 border border-cyan-100 p-3 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest block mb-1">ATMANIRBHAR</span>
+                    <div className="text-xl font-black text-cyan-800">
+                        {(impactData.atmanirbhar || 0).toFixed(1)}%
+                    </div>
+                </div>
+                <div className="bg-indigo-50 border border-indigo-100 p-3 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest block mb-1">CIRCULARITY</span>
+                    <div className="text-xl font-black text-indigo-800">
+                        {(impactData.circularity || 0).toFixed(1)}%
                     </div>
                 </div>
             </div>
