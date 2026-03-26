@@ -102,22 +102,6 @@ export default function SchoolVerifyPage() {
                     qrCodeType="school"
                 />
 
-                {school.status === "verified" && (
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div className="bg-white p-6 rounded-[2rem] border-2 border-emerald-100 shadow-sm flex flex-col items-center text-center">
-                            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2">Verified Carbon Reduced</span>
-                            <div className="text-3xl font-black text-emerald-800">{tco2e || "0.00"} <span className="text-sm opacity-50">tCO2e</span></div>
-                        </div>
-                        <div className="bg-white p-6 rounded-[2rem] border-2 border-cyan-100 shadow-sm flex flex-col items-center text-center">
-                            <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest mb-2">Verified Atmanirbhar</span>
-                            <div className="text-3xl font-black text-cyan-800">{school.atmanirbhar_pct != null ? school.atmanirbhar_pct.toFixed(0) : "0"}%</div>
-                        </div>
-                        <div className="bg-white p-6 rounded-[2rem] border-2 border-indigo-100 shadow-sm flex flex-col items-center text-center">
-                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-2">Verified Circularity</span>
-                            <div className="text-3xl font-black text-indigo-800">{school.circularity_pct != null ? school.circularity_pct.toFixed(1) : "0"}%</div>
-                        </div>
-                    </div>
-                )}
 
                 {school.status === "pledged" && (
                     <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200 flex items-center gap-3">
