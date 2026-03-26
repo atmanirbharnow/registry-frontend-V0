@@ -1,19 +1,20 @@
 import { SCHOOL_EMISSION_FACTORS, SCHOOL_FALLBACK_CONSTANTS, SCHOOL_CALCULATION_VERSION } from "./constants/schoolConstants";
 
 export interface SchoolImpactInput {
-    electricity_kWh_year: number | null;
-    fuel_type: "Diesel" | "Petrol" | "LPG" | "Natural Gas" | "None";
-    fuel_consumption_litres: number | null;
-    renewable_energy_type: "Solar" | "Wind" | "Biogas" | "Small Hydro" | "None";
-    renewable_energy_kwh: number | null;
-    attribution_pct_energy: number;
+    baselineEnergyGrid: number;
+    baselineEnergyDiesel: number;
+    baselineEnergySolar: number;
+    baselineWaterMunicipal: number;
+    baselineWaterRain: number;
+    baselineWaterWaste: number;
+    baselineWasteOrganic: number;
+    baselineWasteInorganic: number;
+    baselineWasteHazardous: number;
     students_count: number;
     
-    waste_generated_kg: number | null;
-    waste_diverted_kg: number | null;
-    water_consumption_m3: number | null;
-    attribution_pct_waste: number;
-    attribution_pct_water: number;
+    // Action details
+    actionType: string;
+    actionQuantity: number; // For schools, we've mapped electricity_kWh_year as quantity temporarily
 }
 
 export interface SchoolImpactResult {
@@ -32,67 +33,94 @@ export interface SchoolImpactResult {
 
 export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactResult {
     const {
-        electricity_kWh_year,
-        fuel_type,
-        fuel_consumption_litres,
-        renewable_energy_type,
-        renewable_energy_kwh,
-        attribution_pct_energy,
+        baselineEnergyGrid,
+        baselineEnergyDiesel,
+        baselineEnergySolar,
+        baselineWaterMunicipal,
+        baselineWaterRain,
+        baselineWaterWaste,
+        baselineWasteOrganic,
+        baselineWasteInorganic,
+        baselineWasteHazardous,
         students_count,
-        waste_generated_kg,
-        waste_diverted_kg,
-        water_consumption_m3,
-        attribution_pct_waste,
-        attribution_pct_water
+        actionType,
+        actionQuantity
     } = input;
 
-    if (students_count <= 0) {
-        throw new Error("Students count must be at least 1 for calculations.");
+    const safeStudents = Math.max(1, students_count);
+
+    // 1. Annual Baseline (Pre-Action / Current State)
+    const annualEnergyCo2eKg = (
+        (baselineEnergyGrid * SCHOOL_EMISSION_FACTORS.ELECTRICITY) +
+        (baselineEnergyDiesel * SCHOOL_EMISSION_FACTORS.DIESEL)
+    ) * 12;
+
+    const annualWaterCo2eKg = (baselineWaterMunicipal / 1000 * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY) * 12;
+    
+    const totalBaselineWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
+    const annualWasteCo2eKg = (totalBaselineWaste * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL) * 12;
+
+    const totalBaselineEmissionsKg = annualEnergyCo2eKg + annualWaterCo2eKg + annualWasteCo2eKg;
+
+    // 2. Reduction from Action
+    let actionLocalEnergy = 0;
+    let actionLocalWater = 0;
+    let actionLocalWaste = 0;
+    let reductionKg = 0;
+
+    const type = actionType.toLowerCase();
+    
+    // Monthly impact calculation (School actionQuantity is usually monthly or annual context)
+    if (type.includes("solar")) {
+        // Assume actionQuantity is kW (rooftop). 1 kW = 125 kWh/mo
+        actionLocalEnergy = actionQuantity * 125;
+        reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
+    } else if (type.includes("efficiency") || type.includes("led")) {
+        // Efficiency saves energy from baseline
+        actionLocalEnergy = baselineEnergyGrid * 0.2; // Example 20% savings
+        reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
+    } else if (type.includes("water") || type.includes("rainwater")) {
+        // Assume actionQuantity is Liters/month
+        actionLocalWater = actionQuantity;
+        reductionKg = (actionLocalWater / 1000) * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY;
+    } else if (type.includes("waste") || type.includes("compost")) {
+        // Assume actionQuantity is kg/month
+        actionLocalWaste = actionQuantity;
+        reductionKg = actionLocalWaste * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL;
+    } else if (type.includes("tree")) {
+        reductionKg = actionQuantity * 20; // 20kg per tree/yr
     }
 
-    // Energy Calculation
-    const eKwh = electricity_kWh_year ?? (SCHOOL_FALLBACK_CONSTANTS.ELECTRICITY_KWH_PER_STUDENT * students_count);
-    const rKwh = renewable_energy_type !== "None" ? (renewable_energy_kwh ?? 0) : 0;
-    const netElectricity = Math.max(0, eKwh - rKwh);
-    
-    const fuelFactor = {
-        Diesel: SCHOOL_EMISSION_FACTORS.DIESEL,
-        Petrol: SCHOOL_EMISSION_FACTORS.PETROL,
-        LPG: SCHOOL_EMISSION_FACTORS.LPG,
-        "Natural Gas": SCHOOL_EMISSION_FACTORS.NATURAL_GAS,
-        None: 0
-    }[fuel_type] || 0;
-    
-    const fLitres = fuel_consumption_litres ?? 0;
-    
-    const energyCo2eKg = netElectricity * SCHOOL_EMISSION_FACTORS.ELECTRICITY * (attribution_pct_energy / 100);
-    const fuelCo2eKg = fLitres * fuelFactor * (attribution_pct_energy / 100);
+    const tco2e_annual = (reductionKg * 12) / 1000; // Annualized
 
-    // Water Calculation
-    const wM3 = water_consumption_m3 ?? (SCHOOL_FALLBACK_CONSTANTS.WATER_M3_PER_STUDENT_PER_YEAR * students_count);
-    const waterCo2eKg = wM3 * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY * (attribution_pct_water / 100);
+    // 3. Atmanirbhar Score (Σ Local / Σ Total)
+    const localSum = 
+        (baselineEnergySolar + actionLocalEnergy) +
+        (baselineWaterRain + baselineWaterWaste + actionLocalWater) +
+        (baselineWasteOrganic + actionLocalWaste);
 
-    // Waste Calculation
-    const wsGenKg = waste_generated_kg ?? (SCHOOL_FALLBACK_CONSTANTS.WASTE_KG_PER_STUDENT_PER_YEAR * students_count);
-    const wasteCo2eKg = wsGenKg * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL * (attribution_pct_waste / 100);
+    const totalEnergy = baselineEnergyGrid + baselineEnergyDiesel + baselineEnergySolar + actionLocalEnergy;
+    const totalWater = baselineWaterMunicipal + baselineWaterRain + baselineWaterWaste + actionLocalWater;
+    const totalWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous + actionLocalWaste;
 
-    const totalEmissionsKg = Math.max(0, energyCo2eKg + fuelCo2eKg + waterCo2eKg + wasteCo2eKg);
-    const tco2e_annual = totalEmissionsKg / 1000;
+    const totalSum = totalEnergy + totalWater + totalWaste;
+    const atmanirbhar_pct = totalSum > 0 ? (localSum / totalSum) * 100 : 0;
 
-    // Additional Indices
-    const atmanirbhar_pct = eKwh > 0 ? Math.min(100, (rKwh / eKwh) * 100) : 0;
-    const circularity_pct = wsGenKg > 0 ? Math.min(100, ((waste_diverted_kg || 0) / wsGenKg) * 100) : 0;
-    const carbon_intensity = tco2e_annual / students_count;
+    // 4. Circularity Score (Diverted / Total Generated)
+    const totalWasteGenerated = Math.max(baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous, actionLocalWaste);
+    const circularity_pct = totalWasteGenerated > 0 ? (actionLocalWaste / totalWasteGenerated) * 100 : 0;
+
+    const carbon_intensity = (totalBaselineEmissionsKg / 1000) / safeStudents;
 
     return {
-        tco2e_annual: Math.round(tco2e_annual * 100) / 100,
-        atmanirbhar_pct: Math.round(atmanirbhar_pct * 10) / 10,
-        circularity_pct: Math.round(circularity_pct * 10) / 10,
+        tco2e_annual: Math.round(tco2e_annual * 1000) / 1000,
+        atmanirbhar_pct: Math.min(100, Math.round(atmanirbhar_pct * 10) / 10),
+        circularity_pct: Math.min(100, Math.round(circularity_pct * 10) / 10),
         carbon_intensity: Math.round(carbon_intensity * 100) / 100,
-        energyCo2eKg: Math.round(energyCo2eKg),
-        fuelCo2eKg: Math.round(fuelCo2eKg),
-        waterCo2eKg: Math.round(waterCo2eKg),
-        wasteCo2eKg: Math.round(wasteCo2eKg),
+        energyCo2eKg: Math.round(annualEnergyCo2eKg),
+        fuelCo2eKg: Math.round(baselineEnergyDiesel * SCHOOL_EMISSION_FACTORS.DIESEL * 12),
+        waterCo2eKg: Math.round(annualWaterCo2eKg),
+        wasteCo2eKg: Math.round(annualWasteCo2eKg),
         calculationVersion: SCHOOL_CALCULATION_VERSION
     };
 }

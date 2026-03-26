@@ -71,9 +71,9 @@ export default function SchoolVerifyPage() {
     const shareText = `Check out ${school.schoolName}'s climate action on the Earth Carbon Registry: ${verifyUrl}`;
 
     const highlights: Highlight[] = [
-        { icon: "🏫", text: `Educational Institution: ${school.students_count || 0} Students` },
-        { icon: "⚡", text: `${school.electricity_kWh_year || 0} kWh Energy consumed / yr` },
-        { icon: "♻️", text: `${school.waste_diverted_kg || 0} kg Waste diverted from landfill` }
+        { icon: "", text: `Educational Institution: ${school.students_count || 0} Students` },
+        { icon: "", text: `${school.electricity_kWh_year || 0} kWh Energy consumed / yr` },
+        { icon: "", text: `${school.waste_diverted_kg || 0} kg Waste diverted from landfill` }
     ];
 
     return (

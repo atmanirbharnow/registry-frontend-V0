@@ -113,13 +113,13 @@ export default function VerifyPage() {
     // Build highlights
     const highlights: Highlight[] = [];
     if (action.actionType) {
-        highlights.push({ icon: "✅", text: `Action Type: ${ACTION_LABELS[action.actionType] || action.actionType}` });
+        highlights.push({ icon: "", text: `Action Type: ${ACTION_LABELS[action.actionType] || action.actionType}` });
     }
     if (action.quantity) {
-        highlights.push({ icon: "⚡", text: `Capacity / Quantity: ${action.quantity} ${action.unit || ""}`.trim() });
+        highlights.push({ icon: "", text: `Capacity / Quantity: ${action.quantity} ${action.unit || ""}`.trim() });
     }
     if (action.localPercent != null || action.indigenousPercent != null) {
-        highlights.push({ icon: "🇮🇳", text: `${action.localPercent || 0}% Local Sourcing, ${action.indigenousPercent || 0}% Indigenous Tech` });
+        highlights.push({ icon: "", text: `${action.localPercent || 0}% Local Sourcing, ${action.indigenousPercent || 0}% Indigenous Tech` });
     }
 
     return (

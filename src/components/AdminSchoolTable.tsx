@@ -24,19 +24,18 @@ export default function AdminSchoolTable() {
     const [verifyForm, setVerifyForm] = useState({
         schoolName: "",
         address: "",
-        electricity_kWh_year: "",
-        fuel_type: "None" as School["fuel_type"],
-        fuel_consumption_litres: "",
-        renewable_energy_type: "None" as School["renewable_energy_type"],
-        renewable_energy_kwh: "",
-        waste_generated_kg: "",
-        waste_diverted_kg: "",
-        water_consumption_m3: "",
-        attribution_pct_energy: "100",
-        attribution_pct_waste: "100",
-        attribution_pct_water: "100",
+        baselineEnergyGrid: "",
+        baselineEnergyDiesel: "0",
+        baselineEnergySolar: "0",
+        baselineWaterMunicipal: "",
+        baselineWaterRain: "0",
+        baselineWaterWaste: "0",
+        baselineWasteOrganic: "",
+        baselineWasteInorganic: "0",
+        baselineWasteHazardous: "0",
+        actionType: "",
+        actionQuantity: "",
         students_count: "1",
-        baseline_source: "" as School["baseline_source"],
         status: "verified" as SchoolStatus,
         adminNotes: "",
     });
@@ -63,19 +62,18 @@ export default function AdminSchoolTable() {
         setVerifyForm({
             schoolName: school.schoolName,
             address: school.address,
-            electricity_kWh_year: school.electricity_kWh_year?.toString() || "",
-            fuel_type: school.fuel_type || "None",
-            fuel_consumption_litres: school.fuel_consumption_litres?.toString() || "",
-            renewable_energy_type: school.renewable_energy_type || "None",
-            renewable_energy_kwh: school.renewable_energy_kwh?.toString() || "",
-            waste_generated_kg: school.waste_generated_kg?.toString() || "",
-            waste_diverted_kg: school.waste_diverted_kg?.toString() || "",
-            water_consumption_m3: school.water_consumption_m3?.toString() || "",
-            attribution_pct_energy: (school.attribution_pct_energy || 100).toString(),
-            attribution_pct_waste: (school.attribution_pct_waste || 100).toString(),
-            attribution_pct_water: (school.attribution_pct_water || 100).toString(),
+            baselineEnergyGrid: (school.baselineEnergyGrid || school.electricity_kWh_year)?.toString() || "",
+            baselineEnergyDiesel: (school.baselineEnergyDiesel || 0).toString(),
+            baselineEnergySolar: (school.baselineEnergySolar || 0).toString(),
+            baselineWaterMunicipal: (school.baselineWaterMunicipal || school.water_consumption_m3)?.toString() || "",
+            baselineWaterRain: (school.baselineWaterRain || 0).toString(),
+            baselineWaterWaste: (school.baselineWaterWaste || 0).toString(),
+            baselineWasteOrganic: (school.baselineWasteOrganic || school.waste_generated_kg)?.toString() || "",
+            baselineWasteInorganic: (school.baselineWasteInorganic || 0).toString(),
+            baselineWasteHazardous: (school.baselineWasteHazardous || 0).toString(),
+            actionType: school.action_id || "Solar", 
+            actionQuantity: (school.electricity_kWh_year || 0).toString(),
             students_count: (school.students_count || 1).toString(),
-            baseline_source: school.baseline_source,
             status: "verified",
             adminNotes: school.adminNotes || "",
         });
@@ -87,19 +85,16 @@ export default function AdminSchoolTable() {
             if (baseline && Object.keys(baseline).length > 0) {
                 setVerifyForm(f => ({
                     ...f,
-                    electricity_kWh_year: (baseline.electricity_kWh_year || f.electricity_kWh_year).toString(),
-                    fuel_type: baseline.fuel_type || f.fuel_type,
-                    fuel_consumption_litres: (baseline.fuel_consumption_litres || f.fuel_consumption_litres).toString(),
-                    renewable_energy_type: baseline.renewable_energy_type || f.renewable_energy_type,
-                    renewable_energy_kwh: (baseline.renewable_energy_kwh || f.renewable_energy_kwh).toString(),
-                    waste_generated_kg: (baseline.waste_generated_kg || f.waste_generated_kg).toString(),
-                    waste_diverted_kg: (baseline.waste_diverted_kg || f.waste_diverted_kg).toString(),
-                    water_consumption_m3: (baseline.water_consumption_m3 || f.water_consumption_m3).toString(),
-                    attribution_pct_energy: (baseline.attribution_pct_energy || f.attribution_pct_energy).toString(),
-                    attribution_pct_waste: (baseline.attribution_pct_waste || f.attribution_pct_waste).toString(),
-                    attribution_pct_water: (baseline.attribution_pct_water || f.attribution_pct_water).toString(),
+                    baselineEnergyGrid: (baseline.baselineEnergyGrid || baseline.electricity_kWh_year || f.baselineEnergyGrid).toString(),
+                    baselineEnergyDiesel: (baseline.baselineEnergyDiesel || f.baselineEnergyDiesel).toString(),
+                    baselineEnergySolar: (baseline.baselineEnergySolar || f.baselineEnergySolar).toString(),
+                    baselineWaterMunicipal: (baseline.baselineWaterMunicipal || baseline.water_consumption_m3 || f.baselineWaterMunicipal).toString(),
+                    baselineWaterRain: (baseline.baselineWaterRain || f.baselineWaterRain).toString(),
+                    baselineWaterWaste: (baseline.baselineWaterWaste || f.baselineWaterWaste).toString(),
+                    baselineWasteOrganic: (baseline.baselineWasteOrganic || baseline.waste_generated_kg || f.baselineWasteOrganic).toString(),
+                    baselineWasteInorganic: (baseline.baselineWasteInorganic || f.baselineWasteInorganic).toString(),
+                    baselineWasteHazardous: (baseline.baselineWasteHazardous || f.baselineWasteHazardous).toString(),
                     students_count: (baseline.students_count || f.students_count).toString(),
-                    baseline_source: baseline.baseline_source || f.baseline_source,
                 }));
             }
         } catch (error) {
@@ -126,19 +121,18 @@ export default function AdminSchoolTable() {
                     editedData: isEditMode ? {
                         schoolName: verifyForm.schoolName,
                         address: verifyForm.address,
-                        electricity_kWh_year: verifyForm.electricity_kWh_year,
-                        fuel_type: verifyForm.fuel_type,
-                        fuel_consumption_litres: verifyForm.fuel_consumption_litres,
-                        renewable_energy_type: verifyForm.renewable_energy_type,
-                        renewable_energy_kwh: verifyForm.renewable_energy_kwh,
-                        waste_generated_kg: verifyForm.waste_generated_kg,
-                        waste_diverted_kg: verifyForm.waste_diverted_kg,
-                        water_consumption_m3: verifyForm.water_consumption_m3,
-                        attribution_pct_energy: verifyForm.attribution_pct_energy,
-                        attribution_pct_waste: verifyForm.attribution_pct_waste,
-                        attribution_pct_water: verifyForm.attribution_pct_water,
-                        students_count: verifyForm.students_count,
-                        baseline_source: verifyForm.baseline_source,
+                        baselineEnergyGrid: Number(verifyForm.baselineEnergyGrid) || 0,
+                        baselineEnergyDiesel: Number(verifyForm.baselineEnergyDiesel) || 0,
+                        baselineEnergySolar: Number(verifyForm.baselineEnergySolar) || 0,
+                        baselineWaterMunicipal: Number(verifyForm.baselineWaterMunicipal) || 0,
+                        baselineWaterRain: Number(verifyForm.baselineWaterRain) || 0,
+                        baselineWaterWaste: Number(verifyForm.baselineWaterWaste) || 0,
+                        baselineWasteOrganic: Number(verifyForm.baselineWasteOrganic) || 0,
+                        baselineWasteInorganic: Number(verifyForm.baselineWasteInorganic) || 0,
+                        baselineWasteHazardous: Number(verifyForm.baselineWasteHazardous) || 0,
+                        students_count: Number(verifyForm.students_count) || 1,
+                        actionType: verifyForm.actionType,
+                        actionQuantity: Number(verifyForm.actionQuantity) || 0,
                     } : null
                 }),
             });
@@ -233,18 +227,18 @@ export default function AdminSchoolTable() {
     const currentImpact = (() => {
         try {
             const impact = calculateSchoolImpact({
-                electricity_kWh_year: verifyForm.electricity_kWh_year ? Number(verifyForm.electricity_kWh_year) : null,
-                fuel_type: verifyForm.fuel_type as any,
-                fuel_consumption_litres: verifyForm.fuel_consumption_litres ? Number(verifyForm.fuel_consumption_litres) : null,
-                renewable_energy_type: verifyForm.renewable_energy_type as any,
-                renewable_energy_kwh: verifyForm.renewable_energy_kwh ? Number(verifyForm.renewable_energy_kwh) : null,
-                attribution_pct_energy: Math.min(100, Math.max(0, Number(verifyForm.attribution_pct_energy) || 0)),
+                baselineEnergyGrid: Number(verifyForm.baselineEnergyGrid) || 0,
+                baselineEnergyDiesel: Number(verifyForm.baselineEnergyDiesel) || 0,
+                baselineEnergySolar: Number(verifyForm.baselineEnergySolar) || 0,
+                baselineWaterMunicipal: Number(verifyForm.baselineWaterMunicipal) || 0,
+                baselineWaterRain: Number(verifyForm.baselineWaterRain) || 0,
+                baselineWaterWaste: Number(verifyForm.baselineWaterWaste) || 0,
+                baselineWasteOrganic: Number(verifyForm.baselineWasteOrganic) || 0,
+                baselineWasteInorganic: Number(verifyForm.baselineWasteInorganic) || 0,
+                baselineWasteHazardous: Number(verifyForm.baselineWasteHazardous) || 0,
                 students_count: Number(verifyForm.students_count) || 1,
-                waste_generated_kg: verifyForm.waste_generated_kg ? Number(verifyForm.waste_generated_kg) : null,
-                waste_diverted_kg: verifyForm.waste_diverted_kg ? Number(verifyForm.waste_diverted_kg) : null,
-                water_consumption_m3: verifyForm.water_consumption_m3 ? Number(verifyForm.water_consumption_m3) : null,
-                attribution_pct_waste: Math.min(100, Math.max(0, Number(verifyForm.attribution_pct_waste) || 0)),
-                attribution_pct_water: Math.min(100, Math.max(0, Number(verifyForm.attribution_pct_water) || 0)),
+                actionType: verifyForm.actionType,
+                actionQuantity: Number(verifyForm.actionQuantity) || 0,
             });
             return impact;
         } catch (e) {
@@ -432,45 +426,144 @@ export default function AdminSchoolTable() {
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h7"/><path d="M16 5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2"/><path d="M3 12h18"/><path d="M18 16.5l3 3-3 3"/><path d="M21 19.5h-9"/></svg>
                                     Baseline Consumption Data
                                 </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6">
+                                    {/* Energy Group */}
+                                    <div className="col-span-full border-b border-blue-50 pb-1">
+                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-tight">Energy Usage (Monthly)</span>
+                                    </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Electricity (kWh)</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Grid (kWh)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
-                                            value={verifyForm.electricity_kWh_year}
-                                            onChange={(e) => setVerifyForm(f => ({ ...f, electricity_kWh_year: e.target.value }))}
-                                            className={!isEditMode ? "bg-white border-blue-200/50 font-black text-blue-900 !py-3" : "border-gray-200 !py-3"}
+                                            value={verifyForm.baselineEnergyGrid}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineEnergyGrid: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Water (m³)</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Fuel (L)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
-                                            value={verifyForm.water_consumption_m3}
-                                            onChange={(e) => setVerifyForm(f => ({ ...f, water_consumption_m3: e.target.value }))}
-                                            className={!isEditMode ? "bg-white border-blue-200/50 font-black text-blue-900 !py-3" : "border-gray-200 !py-3"}
+                                            value={verifyForm.baselineEnergyDiesel}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineEnergyDiesel: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Waste (Kg)</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Solar (kWh)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
-                                            value={verifyForm.waste_generated_kg}
-                                            onChange={(e) => setVerifyForm(f => ({ ...f, waste_generated_kg: e.target.value }))}
-                                            className={!isEditMode ? "bg-white border-blue-200/50 font-black text-blue-900 !py-3" : "border-gray-200 !py-3"}
+                                            value={verifyForm.baselineEnergySolar}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineEnergySolar: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
                                         />
                                     </div>
+
+                                    {/* Water Group */}
+                                    <div className="col-span-full border-b border-blue-50 pb-1 mt-2">
+                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-tight">Water Usage (Monthly)</span>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Muni (L)</label>
+                                        <Input
+                                            type="number"
+                                            disabled={!isEditMode}
+                                            value={verifyForm.baselineWaterMunicipal}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineWaterMunicipal: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Rain (L)</label>
+                                        <Input
+                                            type="number"
+                                            disabled={!isEditMode}
+                                            value={verifyForm.baselineWaterRain}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineWaterRain: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Waste (L)</label>
+                                        <Input
+                                            type="number"
+                                            disabled={!isEditMode}
+                                            value={verifyForm.baselineWaterWaste}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineWaterWaste: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+
+                                    {/* Waste Group */}
+                                    <div className="col-span-full border-b border-blue-50 pb-1 mt-2">
+                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-tight">Waste (Monthly)</span>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Org (kg)</label>
+                                        <Input
+                                            type="number"
+                                            disabled={!isEditMode}
+                                            value={verifyForm.baselineWasteOrganic}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineWasteOrganic: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Inorg (kg)</label>
+                                        <Input
+                                            type="number"
+                                            disabled={!isEditMode}
+                                            value={verifyForm.baselineWasteInorganic}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineWasteInorganic: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Haz (kg)</label>
+                                        <Input
+                                            type="number"
+                                            disabled={!isEditMode}
+                                            value={verifyForm.baselineWasteHazardous}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, baselineWasteHazardous: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+
+                                    {/* Action Group */}
+                                    <div className="col-span-full border-b border-blue-50 pb-1 mt-2">
+                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-tight">Low-Carbon Action</span>
+                                    </div>
+                                    <div className="col-span-2">
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Action Type</label>
+                                        <Input
+                                            disabled={!isEditMode}
+                                            value={verifyForm.actionType}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, actionType: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Quantity/Capacity</label>
+                                        <Input
+                                            type="number"
+                                            disabled={!isEditMode}
+                                            value={verifyForm.actionQuantity}
+                                            onChange={(e) => setVerifyForm(f => ({ ...f, actionQuantity: e.target.value }))}
+                                            className={!isEditMode ? "bg-white border-blue-100/50 font-black text-blue-900 !py-2.5 text-xs" : "border-gray-200 !py-2.5 text-xs"}
+                                        />
+                                    </div>
+
                                     {isEditMode && (
-                                        <div>
+                                        <div className="mt-2">
                                             <label className="block text-[10px] font-black text-gray-500 uppercase mb-1 ml-1">Students Count</label>
                                             <Input
                                                 type="number"
                                                 value={verifyForm.students_count}
                                                 onChange={(e) => setVerifyForm(f => ({ ...f, students_count: e.target.value }))}
-                                                className="border-gray-200 !py-3"
+                                                className="border-gray-200 !py-2.5 text-xs"
                                             />
                                         </div>
                                     )}

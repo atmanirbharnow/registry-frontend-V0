@@ -15,49 +15,19 @@ import { EMISSION_FACTORS_PHASE2 } from './constants/emissionFactors';
 
 export interface CalculationInput {
     actionType: string;
-    quantity: number;
+    quantity: number; // Monthly action impact (kWh, L, kg) or capacity (kW, LPD)
     unit: string;
 
-    // Current Usage (New)
-    electricityUseKwh?: number;
-    fuelDieselLiters?: number;
-    fuelPetrolLiters?: number;
-    fuelKeroseneLiters?: number;
-    waterUsageKLD?: number;
-    wasteOrganicKg?: number;
-    wasteTextileKg?: number;
-    wastePlasticKg?: number;
-    wasteElectronicKg?: number;
-
-    // Action Specific (New)
-    capacityKw?: number;
-    installationDate?: string;
-    sizeLiters?: number;
-    capacity?: string;
-    tankCapacityKL?: number;
-    capacityM3?: string;
-
-    // Baseline Data (Updated)
-    baselineElectricityKwh?: number;
-    baselineWaterKL?: number;
-    baselineWasteOrganicKg?: number;
-    baselineWastePaperKg?: number;
-    baselineWastePlasticKg?: number;
-    baselineWasteTextileKg?: number;
-    baselineWasteEWasteKg?: number;
-
-    // Optional circularity data (waste)
-    wasteGeneratedKg?: number;
-    wasteDivertedKg?: number;
-
-    // Optional action-specific parameters
-    oldStarRating?: number;  // For refrigerator upgrade
-    newStarRating?: number;
-    oldTempC?: number;        // For geyser temp reduction
-    newTempC?: number;
-    oldWattage?: number;      // For LED replacement
-    newWattage?: number;
-    hoursPerDay?: number;
+    // Baseline Usage (Monthly Average - Step 1)
+    baselineEnergyGrid?: number;
+    baselineEnergyDiesel?: number;
+    baselineEnergySolar?: number;
+    baselineWaterMunicipal?: number;
+    baselineWaterRain?: number;
+    baselineWaterWaste?: number;
+    baselineWasteOrganic?: number;
+    baselineWasteInorganic?: number;
+    baselineWasteHazardous?: number;
 }
 
 export interface CalculationResult {
@@ -85,8 +55,8 @@ export function calculateImpactPhase2(input: CalculationInput): CalculationResul
         tCO2e: co2eKg / 1000, // Convert kg to tonnes
         atmanirbharScore,
         circularityScore,
-        calculationVersion: 'v1.0-phase2',
-        methodology: 'ECF Simplified Factors',
+        calculationVersion: 'v1.1-phase2-sync',
+        methodology: 'ECF Combined Resource Ratio',
         emissionFactorUsed: getEmissionFactorDescription(input.actionType),
     };
 }
@@ -96,31 +66,37 @@ export function calculateImpactPhase2(input: CalculationInput): CalculationResul
 // ============================================
 
 /**
- * Circularity Score = (waste diverted from landfill / waste generated) * 100
- * Same formula as school action module. Capped at 100%.
+ * Circularity % = waste_diverted_kg / waste_generated_kg * 100
+ * Capped at 100%.
+ */
+/**
+ * Circularity % = waste_diverted / total_waste_generated * 100
+ * Capped at 100%.
  */
 function calculateCircularityScore(input: CalculationInput): number {
-    const { wasteGeneratedKg, wasteDivertedKg } = input;
+    const { 
+        baselineWasteOrganic = 0, 
+        baselineWasteInorganic = 0, 
+        baselineWasteHazardous = 0,
+        actionType = "",
+        quantity = 0 
+    } = input;
     
-    // Weighted waste streams (future-proofing for multiple streams)
-    const streams = [
-        { generated: wasteGeneratedKg || 0, diverted: wasteDivertedKg || 0, weight: 1.0 }
-    ];
+    // Total throughput = Sum of all waste streams + any new diverted amount not accounted for
+    const totalBaselineWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
+    
+    // Diverted amount
+    let divertedWaste = 0;
+    if (actionType.toLowerCase().includes("waste") || actionType.toLowerCase().includes("recycling") || actionType.toLowerCase().includes("compost")) {
+        divertedWaste = quantity; // Monthly kg
+    }
 
-    let totalScore = 0;
-    let totalWeight = 0;
+    // Denominator should be at least as large as what we diverted
+    const totalMaterialThroughput = Math.max(totalBaselineWaste, divertedWaste);
+    if (totalMaterialThroughput === 0) return 0;
 
-    streams.forEach(s => {
-        if (s.generated > 0) {
-            const rawScore = (s.diverted / s.generated) * 100;
-            const cappedScore = Math.min(100, rawScore); // Cap individual at 100%
-            totalScore += cappedScore * s.weight;
-            totalWeight += s.weight;
-        }
-    });
-
-    if (totalWeight === 0) return 0;
-    return Math.round((totalScore / totalWeight) * 10) / 10;
+    const score = (divertedWaste / totalMaterialThroughput) * 100;
+    return Math.min(100, Math.round(score * 10) / 10);
 }
 
 // ============================================
@@ -128,8 +104,7 @@ function calculateCircularityScore(input: CalculationInput): number {
 // ============================================
 
 function calculateCO2ePhase2(input: CalculationInput): number {
-    const { actionType, quantity, baselineElectricityKwh, baselineWaterKL, baselineWasteOrganicKg } = input;
-
+    const { actionType, quantity } = input;
     let co2eKg = 0;
 
     switch (actionType) {
@@ -202,7 +177,6 @@ function calculateCO2ePhase2(input: CalculationInput): number {
             break;
         }
 
-        // Keep legacy for safety but these are new primary handlers
         case 'rwh': {
             const avgFactor = (EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMin +
                 EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMax) / 2;
@@ -210,7 +184,6 @@ function calculateCO2ePhase2(input: CalculationInput): number {
             break;
         }
 
-        // Legacy action types (keep for backward compatibility)
         case 'swh': {
             // Solar water heater: 100L saves ~1500 kWh/year
             const energySavings = (quantity / 100) * 1500;
@@ -239,69 +212,86 @@ function calculateCO2ePhase2(input: CalculationInput): number {
         }
 
         default: {
-            // Unknown action type - return 0 (admin will enter manually)
             co2eKg = 0;
         }
     }
 
-    // Round to 3 decimal places
-    return Math.round(co2eKg * 1000) / 1000;
+// Round to 3 decimal places
+return Math.round(co2eKg * 1000) / 1000;
 }
 
 // ============================================
 // ATMANIRBHAR CALCULATION
 // ============================================
 
+/**
+ * Atmanirbhar % = (Σ Local Resource Value / Σ Total Resource Value) × 100
+ * = (renewable_kWh + rainwater_harvested_L + waste_processed_kg)
+ *   / (total_electricity_kWh + total_water_L + total_waste_kg) * 100
+ */
 function calculateAtmanirbharPhase2(input: CalculationInput): number {
     const {
-        baselineElectricityKwh = 0,
-        baselineWaterKL = 0,
-        baselineWasteOrganicKg = 0,
-        electricityUseKwh = 0,
-        waterUsageKLD = 0,
-        wasteOrganicKg = 0,
+        baselineEnergyGrid = 0,
+        baselineEnergyDiesel = 0,
+        baselineEnergySolar = 0,
+        baselineWaterMunicipal = 0,
+        baselineWaterRain = 0,
+        baselineWaterWaste = 0,
+        baselineWasteOrganic = 0,
+        baselineWasteInorganic = 0,
+        baselineWasteHazardous = 0,
+        actionType = "",
+        quantity = 0,
     } = input;
 
-    // Client-approved weights (0.4 Energy, 0.3 Water, 0.2 Waste, 0.1 Action Baseline)
-    const WEIGHTS = {
-        energy: 0.4,
-        water: 0.3,
-        waste: 0.2,
-        action: 0.1,
-    };
+    // 1. Calculate Action Contributions (converted to monthly resource units)
+    let actionLocalEnergy = 0;
+    let actionLocalWater = 0;
+    let actionLocalWaste = 0;
 
-    // 1. Energy Efficiency Score
-    let energyScore = 0;
-    if (baselineElectricityKwh > 0) {
-        const reduction = Math.max(0, baselineElectricityKwh - electricityUseKwh);
-        energyScore = Math.min(100, (reduction / baselineElectricityKwh) * 100);
+    const type = actionType.toLowerCase();
+
+    if (type.includes("solar")) {
+        // quantity is kW (rooftop) or units (heater).
+        // 1 kW rooftop = 1500 kWh/yr = 125 kWh/mo
+        // 100 LPD heater geyser displacement = 1500 kWh/yr = 125 kWh/mo
+        if (type.includes("rooftop")) {
+            actionLocalEnergy = quantity * 125;
+        } else {
+            actionLocalEnergy = (quantity / 100) * 125;
+        }
+    } else if (type.includes("rainwater") || type.includes("rwh")) {
+        // quantity is units of 1000L/day. 1 unit = 30k L/mo
+        actionLocalWater = quantity * 30000;
+    } else if (type.includes("waste") || type.includes("recycling") || type.includes("compost")) {
+        // quantity is kg/mo
+        actionLocalWaste = quantity;
+    } else if (type.includes("wastewater")) {
+        // quantity is kL/day. 1 kL/day = 30k L/mo
+        actionLocalWater = quantity * 30000;
     }
 
-    // 2. Water Conservation Score
-    let waterScore = 0;
-    if (baselineWaterKL > 0) {
-        const reduction = Math.max(0, baselineWaterKL - waterUsageKLD);
-        waterScore = Math.min(100, (reduction / baselineWaterKL) * 100);
-    }
+    // 2. Sum Numerator (Local Resources)
+    // We assume baseline EnergySolar, WaterRain, and WasteOrganic are 'local' by definition
+    const localSum =
+        (baselineEnergySolar + actionLocalEnergy) +
+        (baselineWaterRain + baselineWaterWaste + actionLocalWater) +
+        (baselineWasteOrganic + actionLocalWaste);
 
-    // 3. Waste Diversion Score
-    let wasteScore = 0;
-    if (baselineWasteOrganicKg > 0) {
-        const divertedPercent = (input.wasteDivertedKg ?? 0) / (input.wasteGeneratedKg ?? baselineWasteOrganicKg) * 100;
-        wasteScore = Math.min(100, divertedPercent);
-    }
+    // 3. Sum Denominator (Total Resources)
+    // Denominator = Baseline (Grid + Diesel + Local) + Any NEW local impact added
+    const totalEnergy = baselineEnergyGrid + baselineEnergyDiesel + baselineEnergySolar + actionLocalEnergy;
+    const totalWater = baselineWaterMunicipal + baselineWaterRain + baselineWaterWaste + actionLocalWater;
+    const totalWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous + actionLocalWaste;
 
-    // 4. Action Specific Impact (as a fallback/proxy for the 0.1 weight)
-    const actionScore = input.quantity > 0 ? 100 : 0;
+    const totalSum = totalEnergy + totalWater + totalWaste;
 
-    const weightedScore = 
-        (energyScore * WEIGHTS.energy) +
-        (waterScore * WEIGHTS.water) +
-        (wasteScore * WEIGHTS.waste) +
-        (actionScore * WEIGHTS.action);
+    if (totalSum === 0) return 0;
 
-    return Math.round(weightedScore * 10) / 10;
+    const score = (localSum / totalSum) * 100;
+    return Math.min(100, Math.round(score * 10) / 10);
 }
+
 
 // ============================================
 // HELPER FUNCTIONS
@@ -347,10 +337,10 @@ export function validateCalculationInput(input: CalculationInput): {
         errors.push('Unit is required');
     }
 
-    // Validate breakdown fields if provided
+    // Validate baseline fields if provided
     const baselineFields = [
-        { value: input.baselineElectricityKwh, name: 'Electricity Usage' },
-        { value: input.baselineWaterKL, name: 'Water Consumption' },
+        { value: input.baselineEnergyGrid, name: 'Grid Electricity' },
+        { value: input.baselineWaterMunicipal, name: 'Water Consumption' },
     ];
 
     baselineFields.forEach(field => {

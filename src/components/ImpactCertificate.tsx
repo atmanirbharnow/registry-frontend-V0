@@ -159,13 +159,13 @@ export default function ImpactCertificate({
 
                 {/* 3. Core Impact Metrics */}
                 <div className="border-b border-gray-200 pb-6 mb-6 relative z-10">
-                    <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-500 mb-4">
-                        <span>📊</span> CORE IMPACT METRICS
+                    <h2 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-4">
+                        CORE IMPACT METRICS
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* CO2e */}
                         <div className="bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-xl p-5 text-white shadow-md relative overflow-hidden">
-                            <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl">☁️</div>
+                            <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl"></div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">tCO₂e REDUCED</h3>
                             <div className="flex items-baseline gap-1 relative z-10">
                                 <span className="text-3xl font-black">{tco2e}</span>
@@ -177,7 +177,7 @@ export default function ImpactCertificate({
                         </div>
                         {/* Atmanirbhar */}
                         <div className="bg-gradient-to-br from-blue-600 to-[rgb(32,38,130)] rounded-xl p-5 text-white shadow-md relative overflow-hidden">
-                            <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl">🇮🇳</div>
+                            <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl"></div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">ATMANIRBHAR % SCORE</h3>
                             <div className="flex items-baseline gap-1 relative z-10">
                                 <span className="text-3xl font-black">{atmanirbhar}</span>
@@ -189,7 +189,7 @@ export default function ImpactCertificate({
                         </div>
                         {/* Circularity */}
                         <div className="bg-gradient-to-br from-sky-400 to-sky-600 rounded-xl p-5 text-white shadow-md relative overflow-hidden">
-                            <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl">♻️</div>
+                            <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl"></div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">CIRCULARITY SCORE</h3>
                             <div className="flex items-baseline gap-1 relative z-10">
                                 <span className="text-3xl font-black">{circularity}</span>
@@ -204,8 +204,8 @@ export default function ImpactCertificate({
 
                 {/* 4. Action Highlights */}
                 <div className="border-b border-gray-200 pb-6 mb-6 relative z-10">
-                    <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-500 mb-4">
-                        <span>🔍</span> ACTION HIGHLIGHTS (Top 3)
+                    <h2 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-4">
+                        ACTION HIGHLIGHTS (Top 3)
                     </h2>
                     <ul className="space-y-3 mb-6">
                         {highlights.map((highlight, index) => (
@@ -248,7 +248,7 @@ export default function ImpactCertificate({
                     <div className="text-right space-y-3 flex flex-col justify-end">
                         {sha256Hash && (
                             <div className="inline-block text-left p-2.5 border border-dashed border-gray-300 rounded-md bg-gray-50 shadow-inner">
-                                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">✅ DIGITAL SIGNATURE footprint</div>
+                                <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">DIGITAL SIGNATURE footprint</div>
                                 <div className="font-mono text-xs text-gray-800 break-all max-w-[280px]">
                                     {sha256Hash}
                                 </div>

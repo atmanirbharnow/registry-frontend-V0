@@ -27,33 +27,37 @@ declare global {
     }
 }
 
-const validationSchema = Yup.object().shape({
-    actionType: Yup.string().required("Action type is required"),
-    quantity: Yup.number()
-        .min(0.01, "Quantity must be greater than 0")
-        .required("Quantity is required")
-        .typeError("Must be a number"),
-    unit: Yup.string().required("Unit is required"),
-    address: Yup.string().required("Address is required"),
-    commissioningDate: Yup.date()
-        .min(new Date("2025-01-01"), "Year must be 2025 or later")
-        .max(new Date("2099-12-31"), "Invalid year")
-        .required("Commissioning date is required"),
-    
-    // Usage Valdiation
-    electricityUseKwh: Yup.number().min(0).typeError("Must be a number"),
-    waterUsageKLD: Yup.number().min(0).typeError("Must be a number"),
-    
-    // Baseline Validation
-    baselineElectricityKwh: Yup.number().min(0).typeError("Must be a number"),
-    baselineWaterKL: Yup.number().min(0).typeError("Must be a number"),
-    
-    wasteGeneratedKg: Yup.number().min(0).typeError("Must be a number"),
-    wasteDivertedKg: Yup.number().min(0).typeError("Must be a number"),
-    consentGiven: Yup.boolean().oneOf([true], "You must verify this data is correct"),
-    disclaimerAccepted: Yup.boolean().oneOf([true], "You must accept the disclaimer to proceed"),
-    summaryAgreed: Yup.boolean().oneOf([true], "You must agree to proceed"),
-});
+const validationSchema = [
+    // Step 1: Baseline Usage
+    Yup.object({
+        baselineEnergyGrid: Yup.number().required("Required"),
+        baselineEnergyDiesel: Yup.number().required("Required"),
+        baselineEnergySolar: Yup.number().required("Required"),
+        baselineWaterMunicipal: Yup.number().required("Required"),
+        baselineWaterRain: Yup.number().required("Required"),
+        baselineWaterWaste: Yup.number().required("Required"),
+        baselineWasteOrganic: Yup.number().required("Required"),
+        baselineWasteInorganic: Yup.number().required("Required"),
+        baselineWasteHazardous: Yup.number().required("Required"),
+    }),
+    // Step 2: Low-Carbon Action
+    Yup.object({
+        actionType: Yup.string().required("Action type is required"),
+        quantity: Yup.number().min(0.01, "Min 0.01").required("Req"),
+        commissioningDate: Yup.date().required("Req"),
+        address: Yup.string().required("Location is required"),
+        photo_file: Yup.mixed().required("At least 1 photo is required"),
+    }),
+    // Step 3: Impact Summary
+    Yup.object({
+        summaryAgreed: Yup.boolean().oneOf([true], "Agreement required").required(),
+    }),
+    // Step 4: Finalization & Payment
+    Yup.object({
+        consentGiven: Yup.boolean().oneOf([true], "Consent required").required(),
+        disclaimerAccepted: Yup.boolean().oneOf([true], "Acceptance required").required(),
+    })
+];
 
 export default function RegisterActionForm() {
     const { user } = useAuth();
@@ -114,34 +118,22 @@ export default function RegisterActionForm() {
                         pincode: profile?.pincode || null,
                         lat: profile?.lat || values.lat,
                         lng: profile?.lng || values.lng,
-                        // Usage & Baseline
-                        electricityUseKwh: Number(values.electricityUseKwh) || null,
-                        fuelDieselLiters: Number(values.fuelDieselLiters) || null,
-                        fuelPetrolLiters: Number(values.fuelPetrolLiters) || null,
-                        fuelKeroseneLiters: Number(values.fuelKeroseneLiters) || null,
-                        waterUsageKLD: Number(values.waterUsageKLD) || null,
-                        wasteOrganicKg: Number(values.wasteOrganicKg) || null,
-                        wasteTextileKg: Number(values.wasteTextileKg) || null,
-                        wastePlasticKg: Number(values.wastePlasticKg) || null,
-                        wasteElectronicKg: Number(values.wasteElectronicKg) || null,
+                        // Baseline Usage (New 9 Fields)
+                        baselineEnergyGrid: Number(values.baselineEnergyGrid) || 0,
+                        baselineEnergyDiesel: Number(values.baselineEnergyDiesel) || 0,
+                        baselineEnergySolar: Number(values.baselineEnergySolar) || 0,
+                        baselineWaterMunicipal: Number(values.baselineWaterMunicipal) || 0,
+                        baselineWaterRain: Number(values.baselineWaterRain) || 0,
+                        baselineWaterWaste: Number(values.baselineWaterWaste) || 0,
+                        baselineWasteOrganic: Number(values.baselineWasteOrganic) || 0,
+                        baselineWasteHazardous: Number(values.baselineWasteHazardous) || 0,
+                        // Legacy/Compatibility (mapped for safety)
+                        electricityUseKwh: Number(values.baselineEnergyGrid),
+                        waterUsageKLD: Number(values.baselineWaterMunicipal),
 
-                        baselineElectricityKwh: Number(values.baselineElectricityKwh) || null,
-                        baselineWaterKL: Number(values.baselineWaterKL) || null,
-                        baselineWasteOrganicKg: Number(values.baselineWasteOrganicKg) || null,
-                        baselineWastePaperKg: Number(values.baselineWastePaperKg) || null,
-                        baselineWastePlasticKg: Number(values.baselineWastePlasticKg) || null,
-                        baselineWasteTextileKg: Number(values.baselineWasteTextileKg) || null,
-                        baselineWasteEWasteKg: Number(values.baselineWasteEWasteKg) || null,
-
-                        wasteGeneratedKg: Number(values.wasteGeneratedKg) || null,
-                        wasteDivertedKg: Number(values.wasteDivertedKg) || null,
-                        
                         // Action Specific
-                        capacityKw: Number(values.capacityKw) || null,
-                        installationDate: values.installationDate,
-                        capacity: values.capacity,
-                        tankCapacityKL: Number(values.tankCapacityKL) || null,
-                        capacityM3: values.capacityM3,
+                        actionType: values.actionType,
+                        commissioningDate: values.commissioningDate,
 
                         // Photos
                         energyBillCopy: values.energyBillCopy,
@@ -177,6 +169,24 @@ export default function RegisterActionForm() {
 
     const formik = useFormik({
         initialValues: {
+            // Organisation Details
+            entityType: "",
+            sector: "",
+            reportingYear: "2024",
+            beneficiariesCount: "",
+
+            // Baseline Usage (Monthly)
+            baselineEnergyGrid: "0",
+            baselineEnergyDiesel: "0",
+            baselineEnergySolar: "0",
+            baselineWaterMunicipal: "0",
+            baselineWaterRain: "0",
+            baselineWaterWaste: "0",
+            baselineWasteOrganic: "0",
+            baselineWasteInorganic: "0",
+            baselineWasteHazardous: "0",
+
+            // Low-Carbon Action
             actionType: "",
             quantity: "",
             unit: "",
@@ -184,36 +194,8 @@ export default function RegisterActionForm() {
             lat: null as number | null,
             lng: null as number | null,
             commissioningDate: "",
-            
-            // Current Usage
-            electricityUseKwh: "",
-            fuelDieselLiters: "",
-            fuelPetrolLiters: "",
-            fuelKeroseneLiters: "",
-            waterUsageKLD: "",
-            wasteOrganicKg: "",
-            wasteTextileKg: "",
-            wastePlasticKg: "",
-            wasteElectronicKg: "",
+            photo_file: null as File | null,
 
-            // Action Specific
-            capacityKw: "",
-            installationDate: "",
-            capacity: "",
-            tankCapacityKL: "",
-            capacityM3: "",
-
-            // Baseline Data
-            baselineElectricityKwh: "",
-            baselineWaterKL: "",
-            baselineWasteOrganicKg: "",
-            baselineWastePaperKg: "",
-            baselineWastePlasticKg: "",
-            baselineWasteTextileKg: "",
-            baselineWasteEWasteKg: "",
-
-            wasteGeneratedKg: "",
-            wasteDivertedKg: "",
             consentGiven: false,
             disclaimerAccepted: false,
             summaryAgreed: false,
@@ -224,7 +206,7 @@ export default function RegisterActionForm() {
             moreDetailsPhoto: null as string | null,
             siteOverviewPhoto: null as string | null,
         },
-        validationSchema,
+        validationSchema: validationSchema[currentStep - 1],
         onSubmit: async (values) => {
             if (!user) {
                 toast.error("You must be signed in.");
@@ -308,27 +290,23 @@ export default function RegisterActionForm() {
     const handleNext = async () => {
         const errors = await formik.validateForm();
         const stepFields: Record<number, string[]> = {
-            1: ["actionType", "quantity", "unit", "commissioningDate"],
-            2: ["baselineElectricityKwh", "baselineWaterKL", "wasteGeneratedKg", "wasteDivertedKg"], // Assessment Details
-            3: ["summaryAgreed"], // Impact Summary
-            4: ["consentGiven", "disclaimerAccepted"] // Finalize/Payment
+            1: [
+                "baselineEnergyGrid", "baselineEnergyDiesel", "baselineEnergySolar",
+                "baselineWaterMunicipal", "baselineWaterRain", "baselineWaterWaste",
+                "baselineWasteOrganic", "baselineWasteInorganic", "baselineWasteHazardous",
+                "entityType", "sector", "reportingYear", "beneficiariesCount"
+            ],
+            2: ["actionType", "quantity", "commissioningDate", "address", "photo_file"],
+            3: ["summaryAgreed"],
+            4: ["consentGiven", "disclaimerAccepted"]
         };
 
         const currentStepFields = stepFields[currentStep as keyof typeof stepFields] || [];
         const hasStepErrors = currentStepFields.some(field => errors[field as keyof typeof errors]);
 
         if (!hasStepErrors) {
-            if (currentStep === 2) {
-                const requiredPhotos = ["energyBillCopy", "meterPhoto", "moreDetailsPhoto", "siteOverviewPhoto"];
-                const missingPhotos = requiredPhotos.some(key => !formik.values[key as keyof typeof formik.values]);
-                if (missingPhotos) {
-                    toast.error("Please upload all 4 verification photos to proceed");
-                    return;
-                }
-            }
             setCurrentStep(s => Math.min(s + 1, totalSteps));
         } else {
-            // Mark fields as touched to show errors
             const touched = currentStepFields.reduce((acc, field) => ({ ...acc, [field]: true }), {});
             formik.setTouched({ ...formik.touched, ...touched });
             toast.warning("Please fill required fields to proceed");
@@ -355,8 +333,8 @@ export default function RegisterActionForm() {
                     {[1, 2, 3, 4].map((step) => (
                         <div key={step} className="flex flex-col items-center flex-1 min-w-[100px] px-2 text-center">
                             <div className={`text-[10px] font-black mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-300"}`}>
-                                {step === 1 && "Action Details"}
-                                {step === 2 && "Assessment"}
+                                {step === 1 && "Baseline Usage"}
+                                {step === 2 && "Low-Carbon Action"}
                                 {step === 3 && "Impact Summary"}
                                 {step === 4 && "Payment"}
                             </div>
@@ -394,148 +372,95 @@ export default function RegisterActionForm() {
                 )}
 
                 {currentStep === 1 && (
-                    <div className="space-y-8">
-                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-blue-50 rounded-lg text-blue-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Action Details</h3></div>}>
-                            <div className="space-y-8">
-                                <ActionTypeSelector
-                                    value={formik.values.actionType}
-                                    unitValue={formik.values.unit}
-                                    onChange={(val) => formik.setFieldValue("actionType", val)}
-                                    onUnitChange={(unit) => formik.setFieldValue("unit", unit)}
-                                    error={formik.errors.actionType as string}
-                                    touched={formik.touched.actionType}
-                                />
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-3">
-                                        <label htmlFor="quantity" className="block text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Capacity / Quantity</label>
-                                        <div className="relative">
-                                            <input
-                                                id="quantity"
-                                                name="quantity"
-                                                type="number"
-                                                step="0.01"
-                                                className={`w-full px-5 py-4 pr-24 rounded-2xl border-2 bg-gray-50/50 focus:bg-white transition-all duration-300 outline-none font-black text-lg text-gray-900 placeholder:text-gray-300 ${formik.touched.quantity && formik.errors.quantity ? "border-red-400" : "border-gray-100 focus:border-[rgb(32,38,130)]"}`}
-                                                value={formik.values.quantity}
-                                                onChange={formik.handleChange}
-                                                onBlur={formik.handleBlur}
-                                                placeholder="0.00"
-                                            />
-                                            <div className="absolute right-5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-white border border-gray-100 rounded-xl text-gray-500 font-black text-xs shadow-sm">
-                                                {formik.values.unit || "UNITS"}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <Input
-                                        label="Commissioning Date"
-                                        name="commissioningDate"
-                                        type="date"
-                                        className="!py-4 !rounded-xl !text-base !font-bold"
-                                        value={formik.values.commissioningDate}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                    />
-                                </div>
-
-                                {/* Action-Specific Dynamic Fields removed as they are redundant with top-level Quantity and Commissioning Date */}
-                            </div>
-                        </Card>
-
-                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-amber-50 rounded-lg text-amber-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Current Usage</h3></div>}>
-                            <div className="space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <Input label="Electricity Use (Kwh)" name="electricityUseKwh" type="number" value={formik.values.electricityUseKwh} onChange={formik.handleChange} className="!py-4" />
-                                    <Input label="Water usage (KLD)" name="waterUsageKLD" type="number" value={formik.values.waterUsageKLD} onChange={formik.handleChange} className="!py-4" />
-                                </div>
-                                <div className="space-y-4">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Fuel Use (Liters)</p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        <Input label="Diesel" name="fuelDieselLiters" type="number" value={formik.values.fuelDieselLiters} onChange={formik.handleChange} className="!py-4" />
-                                        <Input label="Petrol" name="fuelPetrolLiters" type="number" value={formik.values.fuelPetrolLiters} onChange={formik.handleChange} className="!py-4" />
-                                        <Input label="Kerosene" name="fuelKeroseneLiters" type="number" value={formik.values.fuelKeroseneLiters} onChange={formik.handleChange} className="!py-4" />
+                    <StepWrapper title="Step 1: Organisation & Baseline Usage" icon={<EnergyIcon />}>
+                        <div className="space-y-10">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="md:col-span-2">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                        Energy Usage (Monthly)
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
+                                        <InputField label="Electricity in kWh" name="baselineEnergyGrid" type="number" formik={formik} />
+                                        <InputField label="Fuel (Liters)" name="baselineEnergyDiesel" type="number" formik={formik} />
+                                        <InputField label="Solar (kWh)" name="baselineEnergySolar" type="number" formik={formik} />
                                     </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Waste Generated (Kgs)</p>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                        <Input label="Organic" name="wasteOrganicKg" type="number" value={formik.values.wasteOrganicKg} onChange={formik.handleChange} className="!py-4" />
-                                        <Input label="Textile" name="wasteTextileKg" type="number" value={formik.values.wasteTextileKg} onChange={formik.handleChange} className="!py-4" />
-                                        <Input label="Plastic" name="wastePlasticKg" type="number" value={formik.values.wastePlasticKg} onChange={formik.handleChange} className="!py-4" />
-                                        <Input label="Electronic" name="wasteElectronicKg" type="number" value={formik.values.wasteElectronicKg} onChange={formik.handleChange} className="!py-4" />
+
+                                <div className="md:col-span-2 mt-4">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                        Water Usage (Monthly)
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
+                                        <InputField label="Municipal (L)" name="baselineWaterMunicipal" type="number" formik={formik} />
+                                        <InputField label="Rainwater (L)" name="baselineWaterRain" type="number" formik={formik} />
+                                        <InputField label="Recycled (L)" name="baselineWaterWaste" type="number" formik={formik} />
+                                    </div>
+                                </div>
+
+                                <div className="md:col-span-2 mt-4">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                        Waste Management (Monthly)
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
+                                        <InputField label="Organic (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
+                                        <InputField label="Inorganic (kg)" name="baselineWasteInorganic" type="number" formik={formik} />
+                                        <InputField label="Hazardous (kg)" name="baselineWasteHazardous" type="number" formik={formik} />
                                     </div>
                                 </div>
                             </div>
-                        </Card>
-                    </div>
+                        </div>
+                    </StepWrapper>
                 )}
 
                 {currentStep === 2 && (
-                    <div className="space-y-8">
-                        <Card header={
-                            <div className="flex items-center justify-between group cursor-default">
-                                <div className="flex items-center gap-3">
-                                    <span className="p-2 bg-cyan-50 rounded-lg text-cyan-600">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
-                                    </span>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-gray-800">Assessment & Verification</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        }>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <Input
-                                    label="Baseline Electricity Usage (Kwh)"
-                                    name="baselineElectricityKwh"
+                    <StepWrapper title="Phase 2: Low-Carbon Action Details" icon={<ActionIcon />}>
+                        <div className="space-y-8">
+                            <DropdownField
+                                label="Action Type"
+                                name="actionType"
+                                options={ACTION_TYPE_OPTIONS} // Need to import or define
+                                formik={formik}
+                            />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <InputField
+                                    label="Quantity / Capacity"
+                                    name="quantity"
                                     type="number"
-                                    className="!py-4 !rounded-xl !font-bold"
-                                    value={formik.values.baselineElectricityKwh}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    placeholder="Total Kwh"
-                                    error={formik.touched.baselineElectricityKwh ? (formik.errors.baselineElectricityKwh as string) : undefined}
+                                    formik={formik}
+                                    suffix={formik.values.unit || "units"}
                                 />
-                                <Input
-                                    label="Baseline Water Consumption (KL)"
-                                    name="baselineWaterKL"
-                                    type="number"
-                                    className="!py-4 !rounded-xl !font-bold"
-                                    value={formik.values.baselineWaterKL}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    placeholder="Total KL"
-                                    error={formik.touched.baselineWaterKL ? (formik.errors.baselineWaterKL as string) : undefined}
-                                />
-                                <Input
-                                    label="Recycling: Waste Generated (kg/yr)"
-                                    name="wasteGeneratedKg"
-                                    type="number"
-                                    className="!py-4 !rounded-xl !font-bold"
-                                    value={formik.values.wasteGeneratedKg}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    placeholder="Total waste generated"
-                                    error={formik.touched.wasteGeneratedKg ? (formik.errors.wasteGeneratedKg as string) : undefined}
-                                />
-                                <Input
-                                    label="Recycling: Waste Diverted (kg/yr)"
-                                    name="wasteDivertedKg"
-                                    type="number"
-                                    className="!py-4 !rounded-xl !font-bold"
-                                    value={formik.values.wasteDivertedKg}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    placeholder="Waste recycled or composted"
-                                    error={formik.touched.wasteDivertedKg ? (formik.errors.wasteDivertedKg as string) : undefined}
+                                <InputField
+                                    label="Installation / Commissioning Date"
+                                    name="commissioningDate"
+                                    type="date"
+                                    formik={formik}
                                 />
                             </div>
 
-                            <div className="border-t border-gray-100 pt-6 mt-8">
-                                <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 mb-6">Verification Photos</p>
+                            <LocationPickerSection
+                                address={formik.values.address}
+                                lat={formik.values.lat || undefined}
+                                lng={formik.values.lng || undefined}
+                                onPlaceSelect={handlePlaceSelect}
+                                onAddressChange={(val) => formik.setFieldValue("address", val)}
+                                onCoordsChange={(lat, lng) => {
+                                    formik.setFieldValue("lat", lat);
+                                    formik.setFieldValue("lng", lng);
+                                }}
+                                error={formik.touched.address ? (formik.errors.address as string) : undefined}
+                            />
+
+                            <div className="pt-6 border-t border-gray-100">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-6">
+                                    Verification Photos ({ACTION_PHOTO_LABELS[formik.values.actionType as keyof typeof ACTION_PHOTO_LABELS] || "System Photo"})
+                                </h3>
                                 <PhotoUploadSection
                                     slots={[
-                                        { key: "energyBillCopy", label: "Energy Bill Copy" },
+                                        {
+                                            key: "energyBillCopy",
+                                            label: "Energy Bill Copy"
+                                        },
                                         { key: "meterPhoto", label: "Meter Photo" },
                                         { key: "moreDetailsPhoto", label: "More Details Photo" },
                                         { key: "siteOverviewPhoto", label: "Site Overview of System" },
@@ -547,16 +472,21 @@ export default function RegisterActionForm() {
                                         siteOverviewPhoto: formik.values.siteOverviewPhoto,
                                     }}
                                     userId={user?.uid || ""}
-                                    onPhotoChange={(key, url) => formik.setFieldValue(key, url)}
+                                    onPhotoChange={(key, url) => {
+                                        formik.setFieldValue(key, url);
+                                        // Set photo_file flag if ANY photo is present
+                                        const hasAny = url || formik.values.energyBillCopy || formik.values.meterPhoto || formik.values.moreDetailsPhoto || formik.values.siteOverviewPhoto;
+                                        formik.setFieldValue("photo_file", hasAny ? "uploaded" : null);
+                                    }}
                                 />
                             </div>
-                        </Card>
-                    </div>
+                        </div>
+                    </StepWrapper>
                 )}
 
                 {currentStep === 3 && (
                     <ImpactSummaryStep
-                        isSchool={false}
+                        isSchool={formik.values.entityType === "School"}
                         formValues={formik.values}
                         userProfile={profile}
                         agreed={formik.values.summaryAgreed}
@@ -565,64 +495,57 @@ export default function RegisterActionForm() {
                 )}
 
                 {currentStep === 4 && (
-                    <div className="space-y-8">
-                        <Card>
-                            <div className="space-y-8">
-                                <div className="bg-slate-50 p-6 rounded-[2rem] border border-gray-100 space-y-4">
-                                    <label className="flex items-start gap-4 cursor-pointer group">
-                                        <div className="mt-1 relative">
-                                            <input
-                                                type="checkbox"
-                                                name="consentGiven"
-                                                checked={formik.values.consentGiven}
-                                                onChange={formik.handleChange}
-                                                className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
-                                            />
-                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                                        </div>
-                                        <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
-                                            I verify that the data provided above is correct to the best of my knowledge.
-                                            I understand that this submission will generate a tamper-evident digital signature.
-                                        </span>
-                                    </label>
-                                    {formik.touched.consentGiven && formik.errors.consentGiven && (
-                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.consentGiven as string}</p>
-                                    )}
-
-                                    <label className="flex items-start gap-4 cursor-pointer group">
-                                        <div className="mt-1 relative">
-                                            <input
-                                                type="checkbox"
-                                                name="disclaimerAccepted"
-                                                checked={formik.values.disclaimerAccepted}
-                                                onChange={formik.handleChange}
-                                                className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
-                                            />
-                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                                        </div>
-                                        <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
-                                            I understand that the carbon reduction (tCO₂e) and Atmanirbhar
-                                            values displayed are <span className="text-blue-600">estimates</span> based on my submitted data.
-                                            Earth Carbon Foundation verifies all actions in good faith.
-                                        </span>
-                                    </label>
-                                    {formik.touched.disclaimerAccepted && formik.errors.disclaimerAccepted && (
-                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.disclaimerAccepted as string}</p>
-                                    )}
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-2">
-                                    <div className="text-center sm:text-left">
-                                        <p className="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">Registration Fee</p>
-                                        <p className="text-4xl font-black text-gray-800">{PAYMENT_AMOUNT_DISPLAY}</p>
+                    <StepWrapper title="Phase 4: Payment & Completion" icon={<RegistryIcon />}>
+                        <div className="space-y-8 text-center sm:text-left">
+                            <div className="bg-slate-50 p-6 rounded-[2rem] border border-gray-100 space-y-4">
+                                <label className="flex items-start gap-4 cursor-pointer group">
+                                    <div className="mt-1 relative">
+                                        <input
+                                            type="checkbox"
+                                            name="consentGiven"
+                                            checked={formik.values.consentGiven}
+                                            onChange={formik.handleChange}
+                                            className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                        />
+                                        <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
-                                    <Button type="submit" className="w-full sm:w-auto px-8 py-3.5 text-base rounded-xl shadow-lg shadow-blue-500/10" loading={submitting}>
-                                        Pay & Register Action
-                                    </Button>
-                                </div>
+                                    <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
+                                        I verify that the data provided above is correct to the best of my knowledge.
+                                    </span>
+                                </label>
+
+                                <label className="flex items-start gap-4 cursor-pointer group">
+                                    <div className="mt-1 relative">
+                                        <input
+                                            type="checkbox"
+                                            name="disclaimerAccepted"
+                                            checked={formik.values.disclaimerAccepted}
+                                            onChange={formik.handleChange}
+                                            className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                        />
+                                        <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                    </div>
+                                    <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
+                                        I accept that impact metrics are estimates based on standard methodologies.
+                                    </span>
+                                </label>
                             </div>
-                        </Card>
-                    </div>
+
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-8 p-6 bg-gradient-to-br from-white to-blue-50/30 rounded-3xl border border-gray-100 shadow-xl">
+                                <div>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Registration Fee</p>
+                                    <p className="text-4xl font-black text-[#202682]">{PAYMENT_AMOUNT_DISPLAY}</p>
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="w-full sm:w-auto px-12 py-5 bg-[rgb(32,38,130)] text-white rounded-2xl font-black shadow-2xl shadow-blue-900/30 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
+                                >
+                                    {submitting ? "Processing..." : "Pay & Complete"}
+                                </button>
+                            </div>
+                        </div>
+                    </StepWrapper>
                 )}
 
                 {/* Navigation */}
@@ -651,3 +574,151 @@ export default function RegisterActionForm() {
         </div>
     );
 }
+
+const getAvailableActionTypes = () => [
+    { value: 'solar_rooftop', label: 'Solar Rooftop (PV)', unit: 'kW' },
+    { value: 'solar_water_heater', label: 'Solar Water Heater', unit: 'Liters' },
+    { value: 'borewell_water', label: 'Borewell Water Pumping', unit: 'HP' },
+    { value: 'rainwater_harvesting', label: 'Rainwater Harvesting', unit: 'KL' },
+    { value: 'biogas', label: 'Biogas Plant', unit: 'm3' },
+    { value: 'composting', label: 'Waste Composting', unit: 'kg/day' },
+    { value: 'plastic_recycling', label: 'Plastic Recycling', unit: 'kg' },
+    { value: 'paper_recycling', label: 'Paper Recycling', unit: 'kg' },
+    { value: 'textile_recycling', label: 'Textile Recycling', unit: 'kg' },
+    { value: 'metal_recycling', label: 'Metal Recycling', unit: 'kg' },
+    { value: 'turn_off_bulb', label: 'Lighting Efficiency', unit: 'points' },
+    { value: 'turn_off_fan', label: 'Fan Efficiency', unit: 'points' },
+];
+
+const ACTION_TYPE_OPTIONS = [
+    { value: 'solar_rooftop', label: 'Solar Rooftop (PV)' },
+    { value: 'solar_water_heater', label: 'Solar Water Heater' },
+    { value: 'borewell_water', label: 'Borewell Water Pumping' },
+    { value: 'rainwater_harvesting', label: 'Rainwater Harvesting' },
+    { value: 'biogas', label: 'Biogas Plant' },
+    { value: 'composting', label: 'Waste Composting' },
+    { value: 'plastic_recycling', label: 'Plastic Recycling' },
+    { value: 'paper_recycling', label: 'Paper Recycling' },
+    { value: 'textile_recycling', label: 'Textile Recycling' },
+    { value: 'metal_recycling', label: 'Metal Recycling' },
+    { value: 'turn_off_bulb', label: 'Lighting Efficiency' },
+    { value: 'turn_off_fan', label: 'Fan Efficiency' },
+];
+
+const ACTION_PHOTO_LABELS: Record<string, string> = {
+    solar_rooftop: "Solar Panel & Inverter Photo",
+    solar_water_heater: "Solar Tank & Collector Photo",
+    borewell_water: "Pump & Meter Photo",
+    rainwater_harvesting: "Storage Tank & Filter Photo",
+    biogas: "Digester & Stove Photo",
+    composting: "Compost Bin Photo",
+    plastic_recycling: "Recycled Plastic Batch Photo",
+    paper_recycling: "Paper Collection Point Photo",
+    textile_recycling: "Textile Waste Storage Photo",
+    metal_recycling: "Metal Scrap Storage Photo",
+    turn_off_bulb: "LED Installation Photo",
+    turn_off_fan: "Efficient Fan Photo",
+};
+
+function StepWrapper({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) {
+    return (
+        <div className="bg-white rounded-3xl p-6 shadow-2xl shadow-gray-200 border border-gray-100 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-lg font-black text-white bg-[rgb(32,38,130)] -mx-6 -mt-6 p-5 rounded-t-3xl flex items-center gap-3 text-left">
+                <span className="p-2 bg-white/20 rounded-lg">{icon}</span>
+                {title}
+            </h2>
+            <div className="px-2 text-left">{children}</div>
+        </div>
+    );
+}
+
+function InputField({ label, name, type = "text", formik, textarea = false, placeholder = "", icon, maxLength, suffix, ...props }: any) {
+    const error = formik.touched[name] && formik.errors[name];
+    return (
+        <div className="space-y-2 text-left">
+            <label className="flex items-center gap-2 text-sm font-bold text-gray-400 px-1 uppercase tracking-widest">
+                {icon && <span className="opacity-50">{icon}</span>}
+                {label}
+            </label>
+            <div className="relative">
+                {textarea ? (
+                    <textarea
+                        name={name}
+                        placeholder={placeholder}
+                        maxLength={maxLength}
+                        className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-bold text-gray-900 min-h-[120px] text-base ${error ? "border-red-500 bg-red-50" : "border-gray-100 focus:border-[rgb(32,38,130)] focus:bg-white"
+                            }`}
+                        {...formik.getFieldProps(name)}
+                    />
+                ) : (
+                    <>
+                        <input
+                            type={type}
+                            name={name}
+                            placeholder={placeholder}
+                            maxLength={maxLength}
+                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-bold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-100 focus:border-[rgb(32,38,130)] focus:bg-white"
+                                } ${suffix ? "pr-12" : ""}`}
+                            {...formik.getFieldProps(name)}
+                            {...props}
+                        />
+                        {suffix && (
+                            <div className="absolute right-5 top-1/2 -translate-y-1/2 font-black text-gray-300 pointer-events-none text-xs uppercase">
+                                {suffix}
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+            {error && <p className="text-xs font-bold text-red-500 px-1">{error}</p>}
+        </div>
+    );
+}
+
+function DropdownField({ label, name, options, formik, placeholder = "Select option" }: any) {
+    const error = formik.touched[name] && formik.errors[name];
+    return (
+        <div className="space-y-2 text-left">
+            <label className="block text-xs font-black text-gray-400 px-1 uppercase tracking-widest leading-none mb-1">{label}</label>
+            <CustomDropdown
+                options={options}
+                value={formik.values[name]}
+                onChange={(val) => {
+                    formik.setFieldValue(name, val);
+                    // Auto-set unit based on action type
+                    const selected = getAvailableActionTypes().find(a => a.value === val);
+                    if (selected) formik.setFieldValue("unit", selected.unit);
+                }}
+                placeholder={placeholder}
+                size="lg"
+                className={error ? "border-red-500 rounded-xl" : "rounded-xl border-gray-100"}
+            />
+            {error && <p className="text-xs font-bold text-red-500 px-1">{error}</p>}
+        </div>
+    );
+}
+
+const ActionIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+);
+const EnergyIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2" /><path d="M12 21v2" /><path d="M4.22 4.22l1.42 1.42" /><path d="M18.36 18.36l1.42 1.42" /><path d="M1 12h2" /><path d="M21 12h2" /><path d="M4.22 19.78l1.42-1.42" /><path d="M18.36 5.64l1.42-1.42" /></svg>
+);
+const RegistryIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
+);
+
+const CustomDropdown = ({ options, value, onChange, placeholder, className }: any) => {
+    return (
+        <select
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className={`w-full px-4 py-3 bg-gray-50 border-2 border-gray-100 rounded-xl font-bold text-gray-900 outline-none focus:border-[rgb(32,38,130)] focus:bg-white transition-all ${className}`}
+        >
+            <option value="" disabled>{placeholder}</option>
+            {options.map((opt: any) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+        </select>
+    );
+};

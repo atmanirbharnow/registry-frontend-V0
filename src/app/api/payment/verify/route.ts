@@ -183,14 +183,16 @@ export async function POST(request: NextRequest) {
             actionType: formData.actionType,
             quantity: Number(formData.quantity),
             unit: formData.unit,
-            // Usage fields
-            electricityUseKwh: Number(formData.electricityUseKwh) || undefined,
-            waterUsageKLD: Number(formData.waterUsageKLD) || undefined,
-            // Baseline fields
-            baselineElectricityKwh: Number(formData.baselineElectricityKwh) || undefined,
-            baselineWaterKL: Number(formData.baselineWaterKL) || undefined,
-            wasteGeneratedKg: formData.wasteGeneratedKg ? Number(formData.wasteGeneratedKg) : undefined,
-            wasteDivertedKg: formData.wasteDivertedKg ? Number(formData.wasteDivertedKg) : undefined,
+            // Baseline fields (Step 1 structure)
+            baselineEnergyGrid: Number(formData.baselineEnergyGrid) || 0,
+            baselineEnergyDiesel: Number(formData.baselineEnergyDiesel) || 0,
+            baselineEnergySolar: Number(formData.baselineEnergySolar) || 0,
+            baselineWaterMunicipal: Number(formData.baselineWaterMunicipal) || 0,
+            baselineWaterRain: Number(formData.baselineWaterRain) || 0,
+            baselineWaterWaste: Number(formData.baselineWaterWaste) || 0,
+            baselineWasteOrganic: Number(formData.baselineWasteOrganic) || 0,
+            baselineWasteInorganic: Number(formData.baselineWasteInorganic) || 0,
+            baselineWasteHazardous: Number(formData.baselineWasteHazardous) || 0,
         });
 
         const co2eKg = impact.tCO2e * 1000;
@@ -230,24 +232,21 @@ export async function POST(request: NextRequest) {
             co2eKg,
             atmanirbharPercent,
             circularityPercent,
-            // Usage Data
+            // Usage Data (Step 2 - Comparison for summary/verification)
             electricityUseKwh: Number(formData.electricityUseKwh) || null,
-            fuelDieselLiters: Number(formData.fuelDieselLiters) || null,
-            fuelPetrolLiters: Number(formData.fuelPetrolLiters) || null,
-            fuelKeroseneLiters: Number(formData.fuelKeroseneLiters) || null,
             waterUsageKLD: Number(formData.waterUsageKLD) || null,
-            wasteOrganicKg: Number(formData.wasteOrganicKg) || null,
-            wasteTextileKg: Number(formData.wasteTextileKg) || null,
-            wastePlasticKg: Number(formData.wastePlasticKg) || null,
-            wasteElectronicKg: Number(formData.wasteElectronicKg) || null,
-            // Baseline Data
-            baselineElectricityKwh: Number(formData.baselineElectricityKwh) || null,
-            baselineWaterKL: Number(formData.baselineWaterKL) || null,
-            baselineWasteOrganicKg: Number(formData.baselineWasteOrganicKg) || null,
-            baselineWastePaperKg: Number(formData.baselineWastePaperKg) || null,
-            baselineWastePlasticKg: Number(formData.baselineWastePlasticKg) || null,
-            baselineWasteTextileKg: Number(formData.baselineWasteTextileKg) || null,
-            baselineWasteEWasteKg: Number(formData.baselineWasteEWasteKg) || null,
+            wasteGeneratedKg: Number(formData.wasteGeneratedKg) || null,
+            wasteDivertedKg: Number(formData.wasteDivertedKg) || null,
+            // Baseline Data (Step 1 - 9-field authoritative structure)
+            baselineEnergyGrid: Number(formData.baselineEnergyGrid) || 0,
+            baselineEnergyDiesel: Number(formData.baselineEnergyDiesel) || 0,
+            baselineEnergySolar: Number(formData.baselineEnergySolar) || 0,
+            baselineWaterMunicipal: Number(formData.baselineWaterMunicipal) || 0,
+            baselineWaterRain: Number(formData.baselineWaterRain) || 0,
+            baselineWaterWaste: Number(formData.baselineWaterWaste) || 0,
+            baselineWasteOrganic: Number(formData.baselineWasteOrganic) || 0,
+            baselineWasteInorganic: Number(formData.baselineWasteInorganic) || 0,
+            baselineWasteHazardous: Number(formData.baselineWasteHazardous) || 0,
             // Verification Photos (Updated mapping)
             energyBillCopy: formData.energyBillCopy || null,
             meterPhoto: formData.meterPhoto || null,

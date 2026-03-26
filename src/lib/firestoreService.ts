@@ -46,10 +46,10 @@ export async function updateUserProfile(
     uid: string,
     data: Partial<UserProfile>
 ): Promise<void> {
-    await updateDoc(doc(db, COLLECTIONS.USERS, uid), {
+    await setDoc(doc(db, COLLECTIONS.USERS, uid), {
         ...data,
         updatedAt: serverTimestamp(),
-    });
+    }, { merge: true });
 }
 
 export async function createAction(

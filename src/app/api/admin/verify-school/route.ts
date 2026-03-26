@@ -112,18 +112,18 @@ export async function POST(request: NextRequest) {
         // If admin edited data, merge it and recalculate impact
         if (editedData) {
             const impact = calculateSchoolImpact({
-                electricity_kWh_year: Number(editedData.electricity_kWh_year) || null,
-                fuel_type: editedData.fuel_type || "None",
-                fuel_consumption_litres: Number(editedData.fuel_consumption_litres) || null,
-                renewable_energy_type: editedData.renewable_energy_type || "None",
-                renewable_energy_kwh: Number(editedData.renewable_energy_kwh) || null,
-                attribution_pct_energy: Number(editedData.attribution_pct_energy) || 100,
+                baselineEnergyGrid: Number(editedData.baselineEnergyGrid ?? editedData.electricity_kWh_year) || 0,
+                baselineEnergyDiesel: Number(editedData.baselineEnergyDiesel ?? editedData.fuel_consumption_litres) || 0,
+                baselineEnergySolar: Number(editedData.baselineEnergySolar ?? editedData.renewable_energy_kwh) || 0,
+                baselineWaterMunicipal: Number(editedData.baselineWaterMunicipal ?? editedData.water_consumption_m3) || 0,
+                baselineWaterRain: Number(editedData.baselineWaterRain) || 0,
+                baselineWaterWaste: Number(editedData.baselineWaterWaste) || 0,
+                baselineWasteOrganic: Number(editedData.baselineWasteOrganic ?? editedData.waste_generated_kg) || 0,
+                baselineWasteInorganic: Number(editedData.baselineWasteInorganic ?? editedData.waste_diverted_kg) || 0,
+                baselineWasteHazardous: Number(editedData.baselineWasteHazardous) || 0,
                 students_count: Number(editedData.students_count) || 1,
-                waste_generated_kg: Number(editedData.waste_generated_kg) || null,
-                waste_diverted_kg: Number(editedData.waste_diverted_kg) || null,
-                water_consumption_m3: Number(editedData.water_consumption_m3) || null,
-                attribution_pct_waste: Number(editedData.attribution_pct_waste) || 100,
-                attribution_pct_water: Number(editedData.attribution_pct_water) || 100,
+                actionType: editedData.actionType || "Solar",
+                actionQuantity: Number(editedData.actionQuantity ?? editedData.electricity_kWh_year) || 0,
             });
 
             updateData = {

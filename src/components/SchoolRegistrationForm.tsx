@@ -6,12 +6,9 @@ import * as Yup from "yup";
 import { SchoolFormData } from "@/types/school";
 import { 
     BASELINE_SOURCE_OPTIONS, 
-    FUEL_TYPE_OPTIONS, 
-    RENEWABLE_TYPE_OPTIONS,
     REPORTING_YEAR_OPTIONS,
-    RECYCLING_PROGRAM_OPTIONS,
-    ACTION_TYPE_OPTIONS
 } from "@/lib/constants/schoolConstants";
+import { ACTION_TYPES, ACTION_PHOTO_LABELS } from "@/lib/constants";
 import { toast } from "react-toastify";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRouter } from "next/navigation";
@@ -34,35 +31,34 @@ declare global {
 }
 
 const validationSchema = [
-    // Step 1 (was 2): Energy & Fuel
+    // Step 1: Baseline Usage
     Yup.object({
-        students_count: Yup.number().min(1, "Students count must be at least 1").required("Required"),
-        reporting_year: Yup.string().required("Required"),
-        action_id: Yup.string().required("Please select an action"),
-        electricity_kWh_year: Yup.number().required("Required"),
-        fuel_type: Yup.string().required("Required"),
+        students_count: Yup.number().min(1, "Students count must be at least 1").required("Req"),
+        baselineEnergyGrid: Yup.number().required("Req"),
+        baselineEnergyDiesel: Yup.number().required("Req"),
+        baselineEnergySolar: Yup.number().required("Req"),
+        baselineWaterMunicipal: Yup.number().required("Req"),
+        baselineWaterRain: Yup.number().required("Req"),
+        baselineWaterWaste: Yup.number().required("Req"),
+        baselineWasteOrganic: Yup.number().required("Req"),
+        baselineWasteInorganic: Yup.number().required("Req"),
+        baselineWasteHazardous: Yup.number().required("Req"),
+        reporting_year: Yup.string().required("Req"),
     }),
-    // Step 2 (was 3): Waste & Water
+    // Step 2: Low-Carbon Action
     Yup.object({
-        waste_generated_kg: Yup.number().required("Required"),
-        water_consumption_m3: Yup.number().required("Required"),
-        attribution_pct_energy: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
-        attribution_pct_waste: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
-        attribution_pct_water: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
-        photo_file: Yup.mixed().required("Proof photo is required"),
+        action_type: Yup.string().required("Please select an action type"),
+        actionQuantity: Yup.number().required("Quantity is required"), // Standardized name
+        installation_date: Yup.date().required("Required"),
+        address: Yup.string().required("Location is required"),
     }),
-    // Step 3 (was 4): Impact Summary
+    // Step 3: Impact Summary
     Yup.object({
-        summaryAgreed: Yup.boolean().oneOf([true], "You must agree to proceed").required(),
+        summaryAgreed: Yup.boolean().oneOf([true], "Agreement required").required(),
     }),
-    // Step 4 (was 5): Finalization
+    // Step 4: Finalization & Payment
     Yup.object({
-        consent_confirmed: Yup.boolean().oneOf([true], "Please provide consent to proceed").required(),
-        installation_date: Yup.date()
-            .transform((value, originalValue) => originalValue === "" ? null : value)
-            .nullable()
-            .min(new Date("2025-01-01"), "Year must be 2025 or later")
-            .max(new Date("2099-12-31"), "Invalid year"),
+        consent_confirmed: Yup.boolean().oneOf([true], "Consent required").required(),
     })
 ];
 
@@ -75,7 +71,6 @@ export default function SchoolRegistrationForm() {
     const [currentStep, setCurrentStep] = useState(1);
     const [projects, setProjects] = useState<any[]>([]);
     const [actions, setActions] = useState<any[]>([]);
-    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const totalSteps = 4;
 
     useEffect(() => {
@@ -138,45 +133,47 @@ export default function SchoolRegistrationForm() {
             contactPerson: "",
             phone: "",
             email: "",
-            projectId: "",
+            baselineEnergyGrid: "0",
+            baselineEnergyDiesel: "0",
+            baselineEnergySolar: "0",
+            baselineWaterMunicipal: "0",
+            baselineWaterRain: "0",
+            baselineWaterWaste: "0",
+            baselineWasteOrganic: "0",
+            baselineWasteInorganic: "0",
+            baselineWasteHazardous: "0",
+            students_count: "",
+            reporting_year: "2025",
+            baseline_source: "school_shared",
+
+            action_type: "",
+            actionQuantity: "", // Standardized as quantity
+            installation_date: "",
+            lat: null,
+            lng: null,
+
+            consent_confirmed: false,
+            summaryAgreed: false,
             
-            electricity_kWh_year: "",
+            // Legacy/Unused
+            projectId: "",
+            action_id: "",
             fuel_type: "None",
             fuel_consumption_litres: "",
             renewable_energy_type: "None",
             renewable_energy_kwh: "",
-            attribution_pct_energy: "",
-            students_count: "",
-            reporting_year: "2025",
-            action_id: "",
-
             waste_generated_kg: "",
             waste_diverted_kg: "",
-            recycling_programs: [],
             water_consumption_m3: "",
-            attribution_pct_waste: "",
-            attribution_pct_water: "",
-            calculation_notes: "",
-            baseline_source: "school_shared",
-
-            has_existing_actions: "No",
-            action_type: "",
-            installation_date: "",
-            capacity_description: "",
-            photo_file: null,
-            planned_action_type: "",
-            target_date: "",
+            attribution_pct_energy: "100",
+            attribution_pct_waste: "100",
+            attribution_pct_water: "100",
             
-            consent_confirmed: false,
-            summaryAgreed: false,
-            lat: null,
-            lng: null,
-            
-            // Photos
-            energyBillCopy: null,
-            meterPhoto: null,
-            moreDetailsPhoto: null,
-            siteOverviewPhoto: null,
+            // Verification Photos
+            energyBillCopy: "",
+            meterPhoto: "",
+            moreDetailsPhoto: "",
+            siteOverviewPhoto: "",
         },
         validationSchema: validationSchema[currentStep - 1],
         onSubmit: async (values) => {
@@ -251,26 +248,7 @@ export default function SchoolRegistrationForm() {
     }, [formik.values.projectId]);
 
     const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        if (!["image/jpeg", "image/png"].includes(file.type)) {
-            toast.error("Please upload an image file (JPG or PNG).");
-            return;
-        }
-
-        if (file.size > 10 * 1024 * 1024) {
-            toast.error("Image too large. Please upload a photo under 10MB.");
-            return;
-        }
-
-        // Feature 9: Compression
-        const compressed = await compressImage(file);
-        formik.setFieldValue("photo_file", compressed);
-        
-        const reader = new FileReader();
-        reader.onloadend = () => setPhotoPreview(reader.result as string);
-        reader.readAsDataURL(compressed);
+        // Deprecated: replaced by PhotoUploadSection
     };
 
     const compressImage = (file: File): Promise<File> => {
@@ -321,6 +299,12 @@ export default function SchoolRegistrationForm() {
             formData.append("userIdToken", await auth.currentUser?.getIdToken() || "");
             formData.append("userId", auth.currentUser?.uid || "");
 
+            // Ensure photo fields are sent
+            ["energyBillCopy", "meterPhoto", "moreDetailsPhoto", "siteOverviewPhoto"].forEach(key => {
+                const val = (values as any)[key];
+                if (val) formData.set(key, val);
+            });
+
             const verifyRes = await fetch("/api/school/payment/verify", {
                 method: "POST",
                 body: formData,
@@ -345,8 +329,8 @@ export default function SchoolRegistrationForm() {
         if (Object.keys(errors).length === 0) {
             setCurrentStep(currentStep + 1);
         } else {
-            if (currentStep === 2 && errors.photo_file) {
-                toast.error("Please upload a proof photo of the action to proceed.", { position: "top-center" });
+            if (currentStep === 2 && !formik.values.energyBillCopy && !formik.values.meterPhoto && !formik.values.moreDetailsPhoto && !formik.values.siteOverviewPhoto) {
+                toast.error("Please upload at least one proof photo to proceed.", { position: "top-center" });
             }
             formik.setTouched(
                 Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {})
@@ -366,8 +350,8 @@ export default function SchoolRegistrationForm() {
                     {[1, 2, 3, 4].map((step) => (
                         <div key={step} className="flex flex-col items-center flex-1 min-w-[90px] px-2 text-center">
                             <div className={`text-[9px] sm:text-[10px] font-bold mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
-                                {step === 1 && "Energy & Fuel"}
-                                {step === 2 && "Waste & Water"}
+                                {step === 1 && "Baseline Usage"}
+                                {step === 2 && "Low-Carbon Action"}
                                 {step === 3 && "Impact Summary"}
                                 {step === 4 && "Payment"}
                             </div>
@@ -393,91 +377,106 @@ export default function SchoolRegistrationForm() {
 
             <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(); }} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {currentStep === 1 && (
-                    <StepWrapper title="Phase 2: Energy & Fuel Data" icon={<EnergyIcon />}>
+                    <StepWrapper title="Baseline Usage (Monthly Average)" icon={<EnergyIcon />}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <InputField label="Students Count" name="students_count" type="number" formik={formik} />
+                            <InputField label="Student/Staff Count" name="students_count" type="number" formik={formik} />
                             <DropdownField label="Reporting Year" name="reporting_year" options={REPORTING_YEAR_OPTIONS} formik={formik} />
-                            
-                            <DropdownField label="Primary Action Type" name="action_id" options={actions.map(a => ({ value: a.id, label: `${a.type} - ${a.id}` }))} formik={formik} placeholder="Select Action" />
                             <DropdownField label="Data Source" name="baseline_source" options={BASELINE_SOURCE_OPTIONS} formik={formik} />
 
-                            <div className="md:col-span-2 h-px bg-gray-100 my-4" />
+                            <div className="md:col-span-2 mt-6">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                    Energy Usage (Monthly)
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                    <InputField label="Electricity in kWh" name="baselineEnergyGrid" type="number" formik={formik} />
+                                    <InputField label="Diesel/Fuel (Liters)" name="baselineEnergyDiesel" type="number" formik={formik} />
+                                    <InputField label="Solar/Biomass (kWh)" name="baselineEnergySolar" type="number" formik={formik} />
+                                </div>
+                            </div>
 
-                            <InputField label="Electricity Use (kWh/yr)" name="electricity_kWh_year" type="number" formik={formik} />
-                            <DropdownField label="Main Fuel Type" name="fuel_type" options={FUEL_TYPE_OPTIONS} formik={formik} />
-                            
-                            {formik.values.fuel_type !== "None" && (
-                                <InputField 
-                                    label="Annual Fuel Consumption (Litres)" 
-                                    name="fuel_consumption_litres" 
-                                    type="number" 
-                                    formik={formik} 
-                                />
-                            )}
+                            <div className="md:col-span-2 mt-4">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                    Water Usage (Monthly)
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                    <InputField label="Municipal Intake (Liters)" name="baselineWaterMunicipal" type="number" formik={formik} />
+                                    <InputField label="Rainwater (Liters)" name="baselineWaterRain" type="number" formik={formik} />
+                                    <InputField label="Wastewater (Liters)" name="baselineWaterWaste" type="number" formik={formik} />
+                                </div>
+                            </div>
 
-                            <div className="md:col-span-2 h-px bg-gray-100 my-4" />
-
-                            <DropdownField label="Renewable Energy (if any)" name="renewable_energy_type" options={RENEWABLE_TYPE_OPTIONS} formik={formik} />
-                            {formik.values.renewable_energy_type !== "None" && (
-                                <InputField label="Renewable Gen (kWh/yr)" name="renewable_energy_kwh" type="number" formik={formik} />
-                            )}
+                            <div className="md:col-span-2 mt-4">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                    Waste Management (Monthly)
+                                </h3>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                    <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
+                                    <InputField label="Inorganic (kg)" name="baselineWasteInorganic" type="number" formik={formik} />
+                                    <InputField label="Hazardous (kg)" name="baselineWasteHazardous" type="number" formik={formik} />
+                                </div>
+                            </div>
                         </div>
                     </StepWrapper>
                 )}
 
                 {currentStep === 2 && (
-                    <div className="space-y-8">
-                        <StepWrapper title="Phase 3: Waste & Water Data" icon={<WasteIcon />}>
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <StepWrapper title="Low-Carbon Action Details" icon={<RegistryIcon />}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <InputField label="Waste Generated (kg/yr)" name="waste_generated_kg" type="number" formik={formik} />
-                                <InputField label="Water Consumption (m3/yr)" name="water_consumption_m3" type="number" formik={formik} />
-
-                                <div className="md:col-span-2 h-px bg-gray-100 my-4 text-center">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Attribution Percentages</p>
+                                <DropdownField 
+                                    label="Select Action Type" 
+                                    name="action_type" 
+                                    options={ACTION_TYPES.map(a => ({ value: a.value, label: a.label }))} 
+                                    formik={formik} 
+                                />
+                                <InputField 
+                                    label="Installed Capacity / Quantity" 
+                                    name="actionQuantity" 
+                                    type="number" 
+                                    formik={formik} 
+                                    suffix={ACTION_TYPES.find(a => a.value === formik.values.action_type)?.unit || "Units"}
+                                />
+                                <InputField 
+                                    label="Commissioning Date" 
+                                    name="installation_date" 
+                                    type="date" 
+                                    formik={formik} 
+                                />
+                                
+                                <div className="md:col-span-2 h-px bg-gray-100 my-2" />
+                                
+                                <div className="md:col-span-2">
+                                    <InputField 
+                                        label="Site/Action Location" 
+                                        name="address" 
+                                        textarea 
+                                        formik={formik} 
+                                        placeholder="Enter the specific address where the action is installed..."
+                                    />
                                 </div>
-
-                                <InputField 
-                                    label="Energy Attribution" 
-                                    name="attribution_pct_energy" 
-                                    type="number" 
-                                    formik={formik} 
-                                    suffix="%"
-                                />
-                                <InputField 
-                                    label="Waste Attribution" 
-                                    name="attribution_pct_waste" 
-                                    type="number" 
-                                    formik={formik} 
-                                    suffix="%"
-                                />
-                                <InputField 
-                                    label="Water Attribution" 
-                                    name="attribution_pct_water" 
-                                    type="number" 
-                                    formik={formik} 
-                                    suffix="%"
-                                />
                             </div>
                         </StepWrapper>
 
-                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-indigo-50 rounded-lg text-indigo-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Action Verification</h3></div>}>
-                            <PhotoUploadSection
-                                slots={[
-                                    { key: "energyBillCopy", label: "Energy Bill Copy" },
-                                    { key: "meterPhoto", label: "Meter Photo" },
-                                    { key: "moreDetailsPhoto", label: "More Details Photo" },
-                                    { key: "siteOverviewPhoto", label: "Site Overview of System" },
-                                ]}
-                                photos={{
-                                    energyBillCopy: formik.values.energyBillCopy,
-                                    meterPhoto: formik.values.meterPhoto,
-                                    moreDetailsPhoto: formik.values.moreDetailsPhoto,
-                                    siteOverviewPhoto: formik.values.siteOverviewPhoto,
-                                }}
-                                userId={auth.currentUser?.uid || ""}
-                                onPhotoChange={(key, url) => formik.setFieldValue(key, url)}
-                            />
-                        </Card>
+                        <PhotoUploadSection
+                            userId={auth.currentUser?.uid || "anonymous"}
+                            slots={[
+                                { key: "energyBillCopy", label: "Energy Bill Copy" },
+                                { key: "meterPhoto", label: "Meter Photo" },
+                                { key: "moreDetailsPhoto", label: "More Details Photo" },
+                                { key: "siteOverviewPhoto", label: "Site Overview of System" },
+                            ]}
+                            photos={{
+                                energyBillCopy: formik.values.energyBillCopy || null,
+                                meterPhoto: formik.values.meterPhoto || null,
+                                moreDetailsPhoto: formik.values.moreDetailsPhoto || null,
+                                siteOverviewPhoto: formik.values.siteOverviewPhoto || null,
+                            }}
+                            onPhotoChange={(key, url) => {
+                                formik.setFieldValue(key, url);
+                                // Set photo_file as a flag for Yup if needed, 
+                                // but we manually check in handleNext
+                            }}
+                        />
                     </div>
                 )}
 
@@ -492,64 +491,37 @@ export default function SchoolRegistrationForm() {
                 )}
 
                 {currentStep === 4 && (
-                    <StepWrapper title="Phase 5: Registry Finalization" icon={<RegistryIcon />}>
+                    <StepWrapper title="Finalization & Payment" icon={<RegistryIcon />}>
                         <div className="space-y-8">
-                            <div className="bg-slate-50 p-6 rounded-xl border border-gray-100 space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <span className="font-bold text-gray-700">Has existing low-carbon actions?</span>
-                                    <button
-                                        type="button"
-                                        onClick={() => formik.setFieldValue("has_existing_actions", formik.values.has_existing_actions === "Yes" ? "No" : "Yes")}
-                                        className={`relative w-14 h-8 rounded-full transition-all ${formik.values.has_existing_actions === "Yes" ? "bg-[rgb(32,38,130)]" : "bg-gray-300"}`}
-                                    >
-                                        <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all shadow-md ${formik.values.has_existing_actions === "Yes" ? "left-7" : "left-1"}`} />
-                                    </button>
-                                </div>
-
-                                {formik.values.has_existing_actions === "Yes" && (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
-                                        <DropdownField label="Action Type" name="action_type" options={ACTION_TYPE_OPTIONS} formik={formik} />
-                                        <InputField label="Installation Date" name="installation_date" type="date" formik={formik} min="2025-01-01" max="2099-12-31" />
+                            <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 space-y-4">
+                                <label className="flex items-start gap-4 cursor-pointer group">
+                                    <div className="mt-1 relative">
+                                        <input 
+                                            type="checkbox" 
+                                            name="consent_confirmed"
+                                            checked={formik.values.consent_confirmed} 
+                                            onChange={formik.handleChange} 
+                                            className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer" 
+                                        />
+                                        <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
-                                )}
-
-                                {formik.values.has_existing_actions === "No" && (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
-                                        <InputField label="Planned Action" name="planned_action_type" formik={formik} placeholder="e.g., Solar panels" />
-                                        <InputField label="Target Date" name="target_date" type="date" formik={formik} min="2025-01-01" max="2099-12-31" />
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="pt-6 border-t border-gray-100">
-                                <label className="flex gap-4 cursor-pointer group">
-                                    <input 
-                                        type="checkbox" 
-                                        className="w-6 h-6 mt-1 rounded-lg border-2 border-gray-300 accent-[rgb(32,38,130)]"
-                                        checked={formik.values.consent_confirmed}
-                                        onChange={(e) => formik.setFieldValue("consent_confirmed", e.target.checked)}
-                                    />
-                                    <span className={`text-sm font-bold leading-relaxed transition-colors ${formik.touched.consent_confirmed && formik.errors.consent_confirmed ? "text-red-500" : "text-gray-500 group-hover:text-gray-800"}`}>
-                                        I authorize Earth Carbon Foundation to collect, verify, and publicly display this school's low-carbon action data for transparency and climate accountability purposes.
+                                    <span className="text-sm font-bold text-slate-500 group-hover:text-slate-800 transition-colors leading-relaxed">
+                                        I verify that the data provided above is correct. I authorize Earth Carbon to process this information for registry verification.
                                     </span>
                                 </label>
                             </div>
 
-                            <div className="bg-slate-50 border border-gray-100 p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl shadow-gray-200/50">
-                                <div className="space-y-1 text-center sm:text-left font-bold">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Onboarding Fee</span>
-                                    <div className="flex items-baseline justify-center sm:justify-start gap-1">
-                                        <span className="text-xl text-gray-400">₹</span>
-                                        <span className="text-4xl text-gray-900">199</span>
-                                    </div>
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-gradient-to-br from-white to-blue-50/50 rounded-3xl border-2 border-blue-100 shadow-xl">
+                                <div>
+                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Registration Fee</p>
+                                    <p className="text-4xl font-black text-[rgb(32,38,130)]">₹199</p>
                                 </div>
                                 <button
-                                    type="button"
-                                    onClick={() => formik.handleSubmit()}
+                                    type="submit"
                                     disabled={submitting}
-                                    className="w-full sm:w-auto px-10 py-4 bg-[rgb(32,38,130)] text-white rounded-xl font-black shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-3"
+                                    className="w-full md:w-auto px-12 py-5 bg-[rgb(32,38,130)] text-white rounded-2xl font-black shadow-2xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
                                 >
-                                    {submitting ? <Spinner size="sm" /> : "Pay & Register"}
+                                    {submitting ? "Processing..." : "Pay & Register School"}
                                 </button>
                             </div>
                         </div>

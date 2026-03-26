@@ -1,12 +1,12 @@
 export const SCHOOL_EMISSION_FACTORS = {
-    ELECTRICITY: 0.7,   // kg CO2 per kWh
+    ELECTRICITY: 0.82,   // kg CO2 per kWh (CEA 2024)
     DIESEL: 2.68,       // kg CO2 per litre
     PETROL: 2.31,       // kg CO2 per litre
     LPG: 1.51,          // kg CO2 per kg
     NATURAL_GAS: 2.04,  // kg CO2 per m3
-    WATER_SUPPLY: 0.34, // kg CO2 per m3
+    WATER_SUPPLY: 0.5, // kg CO2 per m3
     WASTE_LANDFILL: 0.5, // kg CO2 per kg
-    RENEWABLE: -0.7,    // kg CO2 per kWh (credit)
+    RENEWABLE: -0.82,    // kg CO2 per kWh (credit)
 } as const;
 
 export const SCHOOL_FALLBACK_CONSTANTS = {

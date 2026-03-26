@@ -33,18 +33,18 @@ export default function ImpactSummaryStep({
     if (isSchool) {
         try {
             const res = calculateSchoolImpact({
-                electricity_kWh_year: Number(formValues.electricity_kWh_year) || 0,
-                fuel_type: formValues.fuel_type || "None",
-                fuel_consumption_litres: Number(formValues.fuel_consumption_litres) || 0,
-                renewable_energy_type: formValues.renewable_energy_type || "None",
-                renewable_energy_kwh: Number(formValues.renewable_energy_kwh) || 0,
-                attribution_pct_energy: Number(formValues.attribution_pct_energy) || 100,
+                baselineEnergyGrid: Number(formValues.baselineEnergyGrid) || 0,
+                baselineEnergyDiesel: Number(formValues.baselineEnergyDiesel) || 0,
+                baselineEnergySolar: Number(formValues.baselineEnergySolar) || 0,
+                baselineWaterMunicipal: Number(formValues.baselineWaterMunicipal) || 0,
+                baselineWaterRain: Number(formValues.baselineWaterRain) || 0,
+                baselineWaterWaste: Number(formValues.baselineWaterWaste) || 0,
+                baselineWasteOrganic: Number(formValues.baselineWasteOrganic) || 0,
+                baselineWasteInorganic: Number(formValues.baselineWasteInorganic) || 0,
+                baselineWasteHazardous: Number(formValues.baselineWasteHazardous) || 0,
                 students_count: Number(formValues.students_count) || 1,
-                waste_generated_kg: Number(formValues.waste_generated_kg) || 0,
-                waste_diverted_kg: Number(formValues.waste_diverted_kg) || 0,
-                water_consumption_m3: Number(formValues.water_consumption_m3) || 0,
-                attribution_pct_waste: Number(formValues.attribution_pct_waste) || 100,
-                attribution_pct_water: Number(formValues.attribution_pct_water) || 100,
+                actionType: formValues.action_type || "",
+                actionQuantity: Number(formValues.actionQuantity || formValues.electricity_kWh_year) || 0,
             });
             impactData = { tCO2e: res.tco2e_annual, atmanirbhar: res.atmanirbhar_pct, circularity: res.circularity_pct };
         } catch (e) {
@@ -55,13 +55,16 @@ export default function ImpactSummaryStep({
             actionType: formValues.actionType || "",
             quantity: Number(formValues.quantity) || 0,
             unit: formValues.unit || "",
-            electricityUseKwh: Number(formValues.electricityUseKwh) || 0,
-            waterUsageKLD: Number(formValues.waterUsageKLD) || 0,
-            wasteGeneratedKg: Number(formValues.wasteGeneratedKg) || 0,
-            wasteDivertedKg: Number(formValues.wasteDivertedKg) || 0,
-            baselineElectricityKwh: Number(formValues.baselineElectricityKwh) || 0,
-            baselineWaterKL: Number(formValues.baselineWaterKL) || 0,
-            baselineWasteOrganicKg: Number(formValues.baselineWasteOrganicKg) || 0,
+            // 9-field baseline
+            baselineEnergyGrid: Number(formValues.baselineEnergyGrid) || 0,
+            baselineEnergyDiesel: Number(formValues.baselineEnergyDiesel) || 0,
+            baselineEnergySolar: Number(formValues.baselineEnergySolar) || 0,
+            baselineWaterMunicipal: Number(formValues.baselineWaterMunicipal) || 0,
+            baselineWaterRain: Number(formValues.baselineWaterRain) || 0,
+            baselineWaterWaste: Number(formValues.baselineWaterWaste) || 0,
+            baselineWasteOrganic: Number(formValues.baselineWasteOrganic) || 0,
+            baselineWasteInorganic: Number(formValues.baselineWasteInorganic) || 0,
+            baselineWasteHazardous: Number(formValues.baselineWasteHazardous) || 0,
         });
         impactData = { tCO2e: res.tCO2e, atmanirbhar: res.atmanirbharScore, circularity: res.circularityScore };
     }
@@ -230,15 +233,14 @@ function PersonalDetailsGrid({ userProfile }: { userProfile: any }) {
 }
 
 function IndividualDetailsGrid({ values }: { values: Record<string, any> }) {
-    const actionLabel = ACTION_LABELS[values.actionType] || values.actionType || "—";
+    const actionLabel = ACTION_LABELS[values.action_type] || values.actionType || "—";
     const rows: [string, string][] = [
         ["Action Type", actionLabel],
-        ["Capacity / Quantity", values.quantity ? `${values.quantity} ${values.unit || "units"}` : "—"],
+        ["Action Capacity", `${values.actionQuantity || values.electricity_kWh_year || values.quantity || 0} units`],
         ["Location", values.address || "—"],
-        ["Electricity Usage", values.electricityUseKwh ? `${values.electricityUseKwh} Kwh (Current) / ${values.baselineElectricityKwh || 0} Kwh (Baseline)` : "—"],
-        ["Water usage", values.waterUsageKLD ? `${values.waterUsageKLD} KLD (Current) / ${values.baselineWaterKL || 0} KL (Baseline)` : "—"],
-        ["Waste Generated", `Organic: ${values.wasteOrganicKg || 0}kg, Plastic: ${values.wastePlasticKg || 0}kg, Electronic: ${values.wasteElectronicKg || 0}kg`],
-        ["Circularity Impact", `${values.wasteDivertedKg || 0}kg Diverted / ${values.wasteGeneratedKg || 0}kg Total`],
+        ["Baseline Energy", `${Number(values.baselineEnergyGrid || 0) + Number(values.baselineEnergyDiesel || 0) + Number(values.baselineEnergySolar || 0)} kWh/mo`],
+        ["Baseline Water", `${Number(values.baselineWaterMunicipal || 0) + Number(values.baselineWaterRain || 0) + Number(values.baselineWaterWaste || 0)} L/mo`],
+        ["Baseline Waste", `${Number(values.baselineWasteOrganic || 0) + Number(values.baselineWasteInorganic || 0) + Number(values.baselineWasteHazardous || 0)} kg/mo`],
     ];
 
     return <DetailTable rows={rows} />;
@@ -246,10 +248,13 @@ function IndividualDetailsGrid({ values }: { values: Record<string, any> }) {
 
 function SchoolDetailsGrid({ values }: { values: Record<string, any> }) {
     const rows: [string, string][] = [
-        ["School", values.schoolName || "—"],
-        ["Location", `${values.city || ""}, ${values.pincode || ""}`],
-        ["Energy", `${values.electricity_kWh_year || 0} kWh (Fuel: ${values.fuel_type || 'None'})`],
-        ["Resources", `Waste: ${values.waste_generated_kg || 0}kg, Water: ${values.water_consumption_m3 || 0}m³`],
+        ["School / Org", values.schoolName || values.actorName || "—"],
+        ["Location", values.address || "—"],
+        ["Students/Staff", values.students_count || "—"],
+        ["Baseline Energy", `${Number(values.baselineEnergyGrid || 0) + Number(values.baselineEnergyDiesel || 0) + Number(values.baselineEnergySolar || 0)} kWh/mo`],
+        ["Baseline Water", `${Number(values.baselineWaterMunicipal || 0) + Number(values.baselineWaterRain || 0) + Number(values.baselineWaterWaste || 0)} L/mo`],
+        ["Baseline Waste", `${Number(values.baselineWasteOrganic || 0) + Number(values.baselineWasteInorganic || 0) + Number(values.baselineWasteHazardous || 0)} kg/mo`],
+        ["Registered Action", ACTION_LABELS[values.action_type] || values.action_type || "—"],
     ];
 
     return <DetailTable rows={rows} />;

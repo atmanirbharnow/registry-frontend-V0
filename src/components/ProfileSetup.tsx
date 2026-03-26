@@ -30,19 +30,28 @@ const INSTITUTION_TYPES = [
 ] as const;
 
 const BHARAT_STATES = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
-    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
-    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
-    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
-    "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
-    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", 
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
+    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh",
+    "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir",
     "Ladakh", "Lakshadweep", "Puducherry"
 ].map(s => ({ value: s, label: s }));
 
 export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupProps) {
     const { user } = useAuth();
     const router = useRouter();
-    const [isEditing, setIsEditing] = useState(!profile);
+    
+    // Check if profile is complete
+    const isProfileIncomplete = !profile || 
+        !profile.phone || 
+        !profile.contactPerson || 
+        !profile.institutionType || 
+        !profile.state || 
+        !profile.city;
+
+    const [isEditing, setIsEditing] = useState(isProfileIncomplete);
     const [formData, setFormData] = useState({
         displayName: profile?.displayName || user?.displayName || "",
         email: profile?.email || user?.email || "",
@@ -94,18 +103,22 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
     };
 
     const handleSubmit = async () => {
-        const phoneRegex = /^\+91[0-9]{10}$/;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const trimmedPhone = formData.phone.trim();
+        const trimmedEmail = formData.email.trim();
+        const trimmedDisplayName = formData.displayName.trim();
+        const trimmedContactPerson = formData.contactPerson.trim();
+        const trimmedAddress = formData.address.trim();
+        const trimmedCity = formData.city.trim();
 
         if (
-            !formData.displayName.trim() || 
-            !formData.phone.trim() || 
-            !formData.contactPerson.trim() || 
+            !trimmedDisplayName ||
+            !trimmedPhone ||
+            !trimmedContactPerson ||
             !formData.institutionType ||
             !formData.state ||
             !formData.pincode ||
-            !formData.address ||
-            !formData.city ||
+            !trimmedAddress ||
+            !trimmedCity ||
             !formData.consentVerified
         ) {
             toast.error("Please fill in all required fields and accept the consent.");
@@ -117,12 +130,12 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
             return;
         }
 
-        if (!phoneRegex.test(formData.phone)) {
+        if (!/^\+91[0-9]{10}$/.test(trimmedPhone)) {
             toast.error("Invalid phone number. Must start with +91 followed by 10 digits.");
             return;
         }
 
-        if (!emailRegex.test(formData.email)) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
             toast.error("Invalid email address format.");
             return;
         }
@@ -130,15 +143,15 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
         setSaving(true);
         try {
             await updateUserProfile(uid, {
-                displayName: formData.displayName,
-                email: formData.email,
-                phone: formData.phone,
-                contactPerson: formData.contactPerson,
+                displayName: trimmedDisplayName,
+                email: trimmedEmail,
+                phone: trimmedPhone,
+                contactPerson: trimmedContactPerson,
                 institutionType: formData.institutionType,
                 state: formData.state,
                 pincode: formData.pincode,
-                address: formData.address,
-                city: formData.city,
+                address: trimmedAddress,
+                city: trimmedCity,
                 lat: formData.lat || undefined,
                 lng: formData.lng || undefined,
                 place_id: formData.place_id,
@@ -166,22 +179,23 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
     };
 
     return (
-        <div className="min-h-[calc(100vh-82px)] bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-            <div className="max-w-6xl w-full space-y-8">
+        <div className="min-h-[calc(100vh-82px)] bg-slate-50 py-10 px-4 sm:px-6">
+            <div className="max-w-4xl mx-auto space-y-10">
+                <div className="text-center space-y-4">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-200 pb-8">
                     <div className="space-y-2 text-center md:text-left">
-                        <h1 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight">
-                            {profile ? "Profile Dashboard" : "Complete Your Profile"}
+                        <h1 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight text-center md:text-left">
+                            {profile && !isProfileIncomplete ? "User Profile" : "Create Your Profile"}
                         </h1>
-                        <p className="text-lg text-slate-500 font-medium">
-                            {profile 
-                                ? "Manage your identity and organization details." 
+                        <p className="text-lg text-slate-500 font-medium text-center md:text-left">
+                            {profile && !isProfileIncomplete
+                                ? "Manage your identity and organization details."
                                 : "Tell us a bit more about yourself or your organization to get started."}
                         </p>
                     </div>
                     {profile && !isEditing && (
-                        <Button 
+                        <Button
                             onClick={handleProceed}
                             className="bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)] !px-8 !py-4 !rounded-xl shadow-lg transform hover:-translate-y-1 transition-all"
                         >
@@ -189,16 +203,17 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                         </Button>
                     )}
                 </div>
+                </div>
 
                 {/* Main Form Card */}
-                <Card className="!p-8 md:!p-12 shadow-xl border-2 border-slate-200 bg-white overflow-hidden">
-                    <div className="space-y-10">
+                <Card className="!p-6 sm:!p-10 md:!p-12 shadow-2xl border-2 border-slate-100 bg-white overflow-hidden rounded-[2rem]">
+                    <div className="space-y-8 sm:space-y-10">
                         <div className="flex justify-between items-center border-b border-slate-100 pb-6">
                             <h2 className="text-2xl font-black text-slate-800 uppercase tracking-wider">
                                 {isEditing ? "Edit Information" : "Identity Details"}
                             </h2>
                             {profile && !isEditing && (
-                                <button 
+                                <button
                                     onClick={() => setIsEditing(true)}
                                     className="text-[rgb(32,38,130)] font-bold text-sm uppercase tracking-widest hover:underline flex items-center gap-2"
                                 >
@@ -232,7 +247,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                                         <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                                                             School / Institution Name
                                                         </label>
-                                                        <SchoolAutocomplete 
+                                                        <SchoolAutocomplete
                                                             value={formData.displayName}
                                                             onPlaceSelect={(loc) => {
                                                                 handleChange("displayName", loc.schoolName);
@@ -265,11 +280,11 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                             </div>
                                         </div>
                                     )}
-                                    
+
                                     <Input label="Email Address" value={formData.email} disabled className="!py-4 !rounded-xl bg-slate-100 !border-slate-300 opacity-80" />
                                     <Input label="Phone Number" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
                                     <Input label="Primary Contact Person" value={formData.contactPerson} onChange={(e) => handleChange("contactPerson", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
-                                    
+
                                     <div className="space-y-2">
                                         <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">State</label>
                                         <CustomDropdown options={BHARAT_STATES} value={formData.state} onChange={(val) => handleChange("state", val)} placeholder="Select state..." size="lg" />
@@ -288,15 +303,21 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                     </label>
                                 </div>
 
-                                <div className="flex gap-6 pt-6 border-t border-slate-100">
-                                    <Button loading={saving} onClick={handleSubmit} className="flex-1 !py-5 !text-lg !rounded-xl shadow-xl bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)]">
-                                        {profile ? "Update & Save Details" : "Save and Continue"}
+                                <div className="flex flex-col-reverse sm:flex-row gap-4 pt-6 border-t border-slate-100">
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => setIsEditing(false)}
+                                        className="w-full sm:w-auto px-8 py-4 uppercase tracking-widest font-black text-xs"
+                                    >
+                                        Cancel
                                     </Button>
-                                    {profile && (
-                                        <button onClick={() => setIsEditing(false)} className="px-10 py-5 bg-slate-100 text-slate-600 font-black text-sm uppercase tracking-widest rounded-xl hover:bg-slate-200 transition-all border border-slate-200">
-                                            Cancel
-                                        </button>
-                                    )}
+                                    <Button
+                                        onClick={handleSubmit}
+                                        disabled={saving}
+                                        className="flex-1 px-8 py-4 bg-[rgb(32,38,130)] text-white uppercase tracking-widest font-black text-xs shadow-xl shadow-blue-900/20 active:scale-95 transition-all"
+                                    >
+                                        {saving ? "Saving..." : "Create Profile & Continue"}
+                                    </Button>
                                 </div>
                             </div>
                         ) : (

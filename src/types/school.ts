@@ -30,6 +30,7 @@ export interface School {
     attribution_pct_energy: number;
     students_count: number;
     reporting_year: string;
+    actionQuantity: number;
     action_id: string;
 
     // Step 3: Waste & Water
@@ -59,12 +60,25 @@ export interface School {
     payment_status: "pending" | "verified";
     userId: string;
     createdAt: string;
+    baselineEnergyGrid: number | null;
+    baselineEnergyDiesel: number | null;
+    baselineEnergySolar: number | null;
+    baselineWaterMunicipal: number | null;
+    baselineWaterRain: number | null;
+    baselineWaterWaste: number | null;
+    baselineWasteOrganic: number | null;
+    baselineWasteInorganic: number | null;
+    baselineWasteHazardous: number | null;
     updatedAt: string | null;
     verifiedAt: string | null;
     verifiedBy: string | null;
     adminNotes: string | null;
     lat: number | null;
     lng: number | null;
+    energyBillCopy?: string | null;
+    meterPhoto?: string | null;
+    moreDetailsPhoto?: string | null;
+    siteOverviewPhoto?: string | null;
 }
 
 export interface SchoolFormData {
@@ -80,28 +94,29 @@ export interface SchoolFormData {
     projectId: string;
     
     // Step 2
-    electricity_kWh_year: string | number;
-    fuel_type: string;
-    fuel_consumption_litres: string | number;
-    renewable_energy_type: string;
-    renewable_energy_kwh: string | number;
-    attribution_pct_energy: string | number;
+    electricity_kWh_year?: string | number;
+    fuel_type?: string;
+    fuel_consumption_litres?: string | number;
+    renewable_energy_type?: string;
+    renewable_energy_kwh?: string | number;
+    attribution_pct_energy?: string | number;
     students_count: string | number;
     reporting_year: string;
+    actionQuantity: string | number;
     action_id: string;
 
     // Step 3
-    waste_generated_kg: string | number;
-    waste_diverted_kg: string | number;
-    recycling_programs: string[];
-    water_consumption_m3: string | number;
-    attribution_pct_waste: string | number;
-    attribution_pct_water: string | number;
-    calculation_notes: string;
+    waste_generated_kg?: string | number;
+    waste_diverted_kg?: string | number;
+    recycling_programs?: string[];
+    water_consumption_m3?: string | number;
+    attribution_pct_waste?: string | number;
+    attribution_pct_water?: string | number;
+    calculation_notes?: string;
     baseline_source: "school_shared" | "sectoral_average" | "estimated";
 
     // Step 4
-    has_existing_actions: "Yes" | "No";
+    has_existing_actions?: "Yes" | "No";
     action_type?: string;
     installation_date?: string;
     capacity_description?: string;
@@ -111,13 +126,24 @@ export interface SchoolFormData {
     
     consent_confirmed: boolean;
     summaryAgreed: boolean;
+
+    baselineEnergyGrid: number | string;
+    baselineEnergyDiesel: number | string;
+    baselineEnergySolar: number | string;
+    baselineWaterMunicipal: number | string;
+    baselineWaterRain: number | string;
+    baselineWaterWaste: number | string;
+    baselineWasteOrganic: number | string;
+    baselineWasteInorganic: number | string;
+    baselineWasteHazardous: number | string;
+
     lat: number | null;
     lng: number | null;
 
     // Verification Photos
-    energyBillCopy: string | null;
-    meterPhoto: string | null;
-    moreDetailsPhoto: string | null;
-    siteOverviewPhoto: string | null;
+    energyBillCopy?: string | null;
+    meterPhoto?: string | null;
+    moreDetailsPhoto?: string | null;
+    siteOverviewPhoto?: string | null;
 }
 

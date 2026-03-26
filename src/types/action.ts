@@ -32,6 +32,10 @@ export interface Action {
     sha256Hash: string;
     meterPhotos: string[];
     sitePhoto: string | null;
+    energyBillCopy?: string | null;
+    meterPhoto?: string | null;
+    moreDetailsPhoto?: string | null;
+    siteOverviewPhoto?: string | null;
     commissioningDate: string | null;
     localPercent: number | null;
     indigenousPercent: number | null;
@@ -45,6 +49,16 @@ export interface Action {
     calculationVersion?: string | null;
     calculationMethodology?: string | null;
     emissionFactorUsed?: string | null;
+    baselineEnergyGrid?: number | null;
+    baselineEnergyDiesel?: number | null;
+    baselineEnergySolar?: number | null;
+    baselineWaterMunicipal?: number | null;
+    baselineWaterRain?: number | null;
+    baselineWaterWaste?: number | null;
+    baselineWasteOrganic?: number | null;
+    baselineWasteInorganic?: number | null;
+    baselineWasteHazardous?: number | null;
+    studentsCount?: number | null;
     createdAt: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -63,6 +77,11 @@ export interface ActionFormData {
     email: string;
     meterPhotos: string[];
     sitePhoto: string | null;
+    energyBillCopy?: string | null;
+    meterPhoto?: string | null;
+    moreDetailsPhoto?: string | null;
+    siteOverviewPhoto?: string | null;
+    photo_file?: any;
     commissioningDate: string;
     localPercent: number | string;
     indigenousPercent: number | string;
@@ -70,6 +89,16 @@ export interface ActionFormData {
     jobsCreated: number | string;
     wasteGeneratedKg: number | string;
     wasteDivertedKg: number | string;
+    baselineEnergyGrid: number | string;
+    baselineEnergyDiesel: number | string;
+    baselineEnergySolar: number | string;
+    baselineWaterMunicipal: number | string;
+    baselineWaterRain: number | string;
+    baselineWaterWaste: number | string;
+    baselineWasteOrganic: number | string;
+    baselineWasteInorganic: number | string;
+    baselineWasteHazardous: number | string;
+    studentsCount: number | string;
     consentGiven: boolean;
     disclaimerAccepted: boolean;
 }
