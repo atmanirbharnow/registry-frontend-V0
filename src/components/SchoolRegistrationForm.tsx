@@ -34,14 +34,7 @@ declare global {
 }
 
 const validationSchema = [
-    // Step 1: Identity
-    Yup.object({
-        schoolName: Yup.string().required("School name is required"),
-        address: Yup.string().required("Address is required"),
-        city: Yup.string().required("City is required"),
-        pincode: Yup.string().matches(/^[0-9]{6}$/, "Must be a 6-digit pincode").required("Required"),
-    }),
-    // Step 2: Energy & Fuel
+    // Step 1 (was 2): Energy & Fuel
     Yup.object({
         students_count: Yup.number().min(1, "Students count must be at least 1").required("Required"),
         reporting_year: Yup.string().required("Required"),
@@ -49,7 +42,7 @@ const validationSchema = [
         electricity_kWh_year: Yup.number().required("Required"),
         fuel_type: Yup.string().required("Required"),
     }),
-    // Step 3: Waste & Water
+    // Step 2 (was 3): Waste & Water
     Yup.object({
         waste_generated_kg: Yup.number().required("Required"),
         water_consumption_m3: Yup.number().required("Required"),
@@ -58,11 +51,11 @@ const validationSchema = [
         attribution_pct_water: Yup.number().min(0, "Min 0").max(100, "Max 100").required("Required"),
         photo_file: Yup.mixed().required("Proof photo is required"),
     }),
-    // Step 4: Impact Summary
+    // Step 3 (was 4): Impact Summary
     Yup.object({
         summaryAgreed: Yup.boolean().oneOf([true], "You must agree to proceed").required(),
     }),
-    // Step 5: Finalization
+    // Step 4 (was 5): Finalization
     Yup.object({
         consent_confirmed: Yup.boolean().oneOf([true], "Please provide consent to proceed").required(),
         installation_date: Yup.date()
@@ -83,7 +76,7 @@ export default function SchoolRegistrationForm() {
     const [projects, setProjects] = useState<any[]>([]);
     const [actions, setActions] = useState<any[]>([]);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-    const totalSteps = 5;
+    const totalSteps = 4;
 
     useEffect(() => {
         // Load Razorpay Script
@@ -115,6 +108,25 @@ export default function SchoolRegistrationForm() {
             }
         }
     }, []);
+
+    // Sync profile data to formik
+    useEffect(() => {
+        if (profile) {
+            formik.setValues(prev => ({
+                ...prev,
+                schoolName: profile.displayName || prev.schoolName,
+                address: profile.address || prev.address,
+                city: profile.city || prev.city,
+                pincode: profile.pincode || prev.pincode,
+                place_id: profile.place_id || prev.place_id,
+                lat: profile.lat || prev.lat,
+                lng: profile.lng || prev.lng,
+                contactPerson: profile.contactPerson || prev.contactPerson,
+                phone: profile.phone || prev.phone,
+                email: profile.email || prev.email,
+            }));
+        }
+    }, [profile]);
 
     const formik = useFormik<SchoolFormData>({
         initialValues: {
@@ -331,23 +343,9 @@ export default function SchoolRegistrationForm() {
     const handleNext = async () => {
         const errors = await formik.validateForm();
         if (Object.keys(errors).length === 0) {
-            if (currentStep === 1) {
-                // Feature 2: Duplicate Check
-                const dupCheck = await checkDuplicateSchool(formik.values.place_id, formik.values.schoolName, formik.values.lat || 0, formik.values.lng || 0);
-                if (dupCheck.isDuplicate) {
-                    if (dupCheck.type === 'BLOCK') {
-                        toast.error(`This school is already registered as ${dupCheck.registryId}. View profile: /verify/school/${dupCheck.registryId}`, { autoClose: 10000 });
-                        return;
-                    } else if (dupCheck.type === 'WARNING') {
-                        if (!confirm("Another school with this name exists in a different location. Confirm to proceed?")) {
-                            return;
-                        }
-                    }
-                }
-            }
             setCurrentStep(currentStep + 1);
         } else {
-            if (currentStep === 3 && errors.photo_file) {
+            if (currentStep === 2 && errors.photo_file) {
                 toast.error("Please upload a proof photo of the action to proceed.", { position: "top-center" });
             }
             formik.setTouched(
@@ -365,14 +363,13 @@ export default function SchoolRegistrationForm() {
             {/* Step Progress Bar */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
-                    {[1, 2, 3, 4, 5].map((step) => (
+                    {[1, 2, 3, 4].map((step) => (
                         <div key={step} className="flex flex-col items-center flex-1 min-w-[90px] px-2 text-center">
                             <div className={`text-[9px] sm:text-[10px] font-bold mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
-                                {step === 1 && "Action Details"}
-                                {step === 2 && "Location & Photos"}
-                                {step === 3 && "Assessment Details"}
-                                {step === 4 && "Impact Summary"}
-                                {step === 5 && "Payment"}
+                                {step === 1 && "Energy & Fuel"}
+                                {step === 2 && "Waste & Water"}
+                                {step === 3 && "Impact Summary"}
+                                {step === 4 && "Payment"}
                             </div>
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${
                                 currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" : 
@@ -396,39 +393,7 @@ export default function SchoolRegistrationForm() {
 
             <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(); }} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {currentStep === 1 && (
-                    <StepWrapper title="Step 1: School Identity" icon={<IdentityIcon />}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="md:col-span-2 space-y-2">
-                                <label className="flex items-center gap-2 text-sm font-bold text-gray-600 px-1">
-                                    <span className="opacity-50"><SchoolIcon /></span>
-                                    School Name
-                                </label>
-                                <SchoolAutocomplete 
-                                    value={formik.values.schoolName}
-                                    onPlaceSelect={(loc) => {
-                                        formik.setFieldValue("schoolName", loc.schoolName);
-                                        formik.setFieldValue("address", loc.address);
-                                        formik.setFieldValue("city", loc.city);
-                                        formik.setFieldValue("pincode", loc.pincode);
-                                        formik.setFieldValue("lat", loc.lat);
-                                        formik.setFieldValue("lng", loc.lng);
-                                        formik.setFieldValue("place_id", loc.place_id);
-                                    }}
-                                    onManualEntry={(name) => formik.setFieldValue("schoolName", name)}
-                                    error={formik.touched.schoolName ? (formik.errors.schoolName as string) : ""}
-                                />
-                            </div>
-                            <InputField label="City" name="city" formik={formik} />
-                            <InputField label="Pincode" name="pincode" formik={formik} maxLength={6} />
-                            <div className="md:col-span-2">
-                                <InputField label="Full Address" name="address" formik={formik} textarea />
-                            </div>
-                        </div>
-                    </StepWrapper>
-                )}
-
-                {currentStep === 2 && (
-                    <StepWrapper title="Step 2: Energy & Fuel Data" icon={<EnergyIcon />}>
+                    <StepWrapper title="Phase 2: Energy & Fuel Data" icon={<EnergyIcon />}>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <InputField label="Students Count" name="students_count" type="number" formik={formik} />
                             <DropdownField label="Reporting Year" name="reporting_year" options={REPORTING_YEAR_OPTIONS} formik={formik} />
@@ -460,9 +425,9 @@ export default function SchoolRegistrationForm() {
                     </StepWrapper>
                 )}
 
-                {currentStep === 3 && (
+                {currentStep === 2 && (
                     <div className="space-y-8">
-                        <StepWrapper title="Step 3: Waste & Water Data" icon={<WasteIcon />}>
+                        <StepWrapper title="Phase 3: Waste & Water Data" icon={<WasteIcon />}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField label="Waste Generated (kg/yr)" name="waste_generated_kg" type="number" formik={formik} />
                                 <InputField label="Water Consumption (m3/yr)" name="water_consumption_m3" type="number" formik={formik} />
@@ -516,7 +481,7 @@ export default function SchoolRegistrationForm() {
                     </div>
                 )}
 
-                {currentStep === 4 && (
+                {currentStep === 3 && (
                     <ImpactSummaryStep
                         isSchool={true}
                         formValues={formik.values}
@@ -526,8 +491,8 @@ export default function SchoolRegistrationForm() {
                     />
                 )}
 
-                {currentStep === 5 && (
-                    <StepWrapper title="Step 5: Registry Finalization" icon={<RegistryIcon />}>
+                {currentStep === 4 && (
+                    <StepWrapper title="Phase 5: Registry Finalization" icon={<RegistryIcon />}>
                         <div className="space-y-8">
                             <div className="bg-slate-50 p-6 rounded-xl border border-gray-100 space-y-6">
                                 <div className="flex items-center justify-between">

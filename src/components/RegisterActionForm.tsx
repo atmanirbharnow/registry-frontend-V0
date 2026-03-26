@@ -62,7 +62,7 @@ export default function RegisterActionForm() {
     const [submitting, setSubmitting] = useState(false);
     const [isSimulationMode, setIsSimulationMode] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
-    const totalSteps = 5;
+    const totalSteps = 4;
 
     useEffect(() => {
         const existing = document.querySelector(
@@ -75,6 +75,18 @@ export default function RegisterActionForm() {
             document.body.appendChild(script);
         }
     }, []);
+
+    // Sync profile data to formik
+    useEffect(() => {
+        if (profile) {
+            formik.setValues(prev => ({
+                ...prev,
+                address: profile.address || prev.address,
+                lat: profile.lat || prev.lat,
+                lng: profile.lng || prev.lng,
+            }));
+        }
+    }, [profile]);
 
     const processPaymentVerification = async (
         paymentDetails: {
@@ -100,6 +112,8 @@ export default function RegisterActionForm() {
                         sector: profile?.institutionType || null,
                         state: profile?.state || null,
                         pincode: profile?.pincode || null,
+                        lat: profile?.lat || values.lat,
+                        lng: profile?.lng || values.lng,
                         // Usage & Baseline
                         electricityUseKwh: Number(values.electricityUseKwh) || null,
                         fuelDieselLiters: Number(values.fuelDieselLiters) || null,
@@ -137,7 +151,7 @@ export default function RegisterActionForm() {
                         userId: user?.uid,
                         userEmail: user?.email,
                         // Pull actor info from profile
-                        actorType: "Individual/Organization",
+                        actorType: profile?.institutionType === "Individual" ? "Individual" : "Organization",
                         actorName: profile?.displayName || user?.displayName || "",
                         contactPerson: profile?.contactPerson || "",
                         phone: profile?.phone || "",
@@ -295,13 +309,12 @@ export default function RegisterActionForm() {
         const errors = await formik.validateForm();
         const stepFields: Record<number, string[]> = {
             1: ["actionType", "quantity", "unit", "commissioningDate"],
-            2: ["address"],
-            3: ["baselineElectricityKwh", "baselineWaterKL", "wasteGeneratedKg", "wasteDivertedKg"], // Assessment Details
-            4: ["summaryAgreed"], // Impact Summary
-            5: ["consentGiven", "disclaimerAccepted"] // Finalize/Payment
+            2: ["baselineElectricityKwh", "baselineWaterKL", "wasteGeneratedKg", "wasteDivertedKg"], // Assessment Details
+            3: ["summaryAgreed"], // Impact Summary
+            4: ["consentGiven", "disclaimerAccepted"] // Finalize/Payment
         };
 
-        const currentStepFields = stepFields[currentStep];
+        const currentStepFields = stepFields[currentStep as keyof typeof stepFields] || [];
         const hasStepErrors = currentStepFields.some(field => errors[field as keyof typeof errors]);
 
         if (!hasStepErrors) {
@@ -339,14 +352,13 @@ export default function RegisterActionForm() {
             {/* Progress Bar */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
-                    {[1, 2, 3, 4, 5].map((step) => (
+                    {[1, 2, 3, 4].map((step) => (
                         <div key={step} className="flex flex-col items-center flex-1 min-w-[100px] px-2 text-center">
                             <div className={`text-[10px] font-black mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-300"}`}>
                                 {step === 1 && "Action Details"}
-                                {step === 2 && "Location & Photos"}
-                                {step === 3 && "Assessment Details"}
-                                {step === 4 && "Impact Summary"}
-                                {step === 5 && "Payment"}
+                                {step === 2 && "Assessment"}
+                                {step === 3 && "Impact Summary"}
+                                {step === 4 && "Payment"}
                             </div>
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" :
                                 currentStep > step ? "bg-green-500 border-green-100 text-white" :
@@ -390,7 +402,7 @@ export default function RegisterActionForm() {
                                     unitValue={formik.values.unit}
                                     onChange={(val) => formik.setFieldValue("actionType", val)}
                                     onUnitChange={(unit) => formik.setFieldValue("unit", unit)}
-                                    error={formik.errors.actionType}
+                                    error={formik.errors.actionType as string}
                                     touched={formik.touched.actionType}
                                 />
 
@@ -460,45 +472,6 @@ export default function RegisterActionForm() {
 
                 {currentStep === 2 && (
                     <div className="space-y-8">
-                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-green-50 rounded-lg text-green-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Location</h3></div>}>
-                            <LocationPickerSection
-                                address={formik.values.address}
-                                lat={formik.values.lat}
-                                lng={formik.values.lng}
-                                onAddressChange={formik.handleChange}
-                                onPlaceSelect={handlePlaceSelect}
-                                onCoordsChange={(lat, lng) => {
-                                    formik.setFieldValue("lat", lat);
-                                    formik.setFieldValue("lng", lng);
-                                }}
-                                error={formik.errors.address}
-                                touched={formik.touched.address}
-                            />
-                        </Card>
-
-                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-indigo-50 rounded-lg text-indigo-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Verification Photos</h3></div>}>
-                            <PhotoUploadSection
-                                slots={[
-                                    { key: "energyBillCopy", label: "Energy Bill Copy" },
-                                    { key: "meterPhoto", label: "Meter Photo" },
-                                    { key: "moreDetailsPhoto", label: "More Details Photo" },
-                                    { key: "siteOverviewPhoto", label: "Site Overview of System" },
-                                ]}
-                                photos={{
-                                    energyBillCopy: formik.values.energyBillCopy,
-                                    meterPhoto: formik.values.meterPhoto,
-                                    moreDetailsPhoto: formik.values.moreDetailsPhoto,
-                                    siteOverviewPhoto: formik.values.siteOverviewPhoto,
-                                }}
-                                userId={user?.uid || ""}
-                                onPhotoChange={(key, url) => formik.setFieldValue(key, url)}
-                            />
-                        </Card>
-                    </div>
-                )}
-
-                {currentStep === 3 && (
-                    <div className="space-y-8">
                         <Card header={
                             <div className="flex items-center justify-between group cursor-default">
                                 <div className="flex items-center gap-3">
@@ -506,14 +479,14 @@ export default function RegisterActionForm() {
                                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                                     </span>
                                     <div>
-                                        <h3 className="text-xl font-bold text-gray-800">Baseline Data</h3>
+                                        <h3 className="text-xl font-bold text-gray-800">Assessment & Verification</h3>
                                     </div>
                                 </div>
                             </div>
                         }>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <Input
-                                    label="Electricity Usage (Kwh)"
+                                    label="Baseline Electricity Usage (Kwh)"
                                     name="baselineElectricityKwh"
                                     type="number"
                                     className="!py-4 !rounded-xl !font-bold"
@@ -521,10 +494,10 @@ export default function RegisterActionForm() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     placeholder="Total Kwh"
-                                    error={formik.touched.baselineElectricityKwh ? formik.errors.baselineElectricityKwh : undefined}
+                                    error={formik.touched.baselineElectricityKwh ? (formik.errors.baselineElectricityKwh as string) : undefined}
                                 />
                                 <Input
-                                    label="Water Consumption (Kilo Liters)"
+                                    label="Baseline Water Consumption (KL)"
                                     name="baselineWaterKL"
                                     type="number"
                                     className="!py-4 !rounded-xl !font-bold"
@@ -532,55 +505,56 @@ export default function RegisterActionForm() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     placeholder="Total KL"
-                                    error={formik.touched.baselineWaterKL ? formik.errors.baselineWaterKL : undefined}
+                                    error={formik.touched.baselineWaterKL ? (formik.errors.baselineWaterKL as string) : undefined}
+                                />
+                                <Input
+                                    label="Recycling: Waste Generated (kg/yr)"
+                                    name="wasteGeneratedKg"
+                                    type="number"
+                                    className="!py-4 !rounded-xl !font-bold"
+                                    value={formik.values.wasteGeneratedKg}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="Total waste generated"
+                                    error={formik.touched.wasteGeneratedKg ? (formik.errors.wasteGeneratedKg as string) : undefined}
+                                />
+                                <Input
+                                    label="Recycling: Waste Diverted (kg/yr)"
+                                    name="wasteDivertedKg"
+                                    type="number"
+                                    className="!py-4 !rounded-xl !font-bold"
+                                    value={formik.values.wasteDivertedKg}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="Waste recycled or composted"
+                                    error={formik.touched.wasteDivertedKg ? (formik.errors.wasteDivertedKg as string) : undefined}
                                 />
                             </div>
 
-                            <div className="border-t border-gray-100 pt-6 mt-6">
-                                <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 mb-4">Waste Generated current period (Kgs)</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <Input label="Organic" name="baselineWasteOrganicKg" type="number" value={formik.values.baselineWasteOrganicKg} onChange={formik.handleChange} />
-                                    <Input label="Paper" name="baselineWastePaperKg" type="number" value={formik.values.baselineWastePaperKg} onChange={formik.handleChange} />
-                                    <Input label="Plastic" name="baselineWastePlasticKg" type="number" value={formik.values.baselineWastePlasticKg} onChange={formik.handleChange} />
-                                    <Input label="Textile" name="baselineWasteTextileKg" type="number" value={formik.values.baselineWasteTextileKg} onChange={formik.handleChange} />
-                                    <Input label="E-Waste" name="baselineWasteEWasteKg" type="number" value={formik.values.baselineWasteEWasteKg} onChange={formik.handleChange} />
-                                </div>
-                            </div>
-
-                            {/* Circularity divider */}
                             <div className="border-t border-gray-100 pt-6 mt-8">
-                                <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 mb-4">Circularity Data</p>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <Input
-                                        label="Total waste generated (kg/yr)"
-                                        name="wasteGeneratedKg"
-                                        type="number"
-                                        className="!py-4 !rounded-xl !font-bold"
-                                        value={formik.values.wasteGeneratedKg}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        placeholder="Total waste generated"
-                                        error={formik.touched.wasteGeneratedKg ? formik.errors.wasteGeneratedKg : undefined}
-                                    />
-                                    <Input
-                                        label="Waste Diverted / Recycled (kg/yr)"
-                                        name="wasteDivertedKg"
-                                        type="number"
-                                        className="!py-4 !rounded-xl !font-bold"
-                                        value={formik.values.wasteDivertedKg}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        placeholder="Waste recycled or composted"
-                                        error={formik.touched.wasteDivertedKg ? formik.errors.wasteDivertedKg : undefined}
-                                    />
-                                </div>
-                                <p className="text-xs text-gray-400 mt-2 ml-1">Used to calculate your Circularity Score — the % of waste diverted from landfill.</p>
+                                <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1 mb-6">Verification Photos</p>
+                                <PhotoUploadSection
+                                    slots={[
+                                        { key: "energyBillCopy", label: "Energy Bill Copy" },
+                                        { key: "meterPhoto", label: "Meter Photo" },
+                                        { key: "moreDetailsPhoto", label: "More Details Photo" },
+                                        { key: "siteOverviewPhoto", label: "Site Overview of System" },
+                                    ]}
+                                    photos={{
+                                        energyBillCopy: formik.values.energyBillCopy,
+                                        meterPhoto: formik.values.meterPhoto,
+                                        moreDetailsPhoto: formik.values.moreDetailsPhoto,
+                                        siteOverviewPhoto: formik.values.siteOverviewPhoto,
+                                    }}
+                                    userId={user?.uid || ""}
+                                    onPhotoChange={(key, url) => formik.setFieldValue(key, url)}
+                                />
                             </div>
                         </Card>
                     </div>
                 )}
 
-                {currentStep === 4 && (
+                {currentStep === 3 && (
                     <ImpactSummaryStep
                         isSchool={false}
                         formValues={formik.values}
@@ -590,7 +564,7 @@ export default function RegisterActionForm() {
                     />
                 )}
 
-                {currentStep === 5 && (
+                {currentStep === 4 && (
                     <div className="space-y-8">
                         <Card>
                             <div className="space-y-8">
@@ -612,7 +586,7 @@ export default function RegisterActionForm() {
                                         </span>
                                     </label>
                                     {formik.touched.consentGiven && formik.errors.consentGiven && (
-                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.consentGiven}</p>
+                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.consentGiven as string}</p>
                                     )}
 
                                     <label className="flex items-start gap-4 cursor-pointer group">
@@ -633,7 +607,7 @@ export default function RegisterActionForm() {
                                         </span>
                                     </label>
                                     {formik.touched.disclaimerAccepted && formik.errors.disclaimerAccepted && (
-                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.disclaimerAccepted}</p>
+                                        <p className="text-red-500 text-[10px] font-black uppercase tracking-widest ml-10">{formik.errors.disclaimerAccepted as string}</p>
                                     )}
                                 </div>
 

@@ -105,6 +105,16 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
 
                 <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                     <div className="flex justify-between">
+                        <span className="text-gray-500">Name</span>
+                        <span className="font-bold text-gray-800 text-right max-w-[55%] truncate">{action.actorName || "N/A"}</span>
+                    </div>
+                    {action.contactPerson && (
+                        <div className="flex justify-between">
+                            <span className="text-gray-500">Contact Person</span>
+                            <span className="font-bold text-gray-800 text-right max-w-[55%] truncate">{action.contactPerson}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between">
                         <span className="text-gray-500">Registry ID</span>
                         <span className="font-mono font-bold text-gray-800">{action.registryId}</span>
                     </div>

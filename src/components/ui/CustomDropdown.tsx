@@ -85,7 +85,7 @@ export default function CustomDropdown({
                 onKeyDown={handleKeyDown}
                 className={`
                     flex items-center justify-between w-full
-                    border border-gray-100 bg-gray-50/50 hover:bg-white focus:bg-white focus:border-blue-400
+                    border border-slate-300 bg-white hover:border-blue-400 focus:border-blue-500
                     transition-all duration-200 outline-none font-medium
                     ${sizeClasses[size]}
                     ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}

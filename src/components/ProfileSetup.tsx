@@ -1,29 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "./ui/Input";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
 import CustomDropdown from "./ui/CustomDropdown";
-import ActionTypeCards from "./forms/ActionTypeCards";
 import { updateUserProfile } from "@/lib/firestoreService";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { UserProfile } from "@/types/user";
+
+import SchoolAutocomplete from "./SchoolAutocomplete";
 
 interface ProfileSetupProps {
     uid: string;
+    profile?: UserProfile | null;
     onComplete: () => void;
 }
 
 const INSTITUTION_TYPES = [
+    { value: "Individual", label: "Individual Actor" },
     { value: "School", label: "Educational Institution (School/College)" },
-    { value: "Hospital", label: "Healthcare (Hospital/Clinic)" },
     { value: "MSME", label: "MSME (Micro, Small & Medium Enterprise)" },
     { value: "Commercial", label: "Commercial (Office/Retail/Hotel)" },
     { value: "NGO", label: "Non-Profit Organization (NGO)" },
     { value: "Government", label: "Government Body" },
-    { value: "Individual", label: "Individual Actor" },
 ] as const;
 
 const BHARAT_STATES = [
@@ -36,22 +39,51 @@ const BHARAT_STATES = [
     "Ladakh", "Lakshadweep", "Puducherry"
 ].map(s => ({ value: s, label: s }));
 
-export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
+export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupProps) {
     const { user } = useAuth();
+    const router = useRouter();
+    const [isEditing, setIsEditing] = useState(!profile);
     const [formData, setFormData] = useState({
-        displayName: user?.displayName || "",
-        email: user?.email || "",
-        phone: "+91",
-        contactPerson: "",
-        institutionType: "" as any,
-        state: "",
-        pincode: "",
-        consentVerified: false,
-        socialHandles: ["", "", ""],
+        displayName: profile?.displayName || user?.displayName || "",
+        email: profile?.email || user?.email || "",
+        phone: profile?.phone || "+91",
+        contactPerson: profile?.contactPerson || "",
+        institutionType: profile?.institutionType || "" as any,
+        state: profile?.state || "",
+        pincode: profile?.pincode || "",
+        address: profile?.address || "",
+        city: profile?.city || "",
+        lat: profile?.lat || null as number | null,
+        lng: profile?.lng || null as number | null,
+        place_id: profile?.place_id || "",
+        sector: profile?.sector || "",
+        consentVerified: !!profile?.consentVerified,
+        socialHandles: profile?.socialHandles || ["", "", ""],
     });
     const [saving, setSaving] = useState(false);
 
-    const handleChange = (field: string, value: string | string[]) => {
+    // Update form when profile changes (e.g. after refresh)
+    useEffect(() => {
+        if (profile) {
+            setFormData(prev => ({
+                ...prev,
+                displayName: profile.displayName || prev.displayName,
+                phone: profile.phone || prev.phone,
+                contactPerson: profile.contactPerson || prev.contactPerson,
+                institutionType: profile.institutionType || prev.institutionType,
+                state: profile.state || prev.state,
+                pincode: profile.pincode || prev.pincode,
+                address: profile.address || prev.address,
+                city: profile.city || prev.city,
+                sector: profile.sector || prev.sector,
+                socialHandles: profile.socialHandles || prev.socialHandles,
+                consentVerified: !!profile.consentVerified,
+            }));
+            setIsEditing(false);
+        }
+    }, [profile]);
+
+    const handleChange = (field: string, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -72,6 +104,8 @@ export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
             !formData.institutionType ||
             !formData.state ||
             !formData.pincode ||
+            !formData.address ||
+            !formData.city ||
             !formData.consentVerified
         ) {
             toast.error("Please fill in all required fields and accept the consent.");
@@ -103,10 +137,17 @@ export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
                 institutionType: formData.institutionType,
                 state: formData.state,
                 pincode: formData.pincode,
+                address: formData.address,
+                city: formData.city,
+                lat: formData.lat || undefined,
+                lng: formData.lng || undefined,
+                place_id: formData.place_id,
+                sector: formData.sector || formData.institutionType,
                 consentVerified: formData.consentVerified,
                 socialHandles: formData.socialHandles as [string, string, string],
             });
             toast.success("Profile updated successfully!");
+            setIsEditing(false);
             onComplete();
         } catch (err) {
             console.error(err);
@@ -116,162 +157,211 @@ export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
         }
     };
 
+    const handleProceed = () => {
+        if (formData.institutionType === "School") {
+            router.push("/school-register");
+        } else {
+            router.push("/register/action");
+        }
+    };
+
     return (
-        <div className="min-h-[calc(100vh-82px)] bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-            <div className="max-w-2xl w-full space-y-8">
+        <div className="min-h-[calc(100vh-82px)] bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+            <div className="max-w-6xl w-full space-y-8">
                 {/* Header Section */}
-                <div className="text-center space-y-3">
-                    <h1 className="text-3xl md:text-4xl font-black text-gray-800 tracking-tight">
-                        Complete Your Profile
-                    </h1>
-                    <p className="text-lg text-gray-500 max-w-md mx-auto">
-                        Tell us a bit more about yourself or your organization to get started with the registry.
-                    </p>
+                <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-200 pb-8">
+                    <div className="space-y-2 text-center md:text-left">
+                        <h1 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight">
+                            {profile ? "Profile Dashboard" : "Complete Your Profile"}
+                        </h1>
+                        <p className="text-lg text-slate-500 font-medium">
+                            {profile 
+                                ? "Manage your identity and organization details." 
+                                : "Tell us a bit more about yourself or your organization to get started."}
+                        </p>
+                    </div>
+                    {profile && !isEditing && (
+                        <Button 
+                            onClick={handleProceed}
+                            className="bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)] !px-8 !py-4 !rounded-xl shadow-lg transform hover:-translate-y-1 transition-all"
+                        >
+                            Proceed to Register Action <span>&rarr;</span>
+                        </Button>
+                    )}
                 </div>
 
                 {/* Main Form Card */}
-                <Card className="!p-8 md:!p-10 shadow-2xl shadow-blue-500/5 border-t-4 border-t-[rgb(32,38,130)]">
-                    <div className="space-y-8">
-                        {/* Welcome Alert */}
-                        <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100/50 flex items-start gap-4">
-                            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-xl shrink-0">
-                                ✨
-                            </div>
-                            <p className="text-sm font-medium text-blue-800 leading-relaxed pt-1">
-                                Welcome to Earth Carbon Registry! Your profile details are required to ensure the transparency and verification of your environmental actions.
-                            </p>
+                <Card className="!p-8 md:!p-12 shadow-xl border-2 border-slate-200 bg-white overflow-hidden">
+                    <div className="space-y-10">
+                        <div className="flex justify-between items-center border-b border-slate-100 pb-6">
+                            <h2 className="text-2xl font-black text-slate-800 uppercase tracking-wider">
+                                {isEditing ? "Edit Information" : "Identity Details"}
+                            </h2>
+                            {profile && !isEditing && (
+                                <button 
+                                    onClick={() => setIsEditing(true)}
+                                    className="text-[rgb(32,38,130)] font-bold text-sm uppercase tracking-widest hover:underline flex items-center gap-2"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                    Edit Details
+                                </button>
+                            )}
                         </div>
 
-                        {/* Form Fields */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="md:col-span-2">
-                                <Input
-                                    label="Full Name / Entity Name"
-                                    placeholder="e.g., Green Valley School or John Doe"
-                                    value={formData.displayName}
-                                    onChange={(e) => handleChange("displayName", e.target.value)}
-                                    className="!py-4 !rounded-xl"
-                                />
-                            </div>
+                        {isEditing ? (
+                            <div className="space-y-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+                                            Entity Type
+                                        </label>
+                                        <CustomDropdown
+                                            options={INSTITUTION_TYPES}
+                                            value={formData.institutionType}
+                                            onChange={(val) => handleChange("institutionType", val)}
+                                            placeholder="Select type..."
+                                            size="lg"
+                                        />
+                                    </div>
 
-                            <Input
-                                label="Email Address"
-                                value={formData.email}
-                                disabled
-                                className="!py-4 !rounded-xl bg-gray-50/50 opacity-70 cursor-not-allowed"
-                            />
+                                    {formData.institutionType && (
+                                        <div className="md:col-span-2 p-8 bg-slate-50/50 rounded-2xl border-2 border-slate-200">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                {formData.institutionType === 'School' ? (
+                                                    <div className="md:col-span-2 space-y-2">
+                                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+                                                            School / Institution Name
+                                                        </label>
+                                                        <SchoolAutocomplete 
+                                                            value={formData.displayName}
+                                                            onPlaceSelect={(loc) => {
+                                                                handleChange("displayName", loc.schoolName);
+                                                                handleChange("address", loc.address);
+                                                                handleChange("city", loc.city);
+                                                                handleChange("pincode", loc.pincode);
+                                                                handleChange("lat", loc.lat);
+                                                                handleChange("lng", loc.lng);
+                                                                handleChange("place_id", loc.place_id);
+                                                            }}
+                                                            onManualEntry={(name) => handleChange("displayName", name)}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="md:col-span-2">
+                                                        <Input
+                                                            label="Full Name / Entity Name"
+                                                            value={formData.displayName}
+                                                            onChange={(e) => handleChange("displayName", e.target.value)}
+                                                            className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500"
+                                                        />
+                                                    </div>
+                                                )}
 
-                            <Input
-                                label="Phone Number"
-                                placeholder="+91 XXXXX XXXXX"
-                                value={formData.phone}
-                                onChange={(e) => handleChange("phone", e.target.value)}
-                                className="!py-4 !rounded-xl"
-                            />
-
-                            <div className="md:col-span-1 space-y-1.5">
-                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                                    Institution Type
-                                </label>
-                                <CustomDropdown
-                                    options={INSTITUTION_TYPES}
-                                    value={formData.institutionType}
-                                    onChange={(val) => handleChange("institutionType", val)}
-                                    placeholder="Select type..."
-                                    size="lg"
-                                />
-                            </div>
-
-                            <Input
-                                label="Primary Contact Person"
-                                placeholder="Name of the person managing the account"
-                                value={formData.contactPerson}
-                                onChange={(e) => handleChange("contactPerson", e.target.value)}
-                                className="!py-4 !rounded-xl"
-                            />
-
-                            <div className="md:col-span-1 space-y-1.5">
-                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                                    State
-                                </label>
-                                <CustomDropdown
-                                    options={BHARAT_STATES}
-                                    value={formData.state}
-                                    onChange={(val) => handleChange("state", val)}
-                                    placeholder="Select state..."
-                                    size="lg"
-                                />
-                            </div>
-
-                            <Input
-                                label="Pincode"
-                                placeholder="6-digit pincode"
-                                value={formData.pincode}
-                                onChange={(e) => handleChange("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
-                                className="!py-4 !rounded-xl"
-                                maxLength={6}
-                            />
-                        </div>
-
-                        {/* Consent Checkbox */}
-                        <div className="bg-slate-50 p-5 rounded-2xl border border-gray-100 mt-4">
-                            <label className="flex items-start gap-4 cursor-pointer group">
-                                <div className="mt-0.5 relative">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.consentVerified}
-                                        onChange={(e) => handleChange("consentVerified", (e.target.checked as any))}
-                                        className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
-                                    />
-                                    <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                                <Input label="City" value={formData.city} onChange={(e) => handleChange("city", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
+                                                <Input label="Pincode" value={formData.pincode} onChange={(e) => handleChange("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" maxLength={6} />
+                                                <div className="md:col-span-2">
+                                                    <Input label="Full Address (Location)" value={formData.address} onChange={(e) => handleChange("address", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" textarea />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    <Input label="Email Address" value={formData.email} disabled className="!py-4 !rounded-xl bg-slate-100 !border-slate-300 opacity-80" />
+                                    <Input label="Phone Number" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
+                                    <Input label="Primary Contact Person" value={formData.contactPerson} onChange={(e) => handleChange("contactPerson", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
+                                    
+                                    <div className="space-y-2">
+                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">State</label>
+                                        <CustomDropdown options={BHARAT_STATES} value={formData.state} onChange={(val) => handleChange("state", val)} placeholder="Select state..." size="lg" />
+                                    </div>
                                 </div>
-                                <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
-                                    I authorize Earth Carbon Foundation to process my data for the purpose of carbon verification and registry maintenance.
-                                </span>
-                            </label>
-                        </div>
 
-                        {/* Social Media Section */}
-                        <div className="space-y-4 pt-4 border-t border-gray-100">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="w-1 bg-blue-400 h-4 rounded-full"></div>
-                                <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">
-                                    Social Media & Website (Optional)
-                                </h3>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input
-                                    placeholder="Website or Social Link 1"
-                                    value={formData.socialHandles[0]}
-                                    onChange={(e) => handleSocialChange(0, e.target.value)}
-                                    className="!py-3 !rounded-xl bg-gray-50/50 border-gray-100 focus:bg-white transition-colors"
-                                />
-                                <Input
-                                    placeholder="Social Link 2"
-                                    value={formData.socialHandles[1]}
-                                    onChange={(e) => handleSocialChange(1, e.target.value)}
-                                    className="!py-3 !rounded-xl bg-gray-50/50 border-gray-100 focus:bg-white transition-colors"
-                                />
-                            </div>
-                        </div>
+                                <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-200">
+                                    <label className="flex items-start gap-4 cursor-pointer group">
+                                        <div className="mt-0.5 relative">
+                                            <input type="checkbox" checked={formData.consentVerified} onChange={(e) => handleChange("consentVerified", (e.target.checked as any))} className="peer appearance-none w-6 h-6 border-2 border-slate-400 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer" />
+                                            <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                        </div>
+                                        <span className="text-sm font-bold text-slate-600 group-hover:text-slate-900 transition-colors leading-relaxed">
+                                            I authorize Earth Carbon Foundation to process my data for the purpose of carbon verification and registry maintenance.
+                                        </span>
+                                    </label>
+                                </div>
 
-                        {/* Submit Button */}
-                        <div className="pt-6">
-                            <Button 
-                                loading={saving} 
-                                onClick={handleSubmit} 
-                                className="w-full !py-3.5 !text-base !rounded-xl shadow-lg shadow-blue-500/10 bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)] transition-all transform hover:-translate-y-0.5"
-                            >
-                                Complete Profile Setup <span>&rarr;</span>
-                            </Button>
-                        </div>
+                                <div className="flex gap-6 pt-6 border-t border-slate-100">
+                                    <Button loading={saving} onClick={handleSubmit} className="flex-1 !py-5 !text-lg !rounded-xl shadow-xl bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)]">
+                                        {profile ? "Update & Save Details" : "Save and Continue"}
+                                    </Button>
+                                    {profile && (
+                                        <button onClick={() => setIsEditing(false)} className="px-10 py-5 bg-slate-100 text-slate-600 font-black text-sm uppercase tracking-widest rounded-xl hover:bg-slate-200 transition-all border border-slate-200">
+                                            Cancel
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-12 animate-in fade-in duration-500">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Entity Type</p>
+                                        <p className="text-xl font-bold text-slate-800">{formData.institutionType}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Name</p>
+                                        <p className="text-xl font-bold text-slate-800">{formData.displayName}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Contact Person</p>
+                                        <p className="text-xl font-bold text-slate-800">{formData.contactPerson}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Phone Number</p>
+                                        <p className="text-xl font-bold text-slate-800">{formData.phone}</p>
+                                    </div>
+                                    <div className="space-y-2 text-wrap break-words">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Email Address</p>
+                                        <p className="text-xl font-bold text-slate-800">{formData.email}</p>
+                                    </div>
+                                    <div className="space-y-2 md:col-span-2 lg:col-span-1">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Location</p>
+                                        <p className="text-xl font-bold text-slate-800 leading-relaxed">
+                                            {formData.city}, {formData.state} {formData.pincode}
+                                        </p>
+                                    </div>
+                                    <div className="md:col-span-2 lg:col-span-3 space-y-2 pt-6 border-t border-slate-50">
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Full Address</p>
+                                        <p className="text-xl font-bold text-slate-800 leading-relaxed max-w-4xl">
+                                            {formData.address}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {formData.socialHandles.some(h => h) && (
+                                    <div className="pt-10 border-t border-slate-100">
+                                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Web & Social Presence</p>
+                                        <div className="flex flex-wrap gap-4">
+                                            {formData.socialHandles.map((handle, idx) => handle && (
+                                                <div key={idx} className="bg-slate-50 px-6 py-3 rounded-xl text-sm font-bold text-slate-600 border-2 border-slate-200">
+                                                    {handle}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </Card>
 
-                {/* Trusted By Footer */}
-                <p className="text-center text-sm text-gray-400 font-medium">
-                    Verified data builds trust in the voluntary carbon market.
-                </p>
+                {/* Footer Component */}
+                <div className="text-center space-y-2 pt-8">
+                    <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">
+                        Earth Carbon Foundation Registry System
+                    </p>
+                    <p className="text-xs text-slate-300 font-medium">
+                        Secure and verified carbon action tracking infrastructure.
+                    </p>
+                </div>
             </div>
         </div>
     );

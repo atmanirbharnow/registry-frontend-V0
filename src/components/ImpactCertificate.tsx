@@ -14,6 +14,7 @@ export interface ImpactCertificateProps {
     registryId: string;
     clientDetails: {
         name: string;
+        contactPerson?: string;
         type?: string;
         email?: string;
         contact?: string;
@@ -118,6 +119,7 @@ export default function ImpactCertificate({
                         <div>
                             <span className="text-gray-400 uppercase tracking-widest text-[10px] font-bold block mb-1">Client Details</span>
                             <span className="font-bold text-gray-900 text-lg uppercase block mb-1">{clientDetails.name}</span>
+                            {clientDetails.contactPerson && <div className="text-gray-700 text-sm font-bold mb-1 italic">Attn: {clientDetails.contactPerson}</div>}
                             {clientDetails.email && <div className="text-gray-600 text-xs">{clientDetails.email}</div>}
                             {clientDetails.contact && <div className="text-gray-600 text-xs">{clientDetails.contact}</div>}
                             {clientDetails.type && <div className="text-gray-500 text-[10px] font-bold uppercase mt-1">({clientDetails.type})</div>}
