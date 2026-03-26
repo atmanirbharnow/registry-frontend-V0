@@ -95,64 +95,7 @@ export default function ImpactSummaryStep({
                 <p className="text-sm text-blue-200 leading-relaxed">{subheading}</p>
             </div>
 
-            {/* Current Portfolio Context - Baseline Footprint */}
-            <div className="bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100/50">
-                <h3 className="text-[10px] font-black text-indigo-800 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                    Current Portfolio Context (Annual Baseline)
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-white p-3 rounded-xl text-center border border-indigo-50 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-orange-400 opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="text-[9px] font-bold text-orange-500 uppercase mb-1">Energy</div>
-                        <div className="font-black text-gray-800 text-sm">
-                            {(
-                                ((Number(formValues.baselineEnergyGrid || 0) * 0.82) + (Number(formValues.baselineEnergyDiesel || 0) * 2.68)) * 12 / 1000
-                            ).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
-                        </div>
-                    </div>
-                    <div className="bg-white p-3 rounded-xl text-center border border-indigo-50 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-cyan-400 opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="text-[9px] font-bold text-cyan-500 uppercase mb-1">Water</div>
-                        <div className="font-black text-gray-800 text-sm">
-                            {(
-                                (Number(formValues.baselineWaterMunicipal || 0) / 1000) * 0.5 * 12
-                            ).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
-                        </div>
-                    </div>
-                    <div className="bg-white p-3 rounded-xl text-center border border-indigo-50 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-emerald-400 opacity-20 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="text-[9px] font-bold text-emerald-500 uppercase mb-1">Waste</div>
-                        <div className="font-black text-gray-800 text-sm">
-                            {(
-                                (Number(formValues.baselineWasteOrganic || 0) + Number(formValues.baselineWasteInorganic || 0) + Number(formValues.baselineWasteHazardous || 0)) * 0.5 * 12 / 1000
-                            ).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Impact Highlights */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-2xl shadow-sm">
-                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-1">CARBON REDUCED</span>
-                    <div className="text-xl font-black text-emerald-800">
-                        {(impactData.actionSavings || 0).toFixed(2)} <span className="text-[10px] font-bold opacity-60">tCO2e/yr</span>
-                    </div>
-                </div>
-                <div className="bg-cyan-50 border border-cyan-100 p-3 rounded-2xl shadow-sm">
-                    <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest block mb-1">ATMANIRBHAR</span>
-                    <div className="text-xl font-black text-cyan-800">
-                        {(impactData.atmanirbhar || 0).toFixed(1)}%
-                    </div>
-                </div>
-                <div className="bg-indigo-50 border border-indigo-100 p-3 rounded-2xl shadow-sm">
-                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest block mb-1">CIRCULARITY</span>
-                    <div className="text-xl font-black text-indigo-800">
-                        {(impactData.circularity || 0).toFixed(1)}%
-                    </div>
-                </div>
-            </div>
 
             {/* Sections Grid - Stacked Vertically */}
             <div className="flex flex-col gap-6">
