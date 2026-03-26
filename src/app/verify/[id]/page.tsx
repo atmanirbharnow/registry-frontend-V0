@@ -162,7 +162,7 @@ export default function VerifyPage() {
                 )}
 
 
-                <ShareButtons shareText={shareText} verifyUrl={verifyUrl} />
+                {/* Removed redundant ShareButtons as requested */}
             </div>
             <PerformanceBreakdownModal
                 isOpen={isBreakdownModalOpen}

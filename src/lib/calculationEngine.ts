@@ -159,114 +159,83 @@ function calculateCO2ePhase2(input: CalculationInput): number {
 
     switch (actionType) {
         case 'solar_rooftop': {
-            // Factor: 1.23 tCO2e per year per kW
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.SOLAR_ROOFTOP.factor * 1000;
+            // Factor: 1.23 tCO2e per year per kW (Earth Carbon Phase 2)
+            co2eKg = quantity * 1.23 * 1000;
             break;
         }
         case 'solar_water_heater': {
             // Factor: 800 kg/yr per 100 LPD
-            co2eKg = (quantity / 100) * EMISSION_FACTORS_PHASE2.SOLAR_WATER_HEATER.factor;
+            co2eKg = (quantity / 100) * 800;
             break;
         }
-
         case 'borewell_water': {
-            // factor: 0.67 kg per kL
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.BOREWELL_WATER.factor;
+            // factor: 0.67 kg per kL (pumping 150m)
+            co2eKg = quantity * 0.67;
             break;
         }
-
         case 'rainwater_harvesting': {
-            // Use mid-point of 26.8 - 68.0 kg/yr for 1000L/day
-            const avgFactor = (EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMin +
-                EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMax) / 2;
-            co2eKg = quantity * avgFactor;
+            // Mid-point of 26.8 - 68.0 kg/yr for 1000L/day
+            co2eKg = quantity * 47.4; 
             break;
         }
-
+        case 'biogas_plant':
         case 'biogas': {
-            // Use client's factor: 1.2 tCO2e/yr per plant
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.BIOGAS_PLANT.factor * 1000;
+            // Factor: 1.2 tCO2e/yr per plant
+            co2eKg = quantity * 1.2 * 1000;
             break;
         }
-
         case 'composting': {
-            // Use client's factor: 0.45 kg per kg food waste
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.COMPOSTING.factor;
+            // Factor: 0.45 kg per kg food waste
+            co2eKg = quantity * 0.45;
             break;
         }
-
         case 'plastic_recycling': {
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.PLASTIC_RECYCLING.factor;
+            co2eKg = quantity * 1.5;
             break;
         }
-
         case 'paper_recycling': {
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.PAPER_RECYCLING.factor;
+            co2eKg = quantity * 0.9;
             break;
         }
-
         case 'textile_recycling': {
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.TEXTILE_RECYCLING.factor;
+            co2eKg = quantity * 2.2;
             break;
         }
-
         case 'metal_recycling': {
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.METAL_RECYCLING.factor;
+            co2eKg = quantity * 3.0;
             break;
         }
-
         case 'turn_off_bulb': {
             // Factor: 17.96 kg/yr per bulb (1 hr/day reduction)
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.LIGHTING_BULB.factor;
+            co2eKg = quantity * 17.96;
             break;
         }
-
         case 'turn_off_fan': {
             // Factor: 7.68 kg/yr per fan (1 hr/day reduction)
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.LIGHTING_FAN.factor;
+            co2eKg = quantity * 7.68;
             break;
         }
-
-        case 'rwh': {
-            const avgFactor = (EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMin +
-                EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMax) / 2;
-            co2eKg = quantity * avgFactor;
-            break;
-        }
-
-        case 'swh': {
-            // Solar water heater: 100L saves ~1500 kWh/year
-            const energySavings = (quantity / 100) * 1500;
-            co2eKg = energySavings * EMISSION_FACTORS_PHASE2.GRID_ELECTRICITY.factor;
-            break;
-        }
-
-        case 'waterless_urinal': {
-            // Each urinal saves ~150 kL per year
-            const waterSavings = quantity * 150;
-            co2eKg = waterSavings * EMISSION_FACTORS_PHASE2.BOREWELL_WATER.factor;
-            break;
-        }
-
         case 'wastewater_recycling': {
-            // quantity = kL/day capacity
-            const annualWaterKL = quantity * 365;
-            co2eKg = annualWaterKL * EMISSION_FACTORS_PHASE2.MUNICIPAL_WATER.factor;
+            // quantity = kL/day capacity. Saves municipal water (0.5 kg/kL)
+            co2eKg = (quantity * 365) * 0.5;
             break;
         }
-
         case 'tree_plantation': {
-            // Trees - use approximate 22 kg/tree/year (not in client's table)
+            // Approx 22 kg/tree/year
             co2eKg = quantity * 22;
             break;
         }
-
+        case 'battery_storage': {
+            // Efficiency based - estimated 10% grid displacement optimization
+            co2eKg = quantity * 0.82 * 0.1 * 1000;
+            break;
+        }
         default: {
             co2eKg = 0;
         }
     }
 
-// Round to 3 decimal places
+    // Round to 3 decimal places
 return Math.round(co2eKg * 1000) / 1000;
 }
 

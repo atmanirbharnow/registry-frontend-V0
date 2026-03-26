@@ -79,22 +79,36 @@ export const PIPELINE_STATUS_OPTIONS = [
 export const ACTION_PILLAR_MAP: Record<string, "energy" | "water" | "waste" | "other"> = {
   // Energy
   solar_rooftop: "energy",
+  solar_water_heater: "energy",
   battery_storage: "energy",
   led_upgrade: "energy",
   biomass_energy: "energy",
   renewable_ppa: "energy",
+  turn_off_bulb: "energy",
+  turn_off_fan: "energy",
 
   // Water
   rainwater_harvesting: "water",
   greywater_recycling: "water",
   water_fixtures: "water",
   recharge_well: "water",
+  borewell_water: "water",
+  waterless_urinal: "water",
+  wastewater_recycling: "water",
 
   // Waste
   composting: "waste",
   biogas_digester: "waste",
+  biogas_plant: "waste",
   material_recovery: "waste",
   waste_reduction: "waste",
+  plastic_recycling: "waste",
+  paper_recycling: "waste",
+  textile_recycling: "waste",
+  metal_recycling: "waste",
+
+  // Other
+  tree_plantation: "other",
 };
 
 export const PAYMENT_AMOUNT_PAISE = 100;
