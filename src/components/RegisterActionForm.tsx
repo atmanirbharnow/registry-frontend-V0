@@ -17,6 +17,7 @@ import CustomDropdown from "./ui/CustomDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { PAYMENT_AMOUNT_DISPLAY } from "@/lib/constants";
+import { getUserActions } from "@/lib/firestoreService";
 
 
 declare global {
@@ -67,6 +68,7 @@ export default function RegisterActionForm() {
     const [submitting, setSubmitting] = useState(false);
     const [isSimulationMode, setIsSimulationMode] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
+    const [registeredActionTypes, setRegisteredActionTypes] = useState<string[]>([]);
     const totalSteps = 4;
 
     useEffect(() => {
@@ -80,6 +82,16 @@ export default function RegisterActionForm() {
             document.body.appendChild(script);
         }
     }, []);
+
+    // Fetch existing actions to disable their dropdown options
+    useEffect(() => {
+        if (!user) return;
+        const unsub = getUserActions(user.uid, (fetchedActions) => {
+            const types = fetchedActions.map(a => a.actionType).filter(Boolean);
+            setRegisteredActionTypes(types);
+        });
+        return () => unsub();
+    }, [user]);
 
     // Sync profile data to formik (Safe merge)
     useEffect(() => {
@@ -375,6 +387,9 @@ export default function RegisterActionForm() {
                 {currentStep === 1 && (
                     <StepWrapper title="Step 1: Baseline Usage" icon={<EnergyIcon />}>
                         <div className="space-y-6">
+                            <p className="text-xs text-blue-600 bg-blue-50 p-3 rounded-xl font-medium border border-blue-100">
+                                Note: Baseline Usage represents your EXISTING usage BEFORE the new low-carbon action.
+                            </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField label="Number of Beneficiaries" name="beneficiariesCount" type="number" formik={formik} placeholder="e.g. 1 for self, 4 for family" />
                                 <DropdownField label="Reporting Year" name="reportingYear" options={[{ value: "2024", label: "2024" }, { value: "2025", label: "2025" }, { value: "2026", label: "2026" }, { value: "2027", label: "2027" }, { value: "2028", label: "2028" }]} formik={formik} />
@@ -424,7 +439,10 @@ export default function RegisterActionForm() {
                             <DropdownField
                                 label="Action Type"
                                 name="actionType"
-                                options={ACTION_TYPE_OPTIONS} // Need to import or define
+                                options={ACTION_TYPE_OPTIONS.map(a => ({
+                                    ...a,
+                                    disabled: registeredActionTypes.includes(a.value)
+                                }))}
                                 formik={formik}
                             />
 
@@ -467,7 +485,7 @@ export default function RegisterActionForm() {
                                     }}
                                     className="mt-2 text-xs font-bold text-[rgb(32,38,130)] hover:underline flex items-center gap-1"
                                 >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
                                     Reset to Profile Address
                                 </button>
                             )}

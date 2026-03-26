@@ -74,7 +74,7 @@ export default function UserSchoolTable() {
                             <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Registry ID</th>
                             <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">School Name</th>
                             <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">CO₂e Reduced (Kg)</th>
+                            <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">CO₂e Reduced (tCO₂e)</th>
                             <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Atmanirbhar Index</th>
                             <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
                             <th className="py-4 px-5 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">View</th>
@@ -99,7 +99,7 @@ export default function UserSchoolTable() {
                                     <StatusBadge status={school.status || "pledged"} />
                                 </td>
                                 <td className="py-3.5 px-5 text-sm font-semibold text-gray-700">
-                                    {school.tco2e_annual != null ? (school.tco2e_annual * 1000).toLocaleString() : "N/A"}
+                                    {school.tco2e_annual != null ? (school.tco2e_annual).toFixed(2) : "N/A"}
                                 </td>
                                 <td className="py-3.5 px-5 text-sm font-medium text-orange-600">
                                     {school.atmanirbhar_pct != null ? `${school.atmanirbhar_pct}%` : "N/A"}

@@ -8,14 +8,14 @@ import {
     BASELINE_SOURCE_OPTIONS,
     REPORTING_YEAR_OPTIONS,
 } from "@/lib/constants/schoolConstants";
-import { ACTION_TYPES, ACTION_PHOTO_LABELS } from "@/lib/constants";
+import { ACTION_TYPES, ACTION_PHOTO_LABELS, PAYMENT_AMOUNT_PAISE } from "@/lib/constants";
 import { toast } from "react-toastify";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/ui/Spinner";
 import { auth } from "@/lib/firebaseConfig";
 import SchoolAutocomplete from "./SchoolAutocomplete";
-import { getProjects, getSchoolActions, checkDuplicateSchool } from "@/lib/schoolFirestoreService";
+import { getProjects, getSchoolActions, checkDuplicateSchool, getUserSchoolsRealtime } from "@/lib/schoolFirestoreService";
 import CustomDropdown from "./ui/CustomDropdown";
 import ImpactSummaryStep from "./ImpactSummaryStep";
 import Card from "./ui/Card";
@@ -72,6 +72,7 @@ export default function SchoolRegistrationForm() {
     const [currentStep, setCurrentStep] = useState(1);
     const [projects, setProjects] = useState<any[]>([]);
     const [actions, setActions] = useState<any[]>([]);
+    const [registeredActionTypes, setRegisteredActionTypes] = useState<string[]>([]);
     const totalSteps = 4;
 
     useEffect(() => {
@@ -103,6 +104,16 @@ export default function SchoolRegistrationForm() {
                 console.error("Failed to load draft", e);
             }
         }
+    }, []);
+
+    // Check for existing user actions to disable from dropdown
+    useEffect(() => {
+        if (!auth.currentUser) return;
+        const unsub = getUserSchoolsRealtime(auth.currentUser.uid, (schools) => {
+            const types = schools.map((s: any) => s.action_id || s.actionType).filter(Boolean);
+            setRegisteredActionTypes(types as string[]);
+        });
+        return () => unsub();
     }, []);
 
     // Sync profile data to formik (Safe merge - only if fields are empty)
@@ -195,10 +206,10 @@ export default function SchoolRegistrationForm() {
 
                 const options = {
                     key: orderData.key,
-                    amount: 19900, // Rs. 199 in paise
+                    amount: PAYMENT_AMOUNT_PAISE, // Rs. 199 in paise
                     currency: "INR",
                     name: "Earth Carbon Registry",
-                    description: "School Onboarding - Rs.199",
+                    description: "School Onboarding - Rs.1",
                     order_id: orderData.orderId,
                     handler: async (response: any) => {
                         // Pre-fill profile data before verification
@@ -357,8 +368,8 @@ export default function SchoolRegistrationForm() {
                                 {step === 4 && "Payment"}
                             </div>
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" :
-                                    currentStep > step ? "bg-green-500 border-green-100 text-white" :
-                                        "bg-white border-gray-100 text-gray-300"
+                                currentStep > step ? "bg-green-500 border-green-100 text-white" :
+                                    "bg-white border-gray-100 text-gray-300"
                                 }`}>
                                 {currentStep > step ? (
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
@@ -378,6 +389,9 @@ export default function SchoolRegistrationForm() {
             <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(); }} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {currentStep === 1 && (
                     <StepWrapper title="Baseline Usage (Monthly Average)" icon={<EnergyIcon />}>
+                        <p className="text-xs text-blue-600 bg-blue-50 p-3 rounded-xl font-medium border border-blue-100 mb-6">
+                            Note: Baseline Usage represents your EXISTING usage BEFORE the new low-carbon action.
+                        </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <InputField label="Student/Staff Count" name="students_count" type="number" formik={formik} />
                             <DropdownField label="Reporting Year" name="reporting_year" options={REPORTING_YEAR_OPTIONS} formik={formik} />
@@ -426,7 +440,11 @@ export default function SchoolRegistrationForm() {
                                 <DropdownField
                                     label="Select Action Type"
                                     name="action_type"
-                                    options={ACTION_TYPES.map(a => ({ value: a.value, label: a.label }))}
+                                    options={ACTION_TYPES.map(a => ({ 
+                                        value: a.value, 
+                                        label: a.label,
+                                        disabled: registeredActionTypes.includes(a.value)
+                                    }))}
                                     formik={formik}
                                 />
                                 <InputField
@@ -476,7 +494,7 @@ export default function SchoolRegistrationForm() {
                                             }}
                                             className="mt-2 text-xs font-bold text-[rgb(32,38,130)] hover:underline flex items-center gap-1"
                                         >
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
                                             Reset to Profile Address
                                         </button>
                                     )}
@@ -541,7 +559,7 @@ export default function SchoolRegistrationForm() {
                             <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-gradient-to-br from-white to-blue-50/50 rounded-3xl border-2 border-blue-100 shadow-xl">
                                 <div>
                                     <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Registration Fee</p>
-                                    <p className="text-4xl font-black text-[rgb(32,38,130)]">₹199</p>
+                                    <p className="text-4xl font-black text-[rgb(32,38,130)]">₹1</p>
                                 </div>
                                 <button
                                     type="submit"

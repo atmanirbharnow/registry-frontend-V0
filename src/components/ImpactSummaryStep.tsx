@@ -82,6 +82,20 @@ export default function ImpactSummaryStep({
         };
     }
 
+    // If school has students but no baseline data, use sectoral averages
+    if (isSchool && impactData.tCO2e === 0) {
+        const students = Number(formValues.students_count) || 0;
+        if (students > 0) {
+            // Sectoral average fallback: 150 kWh/student/yr grid electricity
+            const estimatedKwh = students * 150;
+            const estimatedCO2eKg = estimatedKwh * 0.82;
+            impactData = {
+                ...impactData,
+                tCO2e: Math.round(estimatedCO2eKg / 1000 * 100) / 100,
+            };
+        }
+    }
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}

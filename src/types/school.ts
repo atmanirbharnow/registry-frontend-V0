@@ -31,6 +31,7 @@ export interface School {
     students_count: number;
     reporting_year: string;
     actionQuantity: number;
+    action_type?: string;
     action_id: string;
 
     // Step 3: Waste & Water

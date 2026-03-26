@@ -70,10 +70,21 @@ export default function SchoolVerifyPage() {
     const verifyUrl = `${APP_URL}/verify/school/${school.registryId}`;
     const shareText = `Check out ${school.schoolName}'s climate action on the Earth Carbon Registry: ${verifyUrl}`;
 
+    const energyConsumed = ((school.baselineEnergyGrid || 0) + (school.baselineEnergyDiesel || 0) + (school.baselineEnergySolar || 0)) * 12;
+    const finalEnergy = energyConsumed || school.electricity_kWh_year || 0;
+
+    let wasteDiverted = 0;
+    const type = (school.action_type || school.action_id || "").toLowerCase();
+    if (type.includes("waste") || type.includes("compost") || type.includes("biogas") || type.includes("recycl")) {
+        wasteDiverted = school.actionQuantity || 0;
+    } else {
+        wasteDiverted = school.waste_diverted_kg || 0;
+    }
+
     const highlights: Highlight[] = [
         { icon: "", text: `Educational Institution: ${school.students_count || 0} Students` },
-        { icon: "", text: `${school.electricity_kWh_year || 0} kWh Energy consumed / yr` },
-        { icon: "", text: `${school.waste_diverted_kg || 0} kg Waste diverted from landfill` }
+        { icon: "", text: `${finalEnergy} kWh Energy consumed / yr` },
+        { icon: "", text: `${wasteDiverted} kg Waste diverted from landfill` }
     ];
 
     return (

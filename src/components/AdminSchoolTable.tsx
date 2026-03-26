@@ -71,8 +71,8 @@ export default function AdminSchoolTable() {
             baselineWasteOrganic: (school.baselineWasteOrganic || school.waste_generated_kg)?.toString() || "",
             baselineWasteInorganic: (school.baselineWasteInorganic || 0).toString(),
             baselineWasteHazardous: (school.baselineWasteHazardous || 0).toString(),
-            actionType: school.action_id || "Solar", 
-            actionQuantity: (school.electricity_kWh_year || 0).toString(),
+            actionType: school.action_type || school.action_id || "Solar", 
+            actionQuantity: (school.actionQuantity || school.electricity_kWh_year || 0).toString(),
             students_count: (school.students_count || 1).toString(),
             status: "verified",
             adminNotes: school.adminNotes || "",
@@ -305,7 +305,7 @@ export default function AdminSchoolTable() {
                                 <th className="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">School Name</th>
                                 <th className="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Registry ID</th>
                                 <th className="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">CO2e (Kg)</th>
+                                <th className="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">CO₂e Reduced (tCO₂e)</th>
                                 <th className="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Contact</th>
                                 <th className="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Created At</th>
                                 <th className="px-6 py-5 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Action</th>
@@ -323,7 +323,7 @@ export default function AdminSchoolTable() {
                                     <td className="px-6 py-4">
                                         <StatusBadge status={school.status} />
                                     </td>
-                                    <td className="px-6 py-4 font-medium text-gray-700">{(school.tco2e_annual * 1000).toLocaleString() || "N/A"}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-700">{school.tco2e_annual != null ? school.tco2e_annual.toFixed(2) : "N/A"}</td>
                                     <td className="px-6 py-4">
                                         <div className="text-sm font-medium text-gray-800">{school.contactPerson}</div>
                                         <div className="text-xs text-gray-400">{school.email}</div>
@@ -571,7 +571,7 @@ export default function AdminSchoolTable() {
                                 <div className="flex justify-between items-center pt-2">
                                     <div className="text-sm font-bold text-gray-500">
                                         Calculated Impact: <span className="text-[rgb(32,38,130)] font-black">
-                                            {currentImpact ? (currentImpact.tco2e_annual * 1000).toLocaleString() : "0"} Kg CO₂e
+                                            {currentImpact ? currentImpact.tco2e_annual.toFixed(2) : "0"} tCO₂e
                                         </span>
                                     </div>
                                     {!isEditMode ? (

@@ -57,11 +57,15 @@ export const ACTOR_TYPES = [
 export const SECTOR_LABELS: Record<string, string> = {
     School: "Educational Institution",
     Hospital: "Healthcare Facility",
-    MSME: "MSME Enterprise",
+    "Hospital and Hotel": "Hospital & Hotel",
+    MSME: "MSME / Small Business",
+    SME: "MSME / Small Business",
     Commercial: "Commercial Entity",
     NGO: "Non-Profit Organization",
     Government: "Government Body",
     Individual: "Individual Actor",
+    Household: "Household",
+    Education: "Educational Institution",
 };
 
 export const ACTION_STATUS_OPTIONS = [

@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
             baselineWasteHazardous: Number(formData.get("baselineWasteHazardous")) || 0,
             students_count: Number(formData.get("students_count")) || 1,
             actionType: (formData.get("action_type") as string) || "Solar",
-            actionQuantity: Number(formData.get("actionQuantity") || formData.get("electricity_kWh_year")) || 0,
+            actionQuantity: Number(formData.get("actionQuantity")) || 0,
         });
 
         const sha256Hash = generateSchoolHash({
@@ -235,7 +235,8 @@ export async function POST(request: NextRequest) {
             name_normalized: normalizeSchoolName(formData.get("schoolName") as string),
             students_count: Number(formData.get("students_count")) || 1,
             // Action Data
-            actionQuantity: Number(formData.get("actionQuantity") || formData.get("electricity_kWh_year")) || 0,
+            actionQuantity: Number(formData.get("actionQuantity")) || 0,
+            action_type: formData.get("action_type") || formData.get("actionType") || null,
             action_id: formData.get("action_id"),
             energyBillCopy: formData.get("energyBillCopy") || null,
             meterPhoto: formData.get("meterPhoto") || null,
@@ -258,7 +259,7 @@ export async function POST(request: NextRequest) {
             students_count: Number(formData.get("students_count")),
             reporting_year: formData.get("reporting_year"),
             action_id: formData.get("action_id"),
-            actionQuantity: Number(formData.get("actionQuantity") || formData.get("electricity_kWh_year")) || 0,
+            actionQuantity: Number(formData.get("actionQuantity")) || 0,
             baseline_source: formData.get("baseline_source"),
             last_calculated: now,
             userId, // Include userId for security rules

@@ -89,28 +89,25 @@ export function calculateImpactPhase2(input: CalculationInput): CalculationResul
  * Capped at 100%.
  */
 function calculateCircularityScore(input: CalculationInput): number {
-    const { 
-        baselineWasteOrganic = 0, 
-        baselineWasteInorganic = 0, 
+    const {
+        baselineWasteOrganic = 0,
+        baselineWasteInorganic = 0,
         baselineWasteHazardous = 0,
         actionType = "",
-        quantity = 0 
+        quantity = 0
     } = input;
-    
-    // Total throughput = Sum of all waste streams + any new diverted amount not accounted for
+
     const totalBaselineWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
-    
-    // Diverted amount
-    let divertedWaste = baselineWasteOrganic; // Assume organic waste is diverted/composted
-    if (actionType.toLowerCase().includes("waste") || actionType.toLowerCase().includes("recycling") || actionType.toLowerCase().includes("compost")) {
-        divertedWaste += quantity; // Monthly kg
+    if (totalBaselineWaste === 0) return 0;
+
+    // Diverted waste = only what the specific ACTION diverts
+    let divertedWaste = 0;
+    const type = actionType.toLowerCase();
+    if (type.includes("waste") || type.includes("recycling") || type.includes("compost") || type.includes("biogas_digester") || type.includes("material_recovery")) {
+        divertedWaste = quantity; // Monthly kg diverted by this action
     }
 
-    // Denominator should be at least as large as what we diverted
-    const totalMaterialThroughput = Math.max(totalBaselineWaste, divertedWaste);
-    if (totalMaterialThroughput === 0) return 0;
-
-    const score = (divertedWaste / totalMaterialThroughput) * 100;
+    const score = (divertedWaste / totalBaselineWaste) * 100;
     return Math.min(100, Math.round(score * 10) / 10);
 }
 

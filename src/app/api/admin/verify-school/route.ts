@@ -123,12 +123,12 @@ export async function POST(request: NextRequest) {
                 baselineWasteHazardous: Number(editedData.baselineWasteHazardous) || 0,
                 students_count: Number(editedData.students_count) || 1,
                 actionType: editedData.actionType || "Solar",
-                actionQuantity: Number(editedData.actionQuantity ?? editedData.electricity_kWh_year) || 0,
+                actionQuantity: Number(editedData.actionQuantity) || 0,
             });
 
             updateData = {
-                ...updateData,
                 ...editedData,
+                action_type: editedData.actionType,
                 tco2e_annual: impact.tco2e_annual,
                 atmanirbhar_pct: impact.atmanirbhar_pct,
                 circularity_pct: impact.circularity_pct,

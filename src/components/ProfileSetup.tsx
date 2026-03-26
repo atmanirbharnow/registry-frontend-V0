@@ -196,6 +196,9 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                 consentVerified: formData.consentVerified,
                 socialHandles: formData.socialHandles as [string, string, string],
             });
+            // Clear any lingering drafts to prevent form data contamination
+            localStorage.removeItem("school_onboarding_draft");
+            localStorage.removeItem("register_action_draft"); // future proofing
             toast.success("Profile updated successfully!");
             setIsEditing(false);
             onComplete();
