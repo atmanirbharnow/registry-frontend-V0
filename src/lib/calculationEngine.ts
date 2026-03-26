@@ -18,16 +18,33 @@ export interface CalculationInput {
     quantity: number;
     unit: string;
 
-    // Optional baseline data
-    baselineEnergyKwh?: number;
-    baselineWaterM3?: number;
-    baselineWasteKg?: number;
+    // Current Usage (New)
+    electricityUseKwh?: number;
+    fuelDieselLiters?: number;
+    fuelPetrolLiters?: number;
+    fuelKeroseneLiters?: number;
+    waterUsageKLD?: number;
+    wasteOrganicKg?: number;
+    wasteTextileKg?: number;
+    wastePlasticKg?: number;
+    wasteElectronicKg?: number;
 
-    // Optional atmanirbhar data
-    localPercent?: number;
-    indigenousPercent?: number;
-    communityPercent?: number;
-    jobsCreated?: number;
+    // Action Specific (New)
+    capacityKw?: number;
+    installationDate?: string;
+    sizeLiters?: number;
+    capacity?: string;
+    tankCapacityKL?: number;
+    capacityM3?: string;
+
+    // Baseline Data (Updated)
+    baselineElectricityKwh?: number;
+    baselineWaterKL?: number;
+    baselineWasteOrganicKg?: number;
+    baselineWastePaperKg?: number;
+    baselineWastePlasticKg?: number;
+    baselineWasteTextileKg?: number;
+    baselineWasteEWasteKg?: number;
 
     // Optional circularity data (waste)
     wasteGeneratedKg?: number;
@@ -84,9 +101,26 @@ export function calculateImpactPhase2(input: CalculationInput): CalculationResul
  */
 function calculateCircularityScore(input: CalculationInput): number {
     const { wasteGeneratedKg, wasteDivertedKg } = input;
-    if (!wasteGeneratedKg || wasteGeneratedKg <= 0) return 0;
-    const score = ((wasteDivertedKg ?? 0) / wasteGeneratedKg) * 100;
-    return Math.round(Math.min(100, score) * 10) / 10;
+    
+    // Weighted waste streams (future-proofing for multiple streams)
+    const streams = [
+        { generated: wasteGeneratedKg || 0, diverted: wasteDivertedKg || 0, weight: 1.0 }
+    ];
+
+    let totalScore = 0;
+    let totalWeight = 0;
+
+    streams.forEach(s => {
+        if (s.generated > 0) {
+            const rawScore = (s.diverted / s.generated) * 100;
+            const cappedScore = Math.min(100, rawScore); // Cap individual at 100%
+            totalScore += cappedScore * s.weight;
+            totalWeight += s.weight;
+        }
+    });
+
+    if (totalWeight === 0) return 0;
+    return Math.round((totalScore / totalWeight) * 10) / 10;
 }
 
 // ============================================
@@ -94,11 +128,16 @@ function calculateCircularityScore(input: CalculationInput): number {
 // ============================================
 
 function calculateCO2ePhase2(input: CalculationInput): number {
-    const { actionType, quantity, baselineEnergyKwh, baselineWaterM3, baselineWasteKg } = input;
+    const { actionType, quantity, baselineElectricityKwh, baselineWaterKL, baselineWasteOrganicKg } = input;
 
     let co2eKg = 0;
 
     switch (actionType) {
+        case 'solar_rooftop': {
+            // Factor: 1.23 tCO2e per year per kW
+            co2eKg = quantity * EMISSION_FACTORS_PHASE2.SOLAR_ROOFTOP.factor * 1000;
+            break;
+        }
         case 'solar_water_heater': {
             // Factor: 800 kg/yr per 100 LPD
             co2eKg = (quantity / 100) * EMISSION_FACTORS_PHASE2.SOLAR_WATER_HEATER.factor;
@@ -215,38 +254,53 @@ function calculateCO2ePhase2(input: CalculationInput): number {
 
 function calculateAtmanirbharPhase2(input: CalculationInput): number {
     const {
-        localPercent = 0,
-        indigenousPercent = 0,
-        communityPercent = 0,
-        jobsCreated = 0,
+        baselineElectricityKwh = 0,
+        baselineWaterKL = 0,
+        baselineWasteOrganicKg = 0,
+        electricityUseKwh = 0,
+        waterUsageKLD = 0,
+        wasteOrganicKg = 0,
     } = input;
 
-    // If no data provided, return 0
-    if (localPercent === 0 && indigenousPercent === 0 &&
-        communityPercent === 0 && jobsCreated === 0) {
-        return 0;
-    }
-
-    // Client-approved weights
+    // Client-approved weights (0.4 Energy, 0.3 Water, 0.2 Waste, 0.1 Action Baseline)
     const WEIGHTS = {
-        local: 0.4,        // 40%
-        indigenous: 0.3,   // 30%
-        community: 0.2,    // 20%
-        jobs: 0.1,         // 10%
+        energy: 0.4,
+        water: 0.3,
+        waste: 0.2,
+        action: 0.1,
     };
 
-    // Calculate jobs score (capped at 100)
-    const jobsScore = Math.min(jobsCreated * 10, 100);
+    // 1. Energy Efficiency Score
+    let energyScore = 0;
+    if (baselineElectricityKwh > 0) {
+        const reduction = Math.max(0, baselineElectricityKwh - electricityUseKwh);
+        energyScore = Math.min(100, (reduction / baselineElectricityKwh) * 100);
+    }
 
-    // Weighted average
-    const score =
-        localPercent * WEIGHTS.local +
-        indigenousPercent * WEIGHTS.indigenous +
-        communityPercent * WEIGHTS.community +
-        jobsScore * WEIGHTS.jobs;
+    // 2. Water Conservation Score
+    let waterScore = 0;
+    if (baselineWaterKL > 0) {
+        const reduction = Math.max(0, baselineWaterKL - waterUsageKLD);
+        waterScore = Math.min(100, (reduction / baselineWaterKL) * 100);
+    }
 
-    // Round to 1 decimal place
-    return Math.round(score * 10) / 10;
+    // 3. Waste Diversion Score
+    let wasteScore = 0;
+    if (baselineWasteOrganicKg > 0) {
+        const divertedPercent = (input.wasteDivertedKg ?? 0) / (input.wasteGeneratedKg ?? baselineWasteOrganicKg) * 100;
+        wasteScore = Math.min(100, divertedPercent);
+    }
+
+    // 4. Action Specific Impact (as a fallback/proxy for the 0.1 weight)
+    const actionScore = input.quantity > 0 ? 100 : 0;
+
+    const weightedScore = 
+        (energyScore * WEIGHTS.energy) +
+        (waterScore * WEIGHTS.water) +
+        (wasteScore * WEIGHTS.waste) +
+        (actionScore * WEIGHTS.action);
+
+    return Math.round(weightedScore * 10) / 10;
 }
 
 // ============================================
@@ -293,22 +347,17 @@ export function validateCalculationInput(input: CalculationInput): {
         errors.push('Unit is required');
     }
 
-    // Validate percentage fields if provided
-    const percentFields = [
-        { value: input.localPercent, name: 'Local sourcing %' },
-        { value: input.indigenousPercent, name: 'Indigenous tech %' },
-        { value: input.communityPercent, name: 'Community ownership %' },
+    // Validate breakdown fields if provided
+    const baselineFields = [
+        { value: input.baselineElectricityKwh, name: 'Electricity Usage' },
+        { value: input.baselineWaterKL, name: 'Water Consumption' },
     ];
 
-    percentFields.forEach(field => {
-        if (field.value !== undefined && (field.value < 0 || field.value > 100)) {
-            errors.push(`${field.name} must be between 0 and 100`);
+    baselineFields.forEach(field => {
+        if (field.value !== undefined && field.value < 0) {
+            errors.push(`${field.name} must be 0 or greater`);
         }
     });
-
-    if (input.jobsCreated !== undefined && input.jobsCreated < 0) {
-        errors.push('Jobs created must be 0 or greater');
-    }
 
     return {
         valid: errors.length === 0,

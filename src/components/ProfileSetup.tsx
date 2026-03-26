@@ -18,11 +18,23 @@ interface ProfileSetupProps {
 
 const INSTITUTION_TYPES = [
     { value: "School", label: "Educational Institution (School/College)" },
-    { value: "Corporate", label: "Corporate / Business Entity" },
+    { value: "Hospital", label: "Healthcare (Hospital/Clinic)" },
+    { value: "MSME", label: "MSME (Micro, Small & Medium Enterprise)" },
+    { value: "Commercial", label: "Commercial (Office/Retail/Hotel)" },
     { value: "NGO", label: "Non-Profit Organization (NGO)" },
     { value: "Government", label: "Government Body" },
     { value: "Individual", label: "Individual Actor" },
 ] as const;
+
+const BHARAT_STATES = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
+    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
+    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
+    "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
+    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", 
+    "Ladakh", "Lakshadweep", "Puducherry"
+].map(s => ({ value: s, label: s }));
 
 export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
     const { user } = useAuth();
@@ -32,6 +44,9 @@ export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
         phone: "+91",
         contactPerson: "",
         institutionType: "" as any,
+        state: "",
+        pincode: "",
+        consentVerified: false,
         socialHandles: ["", "", ""],
     });
     const [saving, setSaving] = useState(false);
@@ -54,9 +69,17 @@ export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
             !formData.displayName.trim() || 
             !formData.phone.trim() || 
             !formData.contactPerson.trim() || 
-            !formData.institutionType
+            !formData.institutionType ||
+            !formData.state ||
+            !formData.pincode ||
+            !formData.consentVerified
         ) {
-            toast.error("Please fill in all required fields.");
+            toast.error("Please fill in all required fields and accept the consent.");
+            return;
+        }
+
+        if (formData.pincode.length !== 6) {
+            toast.error("Pincode must be exactly 6 digits.");
             return;
         }
 
@@ -78,6 +101,9 @@ export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
                 phone: formData.phone,
                 contactPerson: formData.contactPerson,
                 institutionType: formData.institutionType,
+                state: formData.state,
+                pincode: formData.pincode,
+                consentVerified: formData.consentVerified,
                 socialHandles: formData.socialHandles as [string, string, string],
             });
             toast.success("Profile updated successfully!");
@@ -163,6 +189,46 @@ export default function ProfileSetup({ uid, onComplete }: ProfileSetupProps) {
                                 onChange={(e) => handleChange("contactPerson", e.target.value)}
                                 className="!py-4 !rounded-xl"
                             />
+
+                            <div className="md:col-span-1 space-y-1.5">
+                                <label className="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                                    State
+                                </label>
+                                <CustomDropdown
+                                    options={BHARAT_STATES}
+                                    value={formData.state}
+                                    onChange={(val) => handleChange("state", val)}
+                                    placeholder="Select state..."
+                                    size="lg"
+                                />
+                            </div>
+
+                            <Input
+                                label="Pincode"
+                                placeholder="6-digit pincode"
+                                value={formData.pincode}
+                                onChange={(e) => handleChange("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
+                                className="!py-4 !rounded-xl"
+                                maxLength={6}
+                            />
+                        </div>
+
+                        {/* Consent Checkbox */}
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-gray-100 mt-4">
+                            <label className="flex items-start gap-4 cursor-pointer group">
+                                <div className="mt-0.5 relative">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.consentVerified}
+                                        onChange={(e) => handleChange("consentVerified", (e.target.checked as any))}
+                                        className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                    />
+                                    <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                </div>
+                                <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
+                                    I authorize Earth Carbon Foundation to process my data for the purpose of carbon verification and registry maintenance.
+                                </span>
+                            </label>
                         </div>
 
                         {/* Social Media Section */}

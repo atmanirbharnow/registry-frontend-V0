@@ -11,7 +11,10 @@ export interface UserProfile {
     socialHandles: [string, string, string];
     phone?: string;
     contactPerson?: string;
-    institutionType?: "School" | "Corporate" | "NGO" | "Government" | "Individual";
+    institutionType?: "School" | "Hospital" | "MSME" | "Commercial" | "NGO" | "Government" | "Individual";
+    state?: string;
+    pincode?: string;
+    consentVerified?: boolean;
     actorName?: string;
     createdAt: Timestamp;
     updatedAt?: Timestamp;

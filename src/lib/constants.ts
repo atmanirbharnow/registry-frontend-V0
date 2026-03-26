@@ -117,6 +117,16 @@ export const ACTOR_TYPES = [
   { value: "ngo", label: "NGO" },
 ] as const;
 
+export const SECTOR_LABELS: Record<string, string> = {
+    School: "Educational Institution",
+    Hospital: "Healthcare Facility",
+    MSME: "MSME Enterprise",
+    Commercial: "Commercial Entity",
+    NGO: "Non-Profit Organization",
+    Government: "Government Body",
+    Individual: "Individual Actor",
+};
+
 export const ACTION_STATUS_OPTIONS = [
   { value: "pending", label: "Pending" },
   { value: "verified", label: "Verified" },

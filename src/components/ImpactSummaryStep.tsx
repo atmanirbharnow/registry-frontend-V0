@@ -2,6 +2,8 @@
 
 import React from "react";
 import { ACTION_LABELS } from "@/lib/constants";
+import { calculateImpactPhase2 } from "@/lib/calculationEngine";
+import { calculateSchoolImpact } from "@/lib/schoolCalculationEngine";
 
 interface ImpactSummaryStepProps {
     isSchool?: boolean;
@@ -26,6 +28,44 @@ export default function ImpactSummaryStep({
         ? "Review your school's submitted data and understand the benefits of registering on the Earth Carbon Registry."
         : "Review your submitted data and understand the benefits of registering on the Earth Carbon Registry.";
 
+    // Calculate Impact
+    let impactData = { tCO2e: 0, atmanirbhar: 0, circularity: 0 };
+    if (isSchool) {
+        try {
+            const res = calculateSchoolImpact({
+                electricity_kWh_year: Number(formValues.electricity_kWh_year) || 0,
+                fuel_type: formValues.fuel_type || "None",
+                fuel_consumption_litres: Number(formValues.fuel_consumption_litres) || 0,
+                renewable_energy_type: formValues.renewable_energy_type || "None",
+                renewable_energy_kwh: Number(formValues.renewable_energy_kwh) || 0,
+                attribution_pct_energy: Number(formValues.attribution_pct_energy) || 100,
+                students_count: Number(formValues.students_count) || 1,
+                waste_generated_kg: Number(formValues.waste_generated_kg) || 0,
+                waste_diverted_kg: Number(formValues.waste_diverted_kg) || 0,
+                water_consumption_m3: Number(formValues.water_consumption_m3) || 0,
+                attribution_pct_waste: Number(formValues.attribution_pct_waste) || 100,
+                attribution_pct_water: Number(formValues.attribution_pct_water) || 100,
+            });
+            impactData = { tCO2e: res.tco2e_annual, atmanirbhar: res.atmanirbhar_pct, circularity: res.circularity_pct };
+        } catch (e) {
+            console.error(e);
+        }
+    } else {
+        const res = calculateImpactPhase2({
+            actionType: formValues.actionType || "",
+            quantity: Number(formValues.quantity) || 0,
+            unit: formValues.unit || "",
+            electricityUseKwh: Number(formValues.electricityUseKwh) || 0,
+            waterUsageKLD: Number(formValues.waterUsageKLD) || 0,
+            wasteGeneratedKg: Number(formValues.wasteGeneratedKg) || 0,
+            wasteDivertedKg: Number(formValues.wasteDivertedKg) || 0,
+            baselineElectricityKwh: Number(formValues.baselineElectricityKwh) || 0,
+            baselineWaterKL: Number(formValues.baselineWaterKL) || 0,
+            baselineWasteOrganicKg: Number(formValues.baselineWasteOrganicKg) || 0,
+        });
+        impactData = { tCO2e: res.tCO2e, atmanirbhar: res.atmanirbharScore, circularity: res.circularityScore };
+    }
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
@@ -39,10 +79,32 @@ export default function ImpactSummaryStep({
                 <p className="text-sm text-blue-200 leading-relaxed">{subheading}</p>
             </div>
 
+            {/* Impact Highlights */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest block mb-1">PROVISIONAL Carbon REDUCTION</span>
+                    <div className="text-2xl font-black text-emerald-800">
+                        -{impactData.tCO2e.toFixed(3)} <span className="text-sm font-bold opacity-60">tCO2e</span>
+                    </div>
+                </div>
+                <div className="bg-cyan-50 border border-cyan-100 p-4 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-cyan-600 uppercase tracking-widest block mb-1">PROVISIONAL ATMANIRBHAR</span>
+                    <div className="text-2xl font-black text-cyan-800">
+                        {impactData.atmanirbhar.toFixed(1)}%
+                    </div>
+                </div>
+                <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl shadow-sm">
+                    <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest block mb-1">PROVISIONAL CIRCULARITY</span>
+                    <div className="text-2xl font-black text-indigo-800">
+                        {impactData.circularity.toFixed(1)}%
+                    </div>
+                </div>
+            </div>
+
             {/* Sections Grid - Stacked Vertically */}
             <div className="flex flex-col gap-6">
                 {/* Personal Details */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                     <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Personal Details</h3>
                     </div>
@@ -52,7 +114,7 @@ export default function ImpactSummaryStep({
                 </div>
 
                 {/* Submitted Details */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
                     <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
                             {isSchool ? "School Details" : "Action Details"}
@@ -158,6 +220,9 @@ function PersonalDetailsGrid({ userProfile }: { userProfile: any }) {
         ["Contact Name", userProfile?.displayName || "—"],
         ["Email Address", userProfile?.email || "—"],
         ["Phone Number", userProfile?.phone || "—"],
+        ["Sector", userProfile?.institutionType || "—"],
+        ["State", userProfile?.state || "—"],
+        ["Pincode", userProfile?.pincode || "—"],
         ["Contact Person", userProfile?.contactPerson || "—"],
     ];
 
@@ -170,8 +235,10 @@ function IndividualDetailsGrid({ values }: { values: Record<string, any> }) {
         ["Action Type", actionLabel],
         ["Capacity / Quantity", values.quantity ? `${values.quantity} ${values.unit || "units"}` : "—"],
         ["Location", values.address || "—"],
-        ["Atmanirbhar Score", `${values.localPercent || 0}% Local Input, ${values.indigenousPercent || 0}% Indigenous Tech`],
-        ["Circularity Impact", `${values.wasteDivertedKg || 0}kg Diverted from ${values.wasteGeneratedKg || 0}kg Waste`],
+        ["Electricity Usage", values.electricityUseKwh ? `${values.electricityUseKwh} Kwh (Current) / ${values.baselineElectricityKwh || 0} Kwh (Baseline)` : "—"],
+        ["Water usage", values.waterUsageKLD ? `${values.waterUsageKLD} KLD (Current) / ${values.baselineWaterKL || 0} KL (Baseline)` : "—"],
+        ["Waste Generated", `Organic: ${values.wasteOrganicKg || 0}kg, Plastic: ${values.wastePlasticKg || 0}kg, Electronic: ${values.wasteElectronicKg || 0}kg`],
+        ["Circularity Impact", `${values.wasteDivertedKg || 0}kg Diverted / ${values.wasteGeneratedKg || 0}kg Total`],
     ];
 
     return <DetailTable rows={rows} />;
@@ -201,8 +268,6 @@ function DetailTable({ rows }: { rows: [string, string][] }) {
     );
 }
 
-/* ===== Benefit Card ===== */
-
 function BenefitCard({ icon, title, description, bgColor, iconColor }: { icon: React.ReactNode; title: string; description: string; bgColor: string; iconColor: string }) {
     return (
         <div className={`flex flex-col gap-2 p-4 rounded-2xl ${bgColor} transition-transform hover:scale-[1.02] border border-white shadow-sm`}>
@@ -216,8 +281,6 @@ function BenefitCard({ icon, title, description, bgColor, iconColor }: { icon: R
         </div>
     );
 }
-
-/* ===== SVG Icons ===== */
 
 const SummaryIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -255,20 +318,8 @@ const SignatureIcon = () => (
     </svg>
 );
 
-const RegistryIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-    </svg>
-);
-
 const ShareIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-    </svg>
-);
-
-const VerifyIcon = () => (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
     </svg>
 );

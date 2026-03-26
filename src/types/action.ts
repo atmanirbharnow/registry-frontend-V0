@@ -21,6 +21,9 @@ export interface Action {
     phone: string;
     email: string;
     status: ActionStatus;
+    sector?: string;
+    state?: string;
+    pincode?: string;
     co2eKg: number | null;
     atmanirbharPercent: number | null;
     circularityPercent: number | null;

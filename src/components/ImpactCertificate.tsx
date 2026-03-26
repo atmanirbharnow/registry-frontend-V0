@@ -3,6 +3,7 @@
 import React, { useRef, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import QRCode from "@/components/QRCode";
+import { SECTOR_LABELS } from "@/lib/constants";
 
 export interface Highlight {
     icon: string;
@@ -140,7 +141,7 @@ export default function ImpactCertificate({
                         <div className="col-span-1 md:col-span-2 flex flex-wrap gap-x-8 gap-y-4">
                             <div>
                                 <span className="text-gray-400 uppercase tracking-widest text-[10px] font-bold block mb-1">Sector / Action Type</span>
-                                <span className="font-semibold text-gray-700">{sector}</span>
+                                <span className="font-semibold text-gray-700">{SECTOR_LABELS[sector] || sector}</span>
                             </div>
                             <div>
                                 <span className="text-gray-400 uppercase tracking-widest text-[10px] font-bold block mb-1">Location</span>

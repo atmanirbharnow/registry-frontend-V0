@@ -113,5 +113,11 @@ export interface SchoolFormData {
     summaryAgreed: boolean;
     lat: number | null;
     lng: number | null;
+
+    // Verification Photos
+    energyBillCopy: string | null;
+    meterPhoto: string | null;
+    moreDetailsPhoto: string | null;
+    siteOverviewPhoto: string | null;
 }
 

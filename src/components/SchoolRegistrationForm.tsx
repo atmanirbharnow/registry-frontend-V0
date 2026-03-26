@@ -21,6 +21,8 @@ import SchoolAutocomplete from "./SchoolAutocomplete";
 import { getProjects, getSchoolActions, checkDuplicateSchool } from "@/lib/schoolFirestoreService";
 import CustomDropdown from "./ui/CustomDropdown";
 import ImpactSummaryStep from "./ImpactSummaryStep";
+import Card from "./ui/Card";
+import PhotoUploadSection from "./forms/PhotoUploadSection";
 
 declare global {
     interface Window {
@@ -157,6 +159,12 @@ export default function SchoolRegistrationForm() {
             summaryAgreed: false,
             lat: null,
             lng: null,
+            
+            // Photos
+            energyBillCopy: null,
+            meterPhoto: null,
+            moreDetailsPhoto: null,
+            siteOverviewPhoto: null,
         },
         validationSchema: validationSchema[currentStep - 1],
         onSubmit: async (values) => {
@@ -189,6 +197,9 @@ export default function SchoolRegistrationForm() {
                             contactPerson: profile?.contactPerson || "",
                             phone: profile?.phone || "",
                             email: profile?.email || auth.currentUser?.email || "",
+                            sector: profile?.institutionType || "School",
+                            state: profile?.state || null,
+                            pincode: profile?.pincode || null,
                         };
                         await processPaymentVerification(response, finalValues);
                     },
@@ -355,14 +366,14 @@ export default function SchoolRegistrationForm() {
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
                     {[1, 2, 3, 4, 5].map((step) => (
-                        <div key={step} className="flex flex-col items-center min-w-[70px]">
-                            <span className={`text-[9px] sm:text-[10px] font-bold mb-2 whitespace-nowrap uppercase tracking-widest ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
-                                {step === 1 && "Identity"}
-                                {step === 2 && "Energy & Fuel"}
-                                {step === 3 && "Waste & Water"}
+                        <div key={step} className="flex flex-col items-center flex-1 min-w-[90px] px-2 text-center">
+                            <div className={`text-[9px] sm:text-[10px] font-bold mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
+                                {step === 1 && "Action Details"}
+                                {step === 2 && "Location & Photos"}
+                                {step === 3 && "Assessment Details"}
                                 {step === 4 && "Impact Summary"}
                                 {step === 5 && "Payment"}
-                            </span>
+                            </div>
                             <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${
                                 currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" : 
                                 currentStep > step ? "bg-green-500 border-green-100 text-white" : 
@@ -484,22 +495,24 @@ export default function SchoolRegistrationForm() {
                             </div>
                         </StepWrapper>
 
-                        <StepWrapper title="Action Verification" icon={<WasteIcon />}>
-                            <div className="space-y-6">
-                                <label className="block text-sm font-bold text-gray-500 px-1 text-center">Proof Photo (JPG/PNG only, max 10MB)</label>
-                                <input type="file" onChange={handlePhotoChange} className="hidden" id="photo-upload" accept="image/jpeg,image/png" />
-                                <label htmlFor="photo-upload" className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl p-8 hover:border-[rgb(32,38,130)] hover:bg-blue-50/20 cursor-pointer transition-all">
-                                    {photoPreview ? (
-                                        <img src={photoPreview} alt="Preview" className="h-40 w-auto rounded-xl object-cover shadow-xl" />
-                                    ) : (
-                                        <div className="text-center space-y-3">
-                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg>
-                                            <p className="text-sm font-bold text-gray-400">Click to upload photo of the action</p>
-                                        </div>
-                                    )}
-                                </label>
-                            </div>
-                        </StepWrapper>
+                        <Card header={<div className="flex items-center gap-3"><span className="p-2 bg-indigo-50 rounded-lg text-indigo-600"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" /><circle cx="12" cy="13" r="4" /></svg></span> <h3 className="text-xl font-bold text-gray-800">Action Verification</h3></div>}>
+                            <PhotoUploadSection
+                                slots={[
+                                    { key: "energyBillCopy", label: "Energy Bill Copy" },
+                                    { key: "meterPhoto", label: "Meter Photo" },
+                                    { key: "moreDetailsPhoto", label: "More Details Photo" },
+                                    { key: "siteOverviewPhoto", label: "Site Overview of System" },
+                                ]}
+                                photos={{
+                                    energyBillCopy: formik.values.energyBillCopy,
+                                    meterPhoto: formik.values.meterPhoto,
+                                    moreDetailsPhoto: formik.values.moreDetailsPhoto,
+                                    siteOverviewPhoto: formik.values.siteOverviewPhoto,
+                                }}
+                                userId={auth.currentUser?.uid || ""}
+                                onPhotoChange={(key, url) => formik.setFieldValue(key, url)}
+                            />
+                        </Card>
                     </div>
                 )}
 
