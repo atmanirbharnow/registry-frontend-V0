@@ -9,7 +9,7 @@ import QRCode from "@/components/QRCode";
 import Spinner from "@/components/ui/Spinner";
 import PublicShell from "@/components/PublicShell";
 import Link from "next/link";
-import { APP_URL } from "@/lib/constants";
+import { APP_URL, ACTION_TYPES } from "@/lib/constants";
 import ImpactCertificate, { Highlight } from "@/components/ImpactCertificate";
 import ShareButtons from "@/components/ShareButtons";
 
@@ -98,7 +98,7 @@ export default function SchoolVerifyPage() {
                         contact: school.phone,
                         type: 'Education Institute / School'
                     }}
-                    sector="Education Institute / School"
+                    sector={school.action_type ? ACTION_TYPES.find(a => a.value === school.action_type)?.label || school.action_type : school.sector || "Education Institute / School"}
                     location={`${school.city || 'City'}, ${school.pincode || ''}`}
                     reportingPeriod={`Year ${new Date().getFullYear()}`}
                     verificationStatus={school.status || "pledged"}

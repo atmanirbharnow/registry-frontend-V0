@@ -20,6 +20,7 @@ export interface School {
     consent_public: boolean;
     consent_research: boolean;
     attribution_percentage: number;
+    sector?: string;
     
     // Step 2: Energy
     electricity_kWh_year: number | null;

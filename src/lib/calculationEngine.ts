@@ -98,13 +98,16 @@ function calculateCircularityScore(input: CalculationInput): number {
     } = input;
 
     const totalBaselineWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
-    if (totalBaselineWaste === 0) return 0;
 
     // Diverted waste = only what the specific ACTION diverts
     let divertedWaste = 0;
     const type = actionType.toLowerCase();
     if (type.includes("waste") || type.includes("recycling") || type.includes("compost") || type.includes("biogas_digester") || type.includes("material_recovery")) {
         divertedWaste = quantity; // Monthly kg diverted by this action
+    }
+
+    if (totalBaselineWaste === 0) {
+        return divertedWaste > 0 ? 100 : 0;
     }
 
     const score = (divertedWaste / totalBaselineWaste) * 100;

@@ -189,15 +189,15 @@ export default function RegisterActionForm() {
             beneficiariesCount: "",
 
             // Baseline Usage (Monthly)
-            baselineEnergyGrid: "0",
-            baselineEnergyDiesel: "0",
-            baselineEnergySolar: "0",
-            baselineWaterMunicipal: "0",
-            baselineWaterRain: "0",
-            baselineWaterWaste: "0",
-            baselineWasteOrganic: "0",
-            baselineWasteInorganic: "0",
-            baselineWasteHazardous: "0",
+            baselineEnergyGrid: "",
+            baselineEnergyDiesel: "",
+            baselineEnergySolar: "",
+            baselineWaterMunicipal: "",
+            baselineWaterRain: "",
+            baselineWaterWaste: "",
+            baselineWasteOrganic: "",
+            baselineWasteInorganic: "",
+            baselineWasteHazardous: "",
 
             // Low-Carbon Action
             actionType: "",

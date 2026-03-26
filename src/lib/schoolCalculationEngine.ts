@@ -79,11 +79,11 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
         // Efficiency saves energy from baseline
         actionLocalEnergy = baselineEnergyGrid * 0.2; // Example 20% savings
         reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-    } else if (type.includes("water") || type.includes("rainwater")) {
+    } else if (type.includes("water") || type.includes("rainwater") || type.includes("borewell")) {
         // Assume actionQuantity is Liters/month
         actionLocalWater = actionQuantity;
         reductionKg = (actionLocalWater / 1000) * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY;
-    } else if (type.includes("waste") || type.includes("compost")) {
+    } else if (type.includes("waste") || type.includes("compost") || type.includes("recycling") || type.includes("biogas")) {
         // Assume actionQuantity is kg/month
         actionLocalWaste = actionQuantity;
         reductionKg = actionLocalWaste * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL;
@@ -109,7 +109,13 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
     // 4. Circularity Score (Diverted / Total Generated)
     const totalWasteGenerated = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
     const totalDiverted = actionLocalWaste; // Only the action's diverted waste
-    const circularity_pct = totalWasteGenerated > 0 ? (totalDiverted / totalWasteGenerated) * 100 : 0;
+    
+    let circularity_pct = 0;
+    if (totalWasteGenerated > 0) {
+        circularity_pct = (totalDiverted / totalWasteGenerated) * 100;
+    } else if (totalDiverted > 0) {
+        circularity_pct = 100;
+    }
 
     const carbon_intensity = (totalBaselineEmissionsKg / 1000) / safeStudents;
 
