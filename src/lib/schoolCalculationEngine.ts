@@ -108,7 +108,8 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
 
     // 4. Circularity Score (Diverted / Total Generated)
     const totalWasteGenerated = Math.max(baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous, actionLocalWaste);
-    const circularity_pct = totalWasteGenerated > 0 ? (actionLocalWaste / totalWasteGenerated) * 100 : 0;
+    const totalDiverted = actionLocalWaste + baselineWasteOrganic; // Assume organic waste is diverted/composted
+    const circularity_pct = totalWasteGenerated > 0 ? (totalDiverted / totalWasteGenerated) * 100 : 0;
 
     const carbon_intensity = (totalBaselineEmissionsKg / 1000) / safeStudents;
 

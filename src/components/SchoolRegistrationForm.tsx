@@ -20,6 +20,7 @@ import CustomDropdown from "./ui/CustomDropdown";
 import ImpactSummaryStep from "./ImpactSummaryStep";
 import Card from "./ui/Card";
 import PhotoUploadSection from "./forms/PhotoUploadSection";
+import LocationPickerSection from "./forms/LocationPickerSection";
 
 declare global {
     interface Window {
@@ -104,21 +105,21 @@ export default function SchoolRegistrationForm() {
         }
     }, []);
 
-    // Sync profile data to formik
+    // Sync profile data to formik (Safe merge - only if fields are empty)
     useEffect(() => {
         if (profile) {
             formik.setValues(prev => ({
                 ...prev,
-                schoolName: profile.displayName || prev.schoolName,
-                address: profile.address || prev.address,
-                city: profile.city || prev.city,
-                pincode: profile.pincode || prev.pincode,
-                place_id: profile.place_id || prev.place_id,
-                lat: profile.lat || prev.lat,
-                lng: profile.lng || prev.lng,
-                contactPerson: profile.contactPerson || prev.contactPerson,
-                phone: profile.phone || prev.phone,
-                email: profile.email || prev.email,
+                schoolName: prev.schoolName || profile.displayName || "",
+                address: prev.address || profile.address || "",
+                city: prev.city || profile.city || "",
+                pincode: prev.pincode || profile.pincode || "",
+                place_id: prev.place_id || profile.place_id || "",
+                lat: prev.lat || profile.lat || null,
+                lng: prev.lng || profile.lng || null,
+                contactPerson: prev.contactPerson || profile.contactPerson || "",
+                phone: prev.phone || profile.phone || "",
+                email: prev.email || profile.email || "",
             }));
         }
     }, [profile]);
@@ -445,13 +446,40 @@ export default function SchoolRegistrationForm() {
                                 <div className="md:col-span-2 h-px bg-gray-100 my-2" />
 
                                 <div className="md:col-span-2">
-                                    <InputField
-                                        label="Site/Action Location"
-                                        name="address"
-                                        textarea
-                                        formik={formik}
-                                        placeholder="Enter the specific address where the action is installed..."
+                                    <LocationPickerSection
+                                        address={formik.values.address}
+                                        lat={formik.values.lat}
+                                        lng={formik.values.lng}
+                                        onAddressChange={formik.handleChange}
+                                        onPlaceSelect={(loc) => {
+                                            formik.setFieldValue("address", loc.address);
+                                            if (loc.lat && loc.lng) {
+                                                formik.setFieldValue("lat", loc.lat);
+                                                formik.setFieldValue("lng", loc.lng);
+                                            }
+                                        }}
+                                        onCoordsChange={(lat, lng) => {
+                                            formik.setFieldValue("lat", lat);
+                                            formik.setFieldValue("lng", lng);
+                                        }}
+                                        touched={formik.touched.address}
+                                        error={formik.errors.address}
                                     />
+                                    {profile?.address && formik.values.address !== profile.address && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                formik.setFieldValue("address", profile.address);
+                                                formik.setFieldValue("lat", profile.lat || null);
+                                                formik.setFieldValue("lng", profile.lng || null);
+                                                formik.setFieldValue("place_id", profile.place_id || "");
+                                            }}
+                                            className="mt-2 text-xs font-bold text-[rgb(32,38,130)] hover:underline flex items-center gap-1"
+                                        >
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                                            Reset to Profile Address
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </StepWrapper>

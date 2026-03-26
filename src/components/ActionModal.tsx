@@ -43,7 +43,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
 
   return (
     <div
-      className='fixed inset-0 bg-gray-900/10 backdrop-blur-sm flex justify-center items-center z-[1000] p-4 transition-all duration-300'
+      className='fixed inset-0 bg-gray-900/10 backdrop-blur-sm flex justify-center items-center z-[1100] p-4 transition-all duration-300'
       onClick={onClose}
     >
       <div

@@ -388,8 +388,8 @@ export default function AdminActionTable() {
 
             {/* Verification Modal */}
             {verifyModalOpen && selectedAction && (
-                <div className="fixed inset-0 z-[1100] flex items-start sm:items-center justify-center bg-black/60 px-4 py-8 sm:p-6 overflow-y-auto">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl my-auto flex flex-col">
+                <div className="fixed inset-0 z-[1100] flex items-start sm:items-center justify-center bg-black/60 px-4 py-8 sm:py-12 overflow-y-auto">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl my-auto flex flex-col animate-in fade-in zoom-in-95 duration-200">
                         <div className="px-4 sm:px-5 py-3 border-b border-gray-100 shrink-0">
                             <h2 className="text-lg font-black text-gray-800 uppercase tracking-tight">Verify Action</h2>
                             <p className="text-sm font-medium text-gray-500 mt-1">
@@ -453,24 +453,34 @@ export default function AdminActionTable() {
                                     <span>Current Portfolio Context</span>
                                     {fetchingPortfolio && <span className="animate-pulse text-indigo-400 text-[10px]">Loading...</span>}
                                 </h3>
-                                {userPortfolio ? (
+                                {(userPortfolio || selectedAction) && (
                                     <div className="grid grid-cols-3 gap-2">
-                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50 shadow-sm">
                                             <div className="text-[10px] font-bold text-orange-500 uppercase">Energy</div>
-                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.energy.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">
+                                                {(userPortfolio?.energy.tCO2e || (
+                                                    ((selectedAction.baselineEnergyGrid || 0) * 0.82 + (selectedAction.baselineEnergyDiesel || 0) * 2.68) * 12 / 1000
+                                                )).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
+                                            </div>
                                         </div>
-                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50 shadow-sm">
                                             <div className="text-[10px] font-bold text-cyan-500 uppercase">Water</div>
-                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.water.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">
+                                                {(userPortfolio?.water.tCO2e || (
+                                                    (selectedAction.baselineWaterMunicipal || 0) * 0.5 * 12 / 1000
+                                                )).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
+                                            </div>
                                         </div>
-                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50 shadow-sm">
                                             <div className="text-[10px] font-bold text-emerald-500 uppercase">Waste</div>
-                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.waste.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">
+                                                {(userPortfolio?.waste.tCO2e || (
+                                                    ((selectedAction.baselineWasteOrganic || 0) + (selectedAction.baselineWasteInorganic || 0) + (selectedAction.baselineWasteHazardous || 0)) * 0.5 * 12 / 1000
+                                                )).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
+                                            </div>
                                         </div>
                                     </div>
-                                ) : !fetchingPortfolio ? (
-                                    <p className="text-xs text-gray-400 italic text-center py-2">No prior verified actions</p>
-                                ) : null}
+                                )}
                             </div>
 
                             <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50">

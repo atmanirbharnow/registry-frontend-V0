@@ -81,14 +81,14 @@ export default function RegisterActionForm() {
         }
     }, []);
 
-    // Sync profile data to formik
+    // Sync profile data to formik (Safe merge)
     useEffect(() => {
         if (profile) {
             formik.setValues(prev => ({
                 ...prev,
-                address: profile.address || prev.address,
-                lat: profile.lat || prev.lat,
-                lng: profile.lng || prev.lng,
+                address: prev.address || profile.address || "",
+                lat: prev.lat || profile.lat || null,
+                lng: prev.lng || profile.lng || null,
             }));
         }
     }, [profile]);
@@ -373,11 +373,11 @@ export default function RegisterActionForm() {
                 )}
 
                 {currentStep === 1 && (
-                    <StepWrapper title="Step 1: Organisation & Baseline Usage" icon={<EnergyIcon />}>
+                    <StepWrapper title="Step 1: Baseline Usage" icon={<EnergyIcon />}>
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField label="Number of Beneficiaries" name="beneficiariesCount" type="number" formik={formik} placeholder="e.g. 1 for self, 4 for family" />
-                                <DropdownField label="Reporting Year" name="reportingYear" options={[{ value: "2024", label: "2024" }, { value: "2025", label: "2025" }, { value: "2026", label: "2026" }]} formik={formik} />
+                                <DropdownField label="Reporting Year" name="reportingYear" options={[{ value: "2024", label: "2024" }, { value: "2025", label: "2025" }, { value: "2026", label: "2026" }, { value: "2027", label: "2027" }, { value: "2028", label: "2028" }]} formik={formik} />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -456,6 +456,21 @@ export default function RegisterActionForm() {
                                 }}
                                 error={formik.touched.address ? (formik.errors.address as string) : undefined}
                             />
+
+                            {profile?.address && formik.values.address !== profile.address && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        formik.setFieldValue("address", profile.address);
+                                        formik.setFieldValue("lat", profile.lat || null);
+                                        formik.setFieldValue("lng", profile.lng || null);
+                                    }}
+                                    className="mt-2 text-xs font-bold text-[rgb(32,38,130)] hover:underline flex items-center gap-1"
+                                >
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+                                    Reset to Profile Address
+                                </button>
+                            )}
 
                             <div className="pt-6 border-t border-gray-100">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-6">

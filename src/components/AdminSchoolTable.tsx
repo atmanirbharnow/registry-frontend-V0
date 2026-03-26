@@ -385,9 +385,9 @@ export default function AdminSchoolTable() {
 
             {/* Verification Modal */}
             {verifyModalOpen && selectedSchool && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 py-6 overflow-hidden">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-full flex flex-col animate-in fade-in zoom-in-95 duration-200">
-                        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center shrink-0">
+                <div className="fixed inset-0 z-[1100] flex items-start sm:items-center justify-center bg-black/60 px-4 py-8 sm:py-12 overflow-y-auto">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl my-auto flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center shrink-0">
                             <div>
                                 <h2 className="text-lg font-black text-gray-800 uppercase tracking-tight">Verify School Profile</h2>
                                 <p className="text-sm font-bold text-[rgb(32,38,130)] mt-1">{selectedSchool.registryId}</p>
@@ -397,7 +397,7 @@ export default function AdminSchoolTable() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleAdminVerification} className="px-8 py-6 space-y-6 overflow-y-auto grow">
+                        <form onSubmit={handleAdminVerification} className="px-6 py-4 space-y-4 overflow-y-auto grow">
                             {/* School Details */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
@@ -421,12 +421,12 @@ export default function AdminSchoolTable() {
                             </div>
 
                             {/* Impact Data */}
-                            <div className="bg-blue-50/50 rounded-3xl p-6 border border-blue-100/50 space-y-4">
-                                <h3 className="text-xs font-black text-[rgb(32,38,130)] uppercase tracking-widest border-b border-blue-100/50 pb-3 mb-4 flex items-center gap-2">
+                            <div className="bg-blue-50/50 rounded-3xl p-4 border border-blue-100/50 space-y-3">
+                                <h3 className="text-xs font-black text-[rgb(32,38,130)] uppercase tracking-widest border-b border-blue-100/50 pb-2 mb-3 flex items-center gap-2">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h7"/><path d="M16 5V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2"/><path d="M3 12h18"/><path d="M18 16.5l3 3-3 3"/><path d="M21 19.5h-9"/></svg>
                                     Baseline Consumption Data
                                 </h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-4">
                                     {/* Energy Group */}
                                     <div className="col-span-full border-b border-blue-50 pb-1">
                                         <span className="text-[9px] font-black text-blue-400 uppercase tracking-tight">Energy Usage (Monthly)</span>

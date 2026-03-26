@@ -131,19 +131,6 @@ export default function SchoolVerifyPage() {
                     </div>
                 )}
 
-                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="space-y-0.5 text-center sm:text-left">
-                        <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Carbon Intensity</h3>
-                        <p className="text-gray-500 text-[11px] font-medium italic">Emissions per student per year</p>
-                    </div>
-                    <div className="flex items-baseline gap-1.5">
-                        <span className="text-3xl font-black text-gray-900">{intensityVal}</span>
-                        <span className="text-xs font-bold text-gray-400">Kg CO₂e / student</span>
-                    </div>
-                </div>
-
-
-
                 <ShareButtons shareText={shareText} verifyUrl={verifyUrl} />
 
                 <div className="text-center pt-8">

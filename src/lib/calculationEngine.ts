@@ -101,9 +101,9 @@ function calculateCircularityScore(input: CalculationInput): number {
     const totalBaselineWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
     
     // Diverted amount
-    let divertedWaste = 0;
+    let divertedWaste = baselineWasteOrganic; // Assume organic waste is diverted/composted
     if (actionType.toLowerCase().includes("waste") || actionType.toLowerCase().includes("recycling") || actionType.toLowerCase().includes("compost")) {
-        divertedWaste = quantity; // Monthly kg
+        divertedWaste += quantity; // Monthly kg
     }
 
     // Denominator should be at least as large as what we diverted
