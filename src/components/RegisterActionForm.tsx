@@ -41,6 +41,7 @@ const validationSchema = [
         baselineWasteOrganic: Yup.number().required("Required"),
         baselineWasteInorganic: Yup.number().required("Required"),
         baselineWasteHazardous: Yup.number().required("Required"),
+        baselineWasteDiverted: Yup.number().required("Required"),
     }),
     // Step 2: Low-Carbon Action
     Yup.object({
@@ -140,6 +141,7 @@ export default function RegisterActionForm() {
                         baselineWaterWaste: Number(values.baselineWaterWaste) || 0,
                         baselineWasteOrganic: Number(values.baselineWasteOrganic) || 0,
                         baselineWasteHazardous: Number(values.baselineWasteHazardous) || 0,
+                        baselineWasteDiverted: Number(values.baselineWasteDiverted) || 0,
                         // Legacy/Compatibility (mapped for safety)
                         electricityUseKwh: Number(values.baselineEnergyGrid),
                         waterUsageKLD: Number(values.baselineWaterMunicipal),
@@ -198,6 +200,7 @@ export default function RegisterActionForm() {
             baselineWasteOrganic: "",
             baselineWasteInorganic: "",
             baselineWasteHazardous: "",
+            baselineWasteDiverted: "",
 
             // Low-Carbon Action
             actionType: "",
@@ -306,7 +309,7 @@ export default function RegisterActionForm() {
             1: [
                 "baselineEnergyGrid", "baselineEnergyDiesel", "baselineEnergySolar",
                 "baselineWaterMunicipal", "baselineWaterRain", "baselineWaterWaste",
-                "baselineWasteOrganic", "baselineWasteInorganic", "baselineWasteHazardous",
+                "baselineWasteOrganic", "baselineWasteInorganic", "baselineWasteHazardous", "baselineWasteDiverted",
                 "entityType", "sector", "reportingYear", "beneficiariesCount"
             ],
             2: ["actionType", "quantity", "commissioningDate", "address", "photo_file"],
@@ -426,6 +429,15 @@ export default function RegisterActionForm() {
                                         <InputField label="Organic (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
                                         <InputField label="Inorganic (kg)" name="baselineWasteInorganic" type="number" formik={formik} />
                                         <InputField label="Hazardous (kg)" name="baselineWasteHazardous" type="number" formik={formik} />
+                                    </div>
+                                </div>
+
+                                <div className="md:col-span-2 mt-4">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                        Waste Diverted (Monthly)
+                                    </h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
+                                        <InputField label="Waste Diverted from Landfill (kg)" name="baselineWasteDiverted" type="number" formik={formik} />
                                     </div>
                                 </div>
                             </div>

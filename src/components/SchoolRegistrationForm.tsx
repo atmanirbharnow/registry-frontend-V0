@@ -44,6 +44,7 @@ const validationSchema = [
         baselineWasteOrganic: Yup.number().required("Req"),
         baselineWasteInorganic: Yup.number().required("Req"),
         baselineWasteHazardous: Yup.number().required("Req"),
+        waste_diverted_kg: Yup.number().required("Req"),
         reporting_year: Yup.string().required("Req"),
     }),
     // Step 2: Low-Carbon Action
@@ -193,7 +194,7 @@ export default function SchoolRegistrationForm() {
             setSubmitting(true);
             try {
                 // Feature 2: Final Duplicate Check
-                const dupCheck = await checkDuplicateSchool(values.place_id, values.schoolName, values.lat || 0, values.lng || 0);
+                const dupCheck = await checkDuplicateSchool(values.place_id, values.schoolName, values.lat || 0, values.lng || 0, auth.currentUser?.uid, values.action_type);
                 if (dupCheck.isDuplicate && dupCheck.type === 'BLOCK') {
                     toast.error(`This school is already registered as ${dupCheck.registryId}. View profile: /verify/school/${dupCheck.registryId}`, { autoClose: 10000 });
                     setSubmitting(false);
@@ -427,6 +428,15 @@ export default function SchoolRegistrationForm() {
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
                                     <InputField label="Inorganic (kg)" name="baselineWasteInorganic" type="number" formik={formik} />
                                     <InputField label="Hazardous (kg)" name="baselineWasteHazardous" type="number" formik={formik} />
+                                </div>
+                            </div>
+                            
+                            <div className="md:col-span-2 mt-4">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                    Waste Diverted (Monthly)
+                                </h3>
+                                <div className="grid grid-cols-1 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
+                                    <InputField label="Waste Diverted from Landfill (kg)" name="waste_diverted_kg" type="number" formik={formik} />
                                 </div>
                             </div>
                         </div>

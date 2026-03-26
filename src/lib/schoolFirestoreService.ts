@@ -66,13 +66,21 @@ export async function getSchoolBaseline(schoolId: string): Promise<Record<string
     return baselineSnap.exists() ? baselineSnap.data() : {};
 }
 
-export async function checkDuplicateSchool(place_id: string, schoolName: string, lat: number, lng: number): Promise<{ isDuplicate: boolean; registryId?: string; type?: 'BLOCK' | 'WARNING' }> {
+export async function checkDuplicateSchool(place_id: string, schoolName: string, lat: number, lng: number, userId?: string, actionType?: string): Promise<{ isDuplicate: boolean; registryId?: string; type?: 'BLOCK' | 'WARNING' }> {
     // Step 1: Place ID Check
     if (place_id) {
         const qPlace = query(collection(db, SCHOOL_COLLECTION), where("place_id", "==", place_id));
         const snapPlace = await getDocs(qPlace);
-        if (!snapPlace.empty) {
-            return { isDuplicate: true, registryId: snapPlace.docs[0].data().registryId, type: 'BLOCK' };
+        for (const d of snapPlace.docs) {
+            const data = d.data();
+            if (userId && data.userId === userId) {
+                if (actionType && (data.action_type === actionType || data.actionType === actionType)) {
+                    return { isDuplicate: true, registryId: data.registryId, type: 'BLOCK' };
+                }
+                // Allow subsequent different actions by the same user
+            } else {
+                return { isDuplicate: true, registryId: data.registryId, type: 'BLOCK' };
+            }
         }
     }
 
@@ -83,11 +91,17 @@ export async function checkDuplicateSchool(place_id: string, schoolName: string,
     
     for (const d of snapName.docs) {
         const data = d.data();
-        const distance = haversineDistance(lat, lng, data.lat, data.lng);
-        if (distance < 500) {
-            return { isDuplicate: true, registryId: data.registryId, type: 'BLOCK' };
+        if (userId && data.userId === userId) {
+            if (actionType && (data.action_type === actionType || data.actionType === actionType)) {
+                return { isDuplicate: true, registryId: data.registryId, type: 'BLOCK' };
+            }
         } else {
-            return { isDuplicate: true, registryId: data.registryId, type: 'WARNING' };
+            const distance = haversineDistance(lat, lng, data.lat, data.lng);
+            if (distance < 500) {
+                return { isDuplicate: true, registryId: data.registryId, type: 'BLOCK' };
+            } else {
+                return { isDuplicate: true, registryId: data.registryId, type: 'WARNING' };
+            }
         }
     }
 

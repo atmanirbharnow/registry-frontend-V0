@@ -42,6 +42,7 @@ export default function ImpactSummaryStep({
                 baselineWasteOrganic: Number(formValues.baselineWasteOrganic) || 0,
                 baselineWasteInorganic: Number(formValues.baselineWasteInorganic) || 0,
                 baselineWasteHazardous: Number(formValues.baselineWasteHazardous) || 0,
+                waste_diverted_kg: Number(formValues.waste_diverted_kg) || 0,
                 students_count: Number(formValues.students_count) || 1,
                 actionType: formValues.action_type || "",
                 actionQuantity: Number(formValues.actionQuantity || formValues.electricity_kWh_year) || 0,
@@ -71,6 +72,7 @@ export default function ImpactSummaryStep({
             baselineWasteOrganic: Number(formValues.baselineWasteOrganic) || 0,
             baselineWasteInorganic: Number(formValues.baselineWasteInorganic) || 0,
             baselineWasteHazardous: Number(formValues.baselineWasteHazardous) || 0,
+            baselineWasteDiverted: Number(formValues.baselineWasteDiverted) || 0,
             beneficiariesCount: Number(formValues.beneficiariesCount) || 1,
         });
         impactData = { 

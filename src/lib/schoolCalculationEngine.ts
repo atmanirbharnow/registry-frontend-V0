@@ -10,6 +10,7 @@ export interface SchoolImpactInput {
     baselineWasteOrganic: number;
     baselineWasteInorganic: number;
     baselineWasteHazardous: number;
+    waste_diverted_kg?: number;
     students_count: number;
     
     // Action details
@@ -42,6 +43,7 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
         baselineWasteOrganic,
         baselineWasteInorganic,
         baselineWasteHazardous,
+        waste_diverted_kg = 0,
         students_count,
         actionType,
         actionQuantity
@@ -71,19 +73,23 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
     const type = actionType.toLowerCase();
     
     // Monthly impact calculation (School actionQuantity is usually monthly or annual context)
-    if (type.includes("solar")) {
+    if (type.includes("solar") && !type.includes("water_heater")) {
         // Assume actionQuantity is kW (rooftop). 1 kW = 125 kWh/mo
         actionLocalEnergy = actionQuantity * 125;
         reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-    } else if (type.includes("efficiency") || type.includes("led")) {
+    } else if (type.includes("renewable_ppa") || type.includes("biomass_energy") || type.includes("battery_storage")) {
+        // actionQuantity is kWh/month
+        actionLocalEnergy = actionQuantity;
+        reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
+    } else if (type.includes("efficiency") || type.includes("led") || type.includes("turn_off")) {
         // Efficiency saves energy from baseline
         actionLocalEnergy = baselineEnergyGrid * 0.2; // Example 20% savings
         reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-    } else if (type.includes("water") || type.includes("rainwater") || type.includes("borewell")) {
+    } else if (type.includes("water") || type.includes("rainwater") || type.includes("borewell") || type.includes("greywater") || type.includes("recharge")) {
         // Assume actionQuantity is Liters/month
         actionLocalWater = actionQuantity;
         reductionKg = (actionLocalWater / 1000) * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY;
-    } else if (type.includes("waste") || type.includes("compost") || type.includes("recycling") || type.includes("biogas")) {
+    } else if (type.includes("waste") || type.includes("compost") || type.includes("recycling") || type.includes("biogas") || type.includes("material_recovery")) {
         // Assume actionQuantity is kg/month
         actionLocalWaste = actionQuantity;
         reductionKg = actionLocalWaste * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL;
@@ -97,7 +103,7 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
     const localSum = 
         (baselineEnergySolar + actionLocalEnergy) +
         (baselineWaterRain + baselineWaterWaste + actionLocalWater) +
-        (baselineWasteOrganic + actionLocalWaste);
+        (baselineWasteOrganic + waste_diverted_kg + actionLocalWaste);
 
     const totalEnergy = baselineEnergyGrid + baselineEnergyDiesel + baselineEnergySolar + actionLocalEnergy;
     const totalWater = baselineWaterMunicipal + baselineWaterRain + baselineWaterWaste + actionLocalWater;
@@ -108,7 +114,7 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
 
     // 4. Circularity Score (Diverted / Total Generated)
     const totalWasteGenerated = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
-    const totalDiverted = actionLocalWaste; // Only the action's diverted waste
+    const totalDiverted = waste_diverted_kg + actionLocalWaste; // Action + Baseline Diverted
     
     let circularity_pct = 0;
     if (totalWasteGenerated > 0) {
