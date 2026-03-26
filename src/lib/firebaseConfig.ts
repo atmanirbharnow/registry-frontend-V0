@@ -20,7 +20,7 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app, "asia-pacific");
+const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
 export { auth, db, googleProvider };
