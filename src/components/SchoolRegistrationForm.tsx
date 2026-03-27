@@ -379,7 +379,7 @@ export default function SchoolRegistrationForm() {
     const progress = (currentStep / totalSteps) * 100;
 
     return (
-        <div className="max-w-5xl mx-auto pb-20 px-4">
+        <div className="max-w-6xl mx-auto pb-20 px-4">
             {/* Step Progress Bar */}
             <div className="mb-12">
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
@@ -425,7 +425,7 @@ export default function SchoolRegistrationForm() {
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
                                     Energy Usage (Monthly)
                                 </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
                                     <InputField label="Diesel/Fuel (Liters)" name="baselineEnergyDiesel" type="number" formik={formik} />
                                     <InputField label="LPG(KG)" name="baselineEnergySolar" type="number" formik={formik} />
@@ -436,7 +436,7 @@ export default function SchoolRegistrationForm() {
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
                                     Water Usage (Monthly)
                                 </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Municipal Intake (AMC) (Liters)" name="baselineWaterMunicipal" type="number" formik={formik} />
                                     <InputField label="Borewell (Liters)" name="baselineWaterRain" type="number" formik={formik} />
                                     <InputField label="Community Source (Liters)" name="baselineWaterWaste" type="number" formik={formik} />
@@ -447,7 +447,7 @@ export default function SchoolRegistrationForm() {
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
                                     Waste Generated (Monthly)
                                 </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
                                     <InputField label="Plastic(Kg)" name="baselineWasteInorganic" type="number" formik={formik} />
                                     <InputField label="Packaging and paper waste(Kg)" name="baselineWasteHazardous" type="number" formik={formik} />
@@ -562,8 +562,8 @@ export default function SchoolRegistrationForm() {
                                             <InputField label="Pincode" name="pincode" type="text" formik={formik} placeholder="Enter 6-digit Pincode" maxLength={6} />
                                             {pinError && <p className="text-xs text-red-500 mt-1 font-bold px-1">{pinError}</p>}
                                         </div>
-                                        <InputField label="State" name="state" type="text" formik={formik} placeholder="Auto-filled" disabled className="opacity-70" />
-                                        <InputField label="City/District" name="city" type="text" formik={formik} placeholder="Auto-filled" disabled className="opacity-70" />
+                                        <InputField label="State" name="state" type="text" formik={formik} placeholder="Auto-filled" disabled className="bg-slate-100/80 !border-slate-200" />
+                                        <InputField label="City/District" name="city" type="text" formik={formik} placeholder="Auto-filled" disabled className="bg-slate-100/80 !border-slate-200" />
                                         <div className="md:col-span-2">
                                             <InputField label="Full Address" name="address" type="text" formik={formik} placeholder="Street, landmark, etc." />
                                         </div>

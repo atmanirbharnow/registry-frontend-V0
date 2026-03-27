@@ -353,10 +353,10 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                                             />
                                                             {pinError && <p className="text-[10px] text-red-500 mt-1 font-bold px-1">{pinError}</p>}
                                                         </div>
-                                                        <Input label="City" value={formData.city} placeholder="Auto-filled" disabled className="!py-4 !rounded-xl bg-slate-50 border-slate-200 opacity-70" />
+                                                        <Input label="City" value={formData.city} placeholder="Auto-filled" disabled className="!py-4 !rounded-xl bg-slate-100/80 border-slate-200" />
                                                         <div className="space-y-2">
                                                             <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">State</label>
-                                                            <CustomDropdown options={BHARAT_STATES} value={formData.state} onChange={(val) => handleChange("state", val)} placeholder="Auto-filled" size="lg" disabled />
+                                                            <CustomDropdown options={BHARAT_STATES} value={formData.state} onChange={(val) => handleChange("state", val)} placeholder="Auto-filled" size="lg" disabled className="bg-slate-100/80 !border-slate-200" />
                                                         </div>
                                                     </div>
 
