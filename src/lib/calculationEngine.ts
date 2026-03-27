@@ -14,9 +14,10 @@ import { EMISSION_FACTORS_PHASE2 } from './constants/emissionFactors';
 // ============================================
 
 export interface CalculationInput {
-    actionType: string;
-    quantity: number; // Monthly action impact (kWh, L, kg) or capacity (kW, LPD)
-    unit: string;
+    actionType?: string;
+    quantity?: number; // Monthly action impact (kWh, L, kg) or capacity (kW, LPD)
+    unit?: string;
+    actions?: Array<{ actionType: string, quantity: number, unit?: string }>;
 
     // Baseline Usage (Monthly Average - Step 1)
     baselineEnergyGrid?: number;
@@ -96,17 +97,23 @@ function calculateCircularityScore(input: CalculationInput): number {
         baselineWasteHazardous = 0,
         baselineWasteDiverted = 0,
         actionType = "",
-        quantity = 0
+        quantity = 0,
+        actions = []
     } = input;
 
     const totalBaselineWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
 
-    // Diverted waste = baseline + only what the specific ACTION diverts additionally
-    let divertedWaste = baselineWasteDiverted;
-    const type = actionType.toLowerCase();
-    if (type.includes("waste") || type.includes("recycling") || type.includes("compost") || type.includes("biogas_digester") || type.includes("material_recovery")) {
-        divertedWaste = quantity; // Monthly kg diverted by this action
+    const actionList = actions.length > 0 ? actions : (actionType ? [{ actionType, quantity }] : []);
+
+    let actionWasteDiverted = 0;
+    for (const act of actionList) {
+        const type = act.actionType.toLowerCase();
+        if (type.includes("waste") || type.includes("recycling") || type.includes("compost") || type.includes("biogas_digester") || type.includes("material_recovery") || type.includes("plastic") || type.includes("paper") || type.includes("metal") || type.includes("textile")) {
+            actionWasteDiverted += act.quantity || 0;
+        }
     }
+
+    let divertedWaste = baselineWasteDiverted + actionWasteDiverted;
 
     if (totalBaselineWaste === 0) {
         return divertedWaste > 0 ? 100 : 0;
@@ -156,89 +163,81 @@ function calculateBaselineCO2e(input: CalculationInput): number {
 // ============================================
 
 function calculateCO2ePhase2(input: CalculationInput): number {
-    const { actionType, quantity } = input;
-    let co2eKg = 0;
+    const { actionType = "", quantity = 0, actions = [] } = input;
+    let totalCo2eKg = 0;
 
-    switch (actionType) {
-        case 'solar_rooftop': {
-            // Factor: 1.23 tCO2e per year per kW (Earth Carbon Phase 2)
-            co2eKg = quantity * 1.23 * 1000;
-            break;
+    const actionList = actions.length > 0 ? actions : (actionType ? [{ actionType, quantity }] : []);
+
+    for (const act of actionList) {
+        let co2eKg = 0;
+        const qty = act.quantity || 0;
+        switch (act.actionType) {
+            case 'solar_rooftop': {
+                co2eKg = qty * 1.23 * 1000;
+                break;
+            }
+            case 'solar_water_heater': {
+                co2eKg = (qty / 100) * 800;
+                break;
+            }
+            case 'borewell_water': {
+                co2eKg = qty * 0.67;
+                break;
+            }
+            case 'rainwater_harvesting': {
+                co2eKg = qty * 47.4; 
+                break;
+            }
+            case 'biogas_plant':
+            case 'biogas': {
+                co2eKg = qty * 1.2 * 1000;
+                break;
+            }
+            case 'composting': {
+                co2eKg = qty * 0.45;
+                break;
+            }
+            case 'plastic_recycling': {
+                co2eKg = qty * 1.5;
+                break;
+            }
+            case 'paper_recycling': {
+                co2eKg = qty * 0.9;
+                break;
+            }
+            case 'textile_recycling': {
+                co2eKg = qty * 2.2;
+                break;
+            }
+            case 'metal_recycling': {
+                co2eKg = qty * 3.0;
+                break;
+            }
+            case 'turn_off_bulb': {
+                co2eKg = qty * 17.96;
+                break;
+            }
+            case 'turn_off_fan': {
+                co2eKg = qty * 7.68;
+                break;
+            }
+            case 'wastewater_recycling': {
+                co2eKg = (qty * 365) * 0.5;
+                break;
+            }
+            case 'tree_plantation': {
+                co2eKg = qty * 22;
+                break;
+            }
+            case 'battery_storage': {
+                co2eKg = qty * 0.82 * 0.1 * 1000;
+                break;
+            }
         }
-        case 'solar_water_heater': {
-            // Factor: 800 kg/yr per 100 LPD
-            co2eKg = (quantity / 100) * 800;
-            break;
-        }
-        case 'borewell_water': {
-            // factor: 0.67 kg per kL (pumping 150m)
-            co2eKg = quantity * 0.67;
-            break;
-        }
-        case 'rainwater_harvesting': {
-            // Mid-point of 26.8 - 68.0 kg/yr for 1000L/day
-            co2eKg = quantity * 47.4; 
-            break;
-        }
-        case 'biogas_plant':
-        case 'biogas': {
-            // Factor: 1.2 tCO2e/yr per plant
-            co2eKg = quantity * 1.2 * 1000;
-            break;
-        }
-        case 'composting': {
-            // Factor: 0.45 kg per kg food waste
-            co2eKg = quantity * 0.45;
-            break;
-        }
-        case 'plastic_recycling': {
-            co2eKg = quantity * 1.5;
-            break;
-        }
-        case 'paper_recycling': {
-            co2eKg = quantity * 0.9;
-            break;
-        }
-        case 'textile_recycling': {
-            co2eKg = quantity * 2.2;
-            break;
-        }
-        case 'metal_recycling': {
-            co2eKg = quantity * 3.0;
-            break;
-        }
-        case 'turn_off_bulb': {
-            // Factor: 17.96 kg/yr per bulb (1 hr/day reduction)
-            co2eKg = quantity * 17.96;
-            break;
-        }
-        case 'turn_off_fan': {
-            // Factor: 7.68 kg/yr per fan (1 hr/day reduction)
-            co2eKg = quantity * 7.68;
-            break;
-        }
-        case 'wastewater_recycling': {
-            // quantity = kL/day capacity. Saves municipal water (0.5 kg/kL)
-            co2eKg = (quantity * 365) * 0.5;
-            break;
-        }
-        case 'tree_plantation': {
-            // Approx 22 kg/tree/year
-            co2eKg = quantity * 22;
-            break;
-        }
-        case 'battery_storage': {
-            // Efficiency based - estimated 10% grid displacement optimization
-            co2eKg = quantity * 0.82 * 0.1 * 1000;
-            break;
-        }
-        default: {
-            co2eKg = 0;
-        }
+        totalCo2eKg += co2eKg;
     }
 
-    // Round to 3 decimal places
-return Math.round(co2eKg * 1000) / 1000;
+    return Math.round(totalCo2eKg * 1000) / 1000;
 }
 
 // ============================================
@@ -263,45 +262,41 @@ function calculateAtmanirbharPhase2(input: CalculationInput): number {
         baselineWasteHazardous = 0,
         actionType = "",
         quantity = 0,
+        actions = []
     } = input;
 
-    // 1. Calculate Action Contributions (converted to monthly resource units)
     let actionLocalEnergy = 0;
     let actionLocalWater = 0;
     let actionLocalWaste = 0;
 
-    const type = actionType.toLowerCase();
+    const actionList = actions.length > 0 ? actions : (actionType ? [{ actionType, quantity }] : []);
 
-    if (type.includes("solar")) {
-        // quantity is kW (rooftop) or units (heater).
-        // 1 kW rooftop = 1500 kWh/yr = 125 kWh/mo
-        // 100 LPD heater geyser displacement = 1500 kWh/yr = 125 kWh/mo
-        if (type.includes("rooftop")) {
-            actionLocalEnergy = quantity * 125;
-        } else {
-            actionLocalEnergy = (quantity / 100) * 125;
+    for (const act of actionList) {
+        const type = act.actionType.toLowerCase();
+        const qty = act.quantity || 0;
+
+        if (type.includes("solar")) {
+            if (type.includes("rooftop")) {
+                actionLocalEnergy += qty * 125;
+            } else {
+                actionLocalEnergy += (qty / 100) * 125;
+            }
+        } else if (type.includes("rainwater") || type.includes("rwh")) {
+            actionLocalWater += qty * 30000;
+        } else if (type.includes("waste") || type.includes("recycling") || type.includes("compost")) {
+            actionLocalWaste += qty;
+        } else if (type.includes("wastewater")) {
+            actionLocalWater += qty * 30000;
+        } else if (type.includes("led") || type.includes("efficiency")) {
+            actionLocalEnergy += baselineEnergyGrid * 0.2; 
         }
-    } else if (type.includes("rainwater") || type.includes("rwh")) {
-        // quantity is units of 1000L/day. 1 unit = 30k L/mo
-        actionLocalWater = quantity * 30000;
-    } else if (type.includes("waste") || type.includes("recycling") || type.includes("compost")) {
-        // quantity is kg/mo
-        actionLocalWaste = quantity;
-    } else if (type.includes("wastewater")) {
-        // quantity is kL/day. 1 kL/day = 30k L/mo
-        actionLocalWater = quantity * 30000;
-    } else if (type.includes("led") || type.includes("efficiency")) {
-        // Efficiency adds to local energy 'savings'
-        actionLocalEnergy = baselineEnergyGrid * 0.2; // Estimated 20% savings
     }
 
-    // 2. Sum Numerator (Local Resources)
     const localSum =
         (baselineEnergySolar + actionLocalEnergy) +
         (baselineWaterRain + baselineWaterWaste + actionLocalWater) +
         (baselineWasteOrganic + actionLocalWaste);
 
-    // 3. Sum Denominator (Total Resources)
     const totalEnergy = baselineEnergyGrid + baselineEnergyDiesel + baselineEnergySolar + actionLocalEnergy;
     const totalWater = baselineWaterMunicipal + baselineWaterRain + baselineWaterWaste + actionLocalWater;
     const totalWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous + actionLocalWaste;

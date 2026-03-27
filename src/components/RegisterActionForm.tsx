@@ -14,9 +14,10 @@ import Input from "./ui/Input";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
 import CustomDropdown from "./ui/CustomDropdown";
+import MultiSelectDropdown from "./ui/MultiSelectDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { PAYMENT_AMOUNT_DISPLAY } from "@/lib/constants";
+import { PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS } from "@/lib/constants";
 import { getUserActions } from "@/lib/firestoreService";
 
 
@@ -44,9 +45,7 @@ const validationSchema = [
     }),
     // Step 2: Low-Carbon Action
     Yup.object({
-        actionType: Yup.string().required("Action type is required"),
-        quantity: Yup.number().min(0.01, "Min 0.01").required("Req"),
-        commissioningDate: Yup.date().required("Req"),
+        actionTypes: Yup.array().of(Yup.string()).min(1, "Please select at least one action type").required("Required"),
         address: Yup.string().required("Location is required"),
         photo_file: Yup.mixed().required("At least 1 photo is required"),
     }),
@@ -124,7 +123,6 @@ export default function RegisterActionForm() {
                     userIdToken: idToken,
                     formData: {
                         ...values,
-                        quantity: Number(values.quantity),
                         // Profile Data
                         sector: profile?.institutionType || null,
                         state: profile?.state || null,
@@ -145,8 +143,14 @@ export default function RegisterActionForm() {
                         waterUsageKLD: Number(values.baselineWaterMunicipal),
 
                         // Action Specific
-                        actionType: values.actionType,
-                        commissioningDate: values.commissioningDate,
+                        actionsData: JSON.stringify(
+                            values.actionTypes.map(type => ({
+                                actionType: type,
+                                quantity: Number((values.actionDetails as any)[type]?.quantity) || 0,
+                                unit: (values.actionDetails as any)[type]?.unit || "",
+                                commissioningDate: (values.actionDetails as any)[type]?.commissioningDate || ""
+                            }))
+                        ),
 
                         // Photos
                         energyBillCopy: values.energyBillCopy,
@@ -200,9 +204,8 @@ export default function RegisterActionForm() {
             baselineWasteHazardous: "",
 
             // Low-Carbon Action
-            actionType: "",
-            quantity: "",
-            unit: "",
+            actionTypes: [] as string[],
+            actionDetails: {} as Record<string, { quantity: string, unit: string, commissioningDate: string }>,
             address: "",
             lat: null as number | null,
             lng: null as number | null,
@@ -309,7 +312,7 @@ export default function RegisterActionForm() {
                 "baselineWasteOrganic", "baselineWasteInorganic", "baselineWasteHazardous",
                 "entityType", "sector", "reportingYear", "beneficiariesCount"
             ],
-            2: ["actionType", "quantity", "commissioningDate", "address", "photo_file"],
+            2: ["actionTypes", "address", "photo_file"],
             3: ["summaryAgreed"],
             4: ["consentGiven", "disclaimerAccepted"]
         };
@@ -420,7 +423,7 @@ export default function RegisterActionForm() {
 
                                 <div className="md:col-span-2 mt-4">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                        Waste Generated: Organic, Plastic, Packaging and paper waste in Kgs.
+                                        Waste Generated (Monthly)
                                     </h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
                                         <InputField label="Organic (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
@@ -437,31 +440,70 @@ export default function RegisterActionForm() {
                 {currentStep === 2 && (
                     <StepWrapper title="Phase 2: Low-Carbon Action Details" icon={<ActionIcon />}>
                         <div className="space-y-8">
-                            <DropdownField
-                                label="Action Type"
-                                name="actionType"
-                                options={ACTION_TYPE_OPTIONS.map(a => ({
-                                    ...a,
-                                    disabled: registeredActionTypes.includes(a.value)
-                                }))}
-                                formik={formik}
-                            />
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <InputField
-                                    label="Quantity / Capacity"
-                                    name="quantity"
-                                    type="number"
-                                    formik={formik}
-                                    suffix={formik.values.unit || "units"}
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    Action Types
+                                </label>
+                                <MultiSelectDropdown
+                                    options={ACTION_TYPE_OPTIONS}
+                                    selectedValues={formik.values.actionTypes}
+                                    onChange={(vals) => formik.setFieldValue("actionTypes", vals)}
                                 />
-                                <InputField
-                                    label="Installation / Commissioning Date"
-                                    name="commissioningDate"
-                                    type="date"
-                                    formik={formik}
-                                />
+                                {formik.touched.actionTypes && formik.errors.actionTypes && typeof formik.errors.actionTypes === 'string' && (
+                                    <p className="mt-1 text-sm text-red-500">{formik.errors.actionTypes}</p>
+                                )}
                             </div>
+
+                            {formik.values.actionTypes && formik.values.actionTypes.map((type, index) => {
+                                const actionOpt = ACTION_TYPE_OPTIONS.find(a => a.value === type);
+                                const label = actionOpt ? actionOpt.label : type;
+                                const defaultUnit = ACTION_UNITS[type] || "units";
+
+                                return (
+                                    <div key={type} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+                                        <h4 className="font-semibold text-[rgb(32,38,130)]">{index + 1}. {label}</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity / Capacity</label>
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        value={formik.values.actionDetails?.[type]?.quantity || ""}
+                                                        onChange={(e) => {
+                                                            const current = formik.values.actionDetails || {};
+                                                            formik.setFieldValue("actionDetails", {
+                                                                ...current,
+                                                                [type]: { ...(current[type] || {}), quantity: e.target.value, unit: defaultUnit }
+                                                            });
+                                                        }}
+                                                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                        required
+                                                    />
+                                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-widest text-[#202682]/50 pointer-events-none">
+                                                        {defaultUnit}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-semibold text-gray-700 mb-2">Installation / Commissioning Date</label>
+                                                <input
+                                                    type="date"
+                                                    value={formik.values.actionDetails?.[type]?.commissioningDate || ""}
+                                                    onChange={(e) => {
+                                                        const current = formik.values.actionDetails || {};
+                                                        formik.setFieldValue("actionDetails", {
+                                                            ...current,
+                                                            [type]: { ...(current[type] || {}), commissioningDate: e.target.value, unit: defaultUnit }
+                                                        });
+                                                    }}
+                                                    className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
 
                             <LocationPickerSection
                                 address={formik.values.address}
@@ -493,7 +535,7 @@ export default function RegisterActionForm() {
 
                             <div className="pt-6 border-t border-gray-100">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-6">
-                                    Verification Photos ({ACTION_PHOTO_LABELS[formik.values.actionType as keyof typeof ACTION_PHOTO_LABELS] || "System Photo"})
+                                    Verification Photos (System Photos)
                                 </h3>
                                 <PhotoUploadSection
                                     slots={[

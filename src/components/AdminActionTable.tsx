@@ -416,7 +416,7 @@ export default function AdminActionTable() {
                                 )}
                                 {selectedAction.co2eKg != null && (
                                     <div className="pt-2 mt-2 border-t border-gray-200">
-                                        <span className="font-bold text-gray-400 uppercase tracking-wider text-[11px] block mb-1">Impact Metrics:</span> 
+                                        <span className="font-bold text-gray-400 uppercase tracking-wider text-[11px] block mb-1">Impact Metrics:</span>
                                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                                             <p className="text-gray-700 font-medium">
                                                 <span className="text-gray-400 font-bold uppercase text-[9px] mr-1">Action Savings:</span>
@@ -440,7 +440,7 @@ export default function AdminActionTable() {
                                 {selectedAction.wasteGeneratedKg != null && (
                                     <div className="pt-1 mt-1 border-t border-gray-100">
                                         <span className="text-gray-700 font-medium text-[10px] break-words">
-                                            Waste Generated: Organic, Plastic, Packaging and paper waste in Kgs: {selectedAction.wasteGeneratedKg} kg/yr,{" "}
+                                            Waste Generated{selectedAction.wasteGeneratedKg} kg/yr,{" "}
                                             Waste Diverted: {selectedAction.wasteDivertedKg ?? 0} kg/yr
                                         </span>
                                     </div>

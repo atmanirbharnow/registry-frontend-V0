@@ -166,6 +166,25 @@ export async function POST(request: NextRequest) {
         const bHazardous = Number(formData.get("baselineWasteHazardous")) || 0;
         const calculatedDiverted = bOrganic + bInorganic + bHazardous;
 
+        let actions = [];
+        try {
+            const actionTypesArr = JSON.parse(formData.get("actionTypes") as string || "[]");
+            const actionDetailsObj = JSON.parse(formData.get("actionDetails") as string || "{}");
+            if (Array.isArray(actionTypesArr)) {
+                actions = actionTypesArr.map(type => ({
+                    actionType: type,
+                    quantity: Number(actionDetailsObj[type]?.quantity) || 0,
+                    unit: actionDetailsObj[type]?.unit || "",
+                    commissioningDate: actionDetailsObj[type]?.commissioningDate || ""
+                }));
+            }
+        } catch (e) {
+            console.error("Failed to parse school actions array", e);
+        }
+
+        const primaryActionType = (formData.get("action_type") as string) || (actions.length > 0 ? actions[0].actionType : "Solar");
+        const primaryQuantity = Number(formData.get("actionQuantity")) || (actions.length > 0 ? actions[0].quantity : 0);
+
         // Calculate Impact
         const impact = calculateSchoolImpact({
             baselineEnergyGrid: Number(formData.get("baselineEnergyGrid")) || 0,
@@ -179,8 +198,9 @@ export async function POST(request: NextRequest) {
             baselineWasteHazardous: bHazardous,
             waste_diverted_kg: calculatedDiverted,
             students_count: Number(formData.get("students_count")) || 1,
-            actionType: (formData.get("action_type") as string) || "Solar",
-            actionQuantity: Number(formData.get("actionQuantity")) || 0,
+            actionType: primaryActionType,
+            actionQuantity: primaryQuantity,
+            actions: actions
         });
 
         const sha256Hash = generateSchoolHash({
@@ -242,8 +262,9 @@ export async function POST(request: NextRequest) {
             name_normalized: normalizeSchoolName(formData.get("schoolName") as string),
             students_count: Number(formData.get("students_count")) || 1,
             // Action Data
-            actionQuantity: Number(formData.get("actionQuantity")) || 0,
-            action_type: formData.get("action_type") || formData.get("actionType") || null,
+            actionQuantity: primaryQuantity,
+            action_type: primaryActionType,
+            actions: actions,
             action_id: formData.get("action_id"),
             energyBillCopy: formData.get("energyBillCopy") || null,
             meterPhoto: formData.get("meterPhoto") || null,

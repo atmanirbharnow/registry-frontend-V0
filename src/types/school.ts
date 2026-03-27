@@ -104,8 +104,8 @@ export interface SchoolFormData {
     attribution_pct_energy?: string | number;
     students_count: string | number;
     reporting_year: string;
-    actionQuantity: string | number;
-    action_id: string;
+    actionQuantity?: string | number;
+    action_id?: string;
 
     // Step 3
     waste_generated_kg?: string | number;
@@ -120,6 +120,8 @@ export interface SchoolFormData {
     // Step 4
     has_existing_actions?: "Yes" | "No";
     action_type?: string;
+    actionTypes?: string[];
+    actionDetails?: Record<string, { quantity: string | number; unit: string; commissioningDate: string }>;
     installation_date?: string;
     capacity_description?: string;
     photo_file?: File | null;

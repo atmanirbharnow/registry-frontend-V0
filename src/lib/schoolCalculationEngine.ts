@@ -14,8 +14,9 @@ export interface SchoolImpactInput {
     students_count: number;
     
     // Action details
-    actionType: string;
-    actionQuantity: number; // For schools, we've mapped electricity_kWh_year as quantity temporarily
+    actionType?: string;
+    actionQuantity?: number; // For schools, we've mapped electricity_kWh_year as quantity temporarily
+    actions?: Array<{ actionType: string, quantity: number, unit?: string }>;
 }
 
 export interface SchoolImpactResult {
@@ -45,8 +46,9 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
         baselineWasteHazardous,
         waste_diverted_kg = 0,
         students_count,
-        actionType,
-        actionQuantity
+        actionType = "",
+        actionQuantity = 0,
+        actions = []
     } = input;
 
     const safeStudents = Math.max(1, students_count);
@@ -70,31 +72,37 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
     let actionLocalWaste = 0;
     let reductionKg = 0;
 
-    const type = actionType.toLowerCase();
-    
-    // Monthly impact calculation (School actionQuantity is usually monthly or annual context)
-    if (type.includes("solar") && !type.includes("water_heater")) {
-        // Assume actionQuantity is kW (rooftop). 1 kW = 125 kWh/mo
-        actionLocalEnergy = actionQuantity * 125;
-        reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-    } else if (type.includes("renewable_ppa") || type.includes("biomass_energy") || type.includes("battery_storage")) {
-        // actionQuantity is kWh/month
-        actionLocalEnergy = actionQuantity;
-        reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-    } else if (type.includes("efficiency") || type.includes("led") || type.includes("turn_off")) {
-        // Efficiency saves energy from baseline
-        actionLocalEnergy = baselineEnergyGrid * 0.2; // Example 20% savings
-        reductionKg = actionLocalEnergy * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-    } else if (type.includes("water") || type.includes("rainwater") || type.includes("borewell") || type.includes("greywater") || type.includes("recharge")) {
-        // Assume actionQuantity is Liters/month
-        actionLocalWater = actionQuantity;
-        reductionKg = (actionLocalWater / 1000) * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY;
-    } else if (type.includes("waste") || type.includes("compost") || type.includes("recycling") || type.includes("biogas") || type.includes("material_recovery")) {
-        // Assume actionQuantity is kg/month
-        actionLocalWaste = actionQuantity;
-        reductionKg = actionLocalWaste * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL;
-    } else if (type.includes("tree")) {
-        reductionKg = actionQuantity * 20; // 20kg per tree/yr
+    const actionList = actions.length > 0 ? actions : (actionType ? [{ actionType, quantity: actionQuantity }] : []);
+
+    for (const act of actionList) {
+        const type = act.actionType.toLowerCase();
+        const quantity = act.quantity || 0;
+        
+        // Monthly impact calculation (School actionQuantity is usually monthly or annual context)
+        if (type.includes("solar") && !type.includes("water_heater")) {
+            // Assume actionQuantity is kW (rooftop). 1 kW = 125 kWh/mo
+            actionLocalEnergy += quantity * 125;
+            reductionKg += (quantity * 125) * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
+        } else if (type.includes("renewable_ppa") || type.includes("biomass_energy") || type.includes("battery_storage")) {
+            // actionQuantity is kWh/month
+            actionLocalEnergy += quantity;
+            reductionKg += quantity * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
+        } else if (type.includes("efficiency") || type.includes("led") || type.includes("turn_off")) {
+            // Efficiency saves energy from baseline
+            const savings = baselineEnergyGrid * 0.2; // Example 20% savings
+            actionLocalEnergy += savings;
+            reductionKg += savings * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
+        } else if (type.includes("water") || type.includes("rainwater") || type.includes("borewell") || type.includes("greywater") || type.includes("recharge")) {
+            // Assume actionQuantity is Liters/month
+            actionLocalWater += quantity;
+            reductionKg += (quantity / 1000) * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY;
+        } else if (type.includes("waste") || type.includes("compost") || type.includes("recycling") || type.includes("biogas") || type.includes("material_recovery")) {
+            // Assume actionQuantity is kg/month
+            actionLocalWaste += quantity;
+            reductionKg += quantity * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL;
+        } else if (type.includes("tree")) {
+            reductionKg += quantity * 20; // 20kg per tree/yr
+        }
     }
 
     const tco2e_annual = (reductionKg * 12) / 1000; // Annualized

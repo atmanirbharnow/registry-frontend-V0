@@ -184,10 +184,14 @@ export async function POST(request: NextRequest) {
         const bHazardous = Number(formData.baselineWasteHazardous) || 0;
         const calculatedDiverted = bOrganic + bInorganic + bHazardous;
 
+        const actionsData = formData.actionsData ? JSON.parse(formData.actionsData) : [];
+        const primaryAction = actionsData.length > 0 ? actionsData[0] : { actionType: formData.actionType || "", quantity: Number(formData.quantity) || 0, unit: formData.unit || "" };
+
         const impact = calculateImpactPhase2({
-            actionType: formData.actionType,
-            quantity: Number(formData.quantity),
-            unit: formData.unit,
+            actionType: primaryAction.actionType,
+            quantity: primaryAction.quantity,
+            unit: primaryAction.unit,
+            actions: actionsData,
             // Baseline fields (Step 1 structure)
             baselineEnergyGrid: Number(formData.baselineEnergyGrid) || 0,
             baselineEnergyDiesel: Number(formData.baselineEnergyDiesel) || 0,
@@ -210,9 +214,9 @@ export async function POST(request: NextRequest) {
 
         const sha256Hash = generateActionHash({
             registryId,
-            actionType: formData.actionType,
-            quantity: Number(formData.quantity),
-            unit: formData.unit,
+            actionType: primaryAction.actionType,
+            quantity: primaryAction.quantity,
+            unit: primaryAction.unit,
             address: formData.address,
             userId: formData.userId,
             createdAt: now,
@@ -221,9 +225,10 @@ export async function POST(request: NextRequest) {
         const actionData: Record<string, unknown> = {
             registryId,
             institutionId: formData.institutionId || null,
-            actionType: formData.actionType,
-            quantity: Number(formData.quantity),
-            unit: formData.unit,
+            actionType: primaryAction.actionType,
+            quantity: primaryAction.quantity,
+            unit: primaryAction.unit,
+            actions: actionsData,
             address: formData.address,
             lat: formData.lat || null,
             lng: formData.lng || null,

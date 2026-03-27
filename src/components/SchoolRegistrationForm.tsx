@@ -8,7 +8,7 @@ import {
     BASELINE_SOURCE_OPTIONS,
     REPORTING_YEAR_OPTIONS,
 } from "@/lib/constants/schoolConstants";
-import { ACTION_TYPES, ACTION_PHOTO_LABELS, PAYMENT_AMOUNT_PAISE } from "@/lib/constants";
+import { ACTION_TYPES, PAYMENT_AMOUNT_PAISE, PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS } from "@/lib/constants";
 import { toast } from "react-toastify";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ import { auth } from "@/lib/firebaseConfig";
 import SchoolAutocomplete from "./SchoolAutocomplete";
 import { getProjects, getSchoolActions, checkDuplicateSchool, getUserSchoolsRealtime } from "@/lib/schoolFirestoreService";
 import CustomDropdown from "./ui/CustomDropdown";
+import MultiSelectDropdown from "./ui/MultiSelectDropdown";
 import ImpactSummaryStep from "./ImpactSummaryStep";
 import Card from "./ui/Card";
 import PhotoUploadSection from "./forms/PhotoUploadSection";
@@ -48,9 +49,7 @@ const validationSchema = [
     }),
     // Step 2: Low-Carbon Action
     Yup.object({
-        action_type: Yup.string().required("Please select an action type"),
-        actionQuantity: Yup.number().required("Quantity is required"), // Standardized name
-        installation_date: Yup.date().required("Required"),
+        actionTypes: Yup.array().of(Yup.string()).min(1, "Please select at least one action type").required("Required"),
         address: Yup.string().required("Location is required"),
     }),
     // Step 3: Impact Summary
@@ -158,9 +157,8 @@ export default function SchoolRegistrationForm() {
             reporting_year: "2025",
             baseline_source: "school_shared",
 
-            action_type: "",
-            actionQuantity: "", // Standardized as quantity
-            installation_date: "",
+            actionTypes: [] as string[],
+            actionDetails: {} as Record<string, { quantity: string, unit: string, commissioningDate: string }>,
             lat: null,
             lng: null,
 
@@ -420,7 +418,7 @@ export default function SchoolRegistrationForm() {
 
                             <div className="md:col-span-2 mt-4">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Waste Generated: Organic, Plastic, Packaging and paper waste in Kgs.
+                                    Waste Generated (Monthly)
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
@@ -428,7 +426,7 @@ export default function SchoolRegistrationForm() {
                                     <InputField label="Packaging and paper waste(Kg)" name="baselineWasteHazardous" type="number" formik={formik} />
                                 </div>
                             </div>
-                            
+
                         </div>
                     </StepWrapper>
                 )}
@@ -436,32 +434,73 @@ export default function SchoolRegistrationForm() {
                 {currentStep === 2 && (
                     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <StepWrapper title="Low-Carbon Action Details" icon={<RegistryIcon />}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <DropdownField
-                                    label="Select Action Type"
-                                    name="action_type"
-                                    options={ACTION_TYPES.map(a => ({ 
-                                        value: a.value, 
-                                        label: a.label,
-                                        disabled: registeredActionTypes.includes(a.value)
-                                    }))}
-                                    formik={formik}
-                                />
-                                <InputField
-                                    label="Installed Capacity / Quantity"
-                                    name="actionQuantity"
-                                    type="number"
-                                    formik={formik}
-                                    suffix={ACTION_TYPES.find(a => a.value === formik.values.action_type)?.unit || "Units"}
-                                />
-                                <InputField
-                                    label="Commissioning Date"
-                                    name="installation_date"
-                                    type="date"
-                                    formik={formik}
-                                />
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Select Action Types
+                                    </label>
+                                    <MultiSelectDropdown
+                                        options={ACTION_TYPES}
+                                        selectedValues={formik.values.actionTypes}
+                                        onChange={(vals) => formik.setFieldValue("actionTypes", vals)}
+                                    />
+                                    {formik.touched.actionTypes && formik.errors.actionTypes && typeof formik.errors.actionTypes === 'string' && (
+                                        <p className="mt-1 text-sm text-red-500">{formik.errors.actionTypes}</p>
+                                    )}
+                                </div>
 
-                                <div className="md:col-span-2 h-px bg-gray-100 my-2" />
+                                {formik.values.actionTypes && formik.values.actionTypes.map((type, index) => {
+                                    const actionOpt = ACTION_TYPES.find(a => a.value === type);
+                                    const label = actionOpt ? actionOpt.label : type;
+                                    const defaultUnit = ACTION_UNITS[type] || "units";
+
+                                    return (
+                                        <div key={type} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+                                            <h4 className="font-semibold text-[rgb(32,38,130)]">{index + 1}. {label}</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Installed Capacity / Quantity</label>
+                                                    <div className="relative">
+                                                        <input
+                                                            type="number"
+                                                            value={formik.values.actionDetails?.[type]?.quantity || ""}
+                                                            onChange={(e) => {
+                                                                const current = formik.values.actionDetails || {};
+                                                                formik.setFieldValue("actionDetails", {
+                                                                    ...current,
+                                                                    [type]: { ...(current[type] || {}), quantity: e.target.value, unit: defaultUnit }
+                                                                });
+                                                            }}
+                                                            className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                            required
+                                                        />
+                                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-widest text-[#202682]/50 pointer-events-none">
+                                                            {defaultUnit}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Commissioning Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={formik.values.actionDetails?.[type]?.commissioningDate || ""}
+                                                        onChange={(e) => {
+                                                            const current = formik.values.actionDetails || {};
+                                                            formik.setFieldValue("actionDetails", {
+                                                                ...current,
+                                                                [type]: { ...(current[type] || {}), commissioningDate: e.target.value, unit: defaultUnit }
+                                                            });
+                                                        }}
+                                                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+
+                                <div className="h-px bg-gray-100 my-2" />
 
                                 <div className="md:col-span-2">
                                     <LocationPickerSection
