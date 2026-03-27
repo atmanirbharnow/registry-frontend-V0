@@ -550,8 +550,11 @@ export default function RegisterActionForm() {
                                     <InputField label="State" name="state" type="text" formik={formik} placeholder="Auto-filled from pincode" disabled className="opacity-70" />
                                     <InputField label="City/District" name="city" type="text" formik={formik} placeholder="Auto-filled from pincode" disabled className="opacity-70" />
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Address / Location (Google Search)</label>
+                                        <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
+                                            Full Address {profile?.institutionType !== 'Individual' && '/ Location (Google Search)'}
+                                        </label>
                                         <LocationAutocomplete
+                                            disableValidation={profile?.institutionType === 'Individual'}
                                             value={formik.values.address}
                                             onChange={formik.handleChange("address")}
                                             onPlaceSelect={(loc) => {
@@ -561,7 +564,7 @@ export default function RegisterActionForm() {
                                                 if (loc.lat) formik.setFieldValue("lat", loc.lat);
                                                 if (loc.lng) formik.setFieldValue("lng", loc.lng);
                                             }}
-                                            placeholder="Search for your building/street address..."
+                                            placeholder={profile?.institutionType === 'Individual' ? "Enter your full address..." : "Search for your building/street address..."}
                                             className="!py-3 !rounded-xl !border-slate-300 focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all"
                                         />
                                     </div>
