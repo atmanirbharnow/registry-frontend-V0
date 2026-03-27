@@ -161,6 +161,11 @@ export async function POST(request: NextRequest) {
         const registryId = `ECF-SCH-${String(nextValue).padStart(4, "0")}`;
         const now = new Date().toISOString();
 
+        const bOrganic = Number(formData.get("baselineWasteOrganic")) || 0;
+        const bInorganic = Number(formData.get("baselineWasteInorganic")) || 0;
+        const bHazardous = Number(formData.get("baselineWasteHazardous")) || 0;
+        const calculatedDiverted = bOrganic + bInorganic + bHazardous;
+
         // Calculate Impact
         const impact = calculateSchoolImpact({
             baselineEnergyGrid: Number(formData.get("baselineEnergyGrid")) || 0,
@@ -169,10 +174,10 @@ export async function POST(request: NextRequest) {
             baselineWaterMunicipal: Number(formData.get("baselineWaterMunicipal")) || 0,
             baselineWaterRain: Number(formData.get("baselineWaterRain")) || 0,
             baselineWaterWaste: Number(formData.get("baselineWaterWaste")) || 0,
-            baselineWasteOrganic: Number(formData.get("baselineWasteOrganic")) || 0,
-            baselineWasteInorganic: Number(formData.get("baselineWasteInorganic")) || 0,
-            baselineWasteHazardous: Number(formData.get("baselineWasteHazardous")) || 0,
-            waste_diverted_kg: Number(formData.get("waste_diverted_kg")) || 0,
+            baselineWasteOrganic: bOrganic,
+            baselineWasteInorganic: bInorganic,
+            baselineWasteHazardous: bHazardous,
+            waste_diverted_kg: calculatedDiverted,
             students_count: Number(formData.get("students_count")) || 1,
             actionType: (formData.get("action_type") as string) || "Solar",
             actionQuantity: Number(formData.get("actionQuantity")) || 0,
@@ -229,10 +234,10 @@ export async function POST(request: NextRequest) {
             baselineWaterMunicipal: Number(formData.get("baselineWaterMunicipal")) || 0,
             baselineWaterRain: Number(formData.get("baselineWaterRain")) || 0,
             baselineWaterWaste: Number(formData.get("baselineWaterWaste")) || 0,
-            baselineWasteOrganic: Number(formData.get("baselineWasteOrganic")) || 0,
-            baselineWasteInorganic: Number(formData.get("baselineWasteInorganic")) || 0,
-            baselineWasteHazardous: Number(formData.get("baselineWasteHazardous")) || 0,
-            waste_diverted_kg: Number(formData.get("waste_diverted_kg")) || 0,
+            baselineWasteOrganic: bOrganic,
+            baselineWasteInorganic: bInorganic,
+            baselineWasteHazardous: bHazardous,
+            waste_diverted_kg: calculatedDiverted,
             baseline_source: formData.get("baseline_source") || "self-reported",
             name_normalized: normalizeSchoolName(formData.get("schoolName") as string),
             students_count: Number(formData.get("students_count")) || 1,
@@ -255,10 +260,10 @@ export async function POST(request: NextRequest) {
             baselineWaterMunicipal: Number(formData.get("baselineWaterMunicipal")) || 0,
             baselineWaterRain: Number(formData.get("baselineWaterRain")) || 0,
             baselineWaterWaste: Number(formData.get("baselineWaterWaste")) || 0,
-            baselineWasteOrganic: Number(formData.get("baselineWasteOrganic")) || 0,
-            baselineWasteInorganic: Number(formData.get("baselineWasteInorganic")) || 0,
-            baselineWasteHazardous: Number(formData.get("baselineWasteHazardous")) || 0,
-            waste_diverted_kg: Number(formData.get("waste_diverted_kg")) || 0,
+            baselineWasteOrganic: bOrganic,
+            baselineWasteInorganic: bInorganic,
+            baselineWasteHazardous: bHazardous,
+            waste_diverted_kg: calculatedDiverted,
             students_count: Number(formData.get("students_count")),
             reporting_year: formData.get("reporting_year"),
             action_id: formData.get("action_id"),

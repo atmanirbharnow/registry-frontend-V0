@@ -44,7 +44,6 @@ const validationSchema = [
         baselineWasteOrganic: Yup.number().required("Req"),
         baselineWasteInorganic: Yup.number().required("Req"),
         baselineWasteHazardous: Yup.number().required("Req"),
-        waste_diverted_kg: Yup.number().required("Req"),
         reporting_year: Yup.string().required("Req"),
     }),
     // Step 2: Low-Carbon Action
@@ -176,7 +175,6 @@ export default function SchoolRegistrationForm() {
             renewable_energy_type: "None",
             renewable_energy_kwh: "",
             waste_generated_kg: "",
-            waste_diverted_kg: "",
             water_consumption_m3: "",
             attribution_pct_energy: "100",
             attribution_pct_waste: "100",
@@ -405,7 +403,7 @@ export default function SchoolRegistrationForm() {
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
                                     <InputField label="Diesel/Fuel (Liters)" name="baselineEnergyDiesel" type="number" formik={formik} />
-                                    <InputField label="Solar/Biomass (kWh)" name="baselineEnergySolar" type="number" formik={formik} />
+                                    <InputField label="LPG(KG)" name="baselineEnergySolar" type="number" formik={formik} />
                                 </div>
                             </div>
 
@@ -426,19 +424,11 @@ export default function SchoolRegistrationForm() {
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
-                                    <InputField label="Inorganic (kg)" name="baselineWasteInorganic" type="number" formik={formik} />
-                                    <InputField label="Hazardous (kg)" name="baselineWasteHazardous" type="number" formik={formik} />
+                                    <InputField label="Plastic(Kg)" name="baselineWasteInorganic" type="number" formik={formik} />
+                                    <InputField label="Packaging and paper waste(Kg)" name="baselineWasteHazardous" type="number" formik={formik} />
                                 </div>
                             </div>
                             
-                            <div className="md:col-span-2 mt-4">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Waste Diverted (Monthly)
-                                </h3>
-                                <div className="grid grid-cols-1 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
-                                    <InputField label="Waste Diverted from Landfill (kg)" name="waste_diverted_kg" type="number" formik={formik} />
-                                </div>
-                            </div>
                         </div>
                     </StepWrapper>
                 )}

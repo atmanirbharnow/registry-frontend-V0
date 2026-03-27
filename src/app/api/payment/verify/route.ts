@@ -179,6 +179,11 @@ export async function POST(request: NextRequest) {
         const counterNext = await incrementCounter(userIdToken);
         const registryId = `ECF-${String(counterNext).padStart(4, "0")}`;
         const now = new Date().toISOString();
+        const bOrganic = Number(formData.baselineWasteOrganic) || 0;
+        const bInorganic = Number(formData.baselineWasteInorganic) || 0;
+        const bHazardous = Number(formData.baselineWasteHazardous) || 0;
+        const calculatedDiverted = bOrganic + bInorganic + bHazardous;
+
         const impact = calculateImpactPhase2({
             actionType: formData.actionType,
             quantity: Number(formData.quantity),
@@ -190,9 +195,10 @@ export async function POST(request: NextRequest) {
             baselineWaterMunicipal: Number(formData.baselineWaterMunicipal) || 0,
             baselineWaterRain: Number(formData.baselineWaterRain) || 0,
             baselineWaterWaste: Number(formData.baselineWaterWaste) || 0,
-            baselineWasteOrganic: Number(formData.baselineWasteOrganic) || 0,
-            baselineWasteInorganic: Number(formData.baselineWasteInorganic) || 0,
-            baselineWasteHazardous: Number(formData.baselineWasteHazardous) || 0,
+            baselineWasteOrganic: bOrganic,
+            baselineWasteInorganic: bInorganic,
+            baselineWasteHazardous: bHazardous,
+            baselineWasteDiverted: calculatedDiverted,
             beneficiariesCount: Number(formData.beneficiariesCount) || 1,
         });
 
@@ -241,7 +247,7 @@ export async function POST(request: NextRequest) {
             electricityUseKwh: Number(formData.electricityUseKwh) || null,
             waterUsageKLD: Number(formData.waterUsageKLD) || null,
             wasteGeneratedKg: Number(formData.wasteGeneratedKg) || null,
-            wasteDivertedKg: Number(formData.wasteDivertedKg) || null,
+            wasteDivertedKg: calculatedDiverted,
             // Baseline Data (Step 1 - 9-field authoritative structure)
             baselineEnergyGrid: Number(formData.baselineEnergyGrid) || 0,
             baselineEnergyDiesel: Number(formData.baselineEnergyDiesel) || 0,
@@ -249,9 +255,9 @@ export async function POST(request: NextRequest) {
             baselineWaterMunicipal: Number(formData.baselineWaterMunicipal) || 0,
             baselineWaterRain: Number(formData.baselineWaterRain) || 0,
             baselineWaterWaste: Number(formData.baselineWaterWaste) || 0,
-            baselineWasteOrganic: Number(formData.baselineWasteOrganic) || 0,
-            baselineWasteInorganic: Number(formData.baselineWasteInorganic) || 0,
-            baselineWasteHazardous: Number(formData.baselineWasteHazardous) || 0,
+            baselineWasteOrganic: bOrganic,
+            baselineWasteInorganic: bInorganic,
+            baselineWasteHazardous: bHazardous,
             beneficiariesCount: Number(formData.beneficiariesCount) || null,
             // Verification Photos (Updated mapping)
             energyBillCopy: formData.energyBillCopy || null,

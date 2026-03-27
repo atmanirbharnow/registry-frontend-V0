@@ -452,7 +452,7 @@ export default function AdminSchoolTable() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Solar (kWh)</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">LPG(KG)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
@@ -512,7 +512,7 @@ export default function AdminSchoolTable() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Inorg (kg)</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Plastic(Kg)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
@@ -522,7 +522,7 @@ export default function AdminSchoolTable() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Haz (kg)</label>
+                                        <label className="block text-[10px] font-black text-gray-400 uppercase mb-1 ml-1">Packaging and paper waste(Kg)</label>
                                         <Input
                                             type="number"
                                             disabled={!isEditMode}
