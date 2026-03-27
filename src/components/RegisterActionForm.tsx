@@ -19,6 +19,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS } from "@/lib/constants";
 import { getUserActions } from "@/lib/firestoreService";
+import { usePincodeLookup } from "@/hooks/usePincodeLookup";
+import LocationAutocomplete from "./LocationAutocomplete";
+import Spinner from "./ui/Spinner";
 
 
 declare global {
@@ -125,10 +128,12 @@ export default function RegisterActionForm() {
                         ...values,
                         // Profile Data
                         sector: profile?.institutionType || null,
-                        state: profile?.state || null,
-                        pincode: profile?.pincode || null,
-                        lat: profile?.lat || values.lat,
-                        lng: profile?.lng || values.lng,
+                        state: values.state,
+                        pincode: values.pincode,
+                        city: values.city,
+                        address: values.address,
+                        lat: values.lat,
+                        lng: values.lng,
                         // Baseline Usage (New 9 Fields)
                         baselineEnergyGrid: Number(values.baselineEnergyGrid) || 0,
                         baselineEnergyDiesel: Number(values.baselineEnergyDiesel) || 0,
@@ -206,10 +211,12 @@ export default function RegisterActionForm() {
             // Low-Carbon Action
             actionTypes: [] as string[],
             actionDetails: {} as Record<string, { quantity: string, unit: string, commissioningDate: string }>,
+            pincode: "",
+            state: "",
+            city: "",
             address: "",
             lat: null as number | null,
             lng: null as number | null,
-            commissioningDate: "",
             photo_file: null as File | null,
 
             consentGiven: false,
@@ -312,7 +319,7 @@ export default function RegisterActionForm() {
                 "baselineWasteOrganic", "baselineWasteInorganic", "baselineWasteHazardous",
                 "entityType", "sector", "reportingYear", "beneficiariesCount"
             ],
-            2: ["actionTypes", "address", "photo_file"],
+            2: ["actionTypes", "pincode", "address", "photo_file"],
             3: ["summaryAgreed"],
             4: ["consentGiven", "disclaimerAccepted"]
         };
@@ -338,6 +345,28 @@ export default function RegisterActionForm() {
             formik.setFieldValue("lng", location.lng);
         }
     };
+
+    const { state: pinState, city: pinCity, loading: pinLoading, error: pinError } = usePincodeLookup(formik.values.pincode);
+
+    useEffect(() => {
+        if (pinState && pinState !== formik.values.state) formik.setFieldValue("state", pinState);
+        if (pinCity && pinCity !== formik.values.city) formik.setFieldValue("city", pinCity);
+    }, [pinState, pinCity]);
+
+    useEffect(() => {
+        if (!formik.values.pincode || String(formik.values.pincode).trim().length !== 6) {
+            if (formik.values.state) formik.setFieldValue("state", "");
+            if (formik.values.city) formik.setFieldValue("city", "");
+        }
+    }, [formik.values.pincode]);
+
+    // Reset data when action types change
+    useEffect(() => {
+        // If action types become empty, clear some fields
+        if (formik.values.actionTypes.length === 0) {
+            formik.setFieldValue("actionDetails", {});
+        }
+    }, [formik.values.actionTypes]);
 
     const progress = (currentStep / totalSteps) * 100;
 
@@ -505,33 +534,39 @@ export default function RegisterActionForm() {
                                 );
                             })}
 
-                            <LocationPickerSection
-                                address={formik.values.address}
-                                lat={formik.values.lat || undefined}
-                                lng={formik.values.lng || undefined}
-                                onPlaceSelect={handlePlaceSelect}
-                                onAddressChange={(val) => formik.setFieldValue("address", val)}
-                                onCoordsChange={(lat, lng) => {
-                                    formik.setFieldValue("lat", lat);
-                                    formik.setFieldValue("lng", lng);
-                                }}
-                                error={formik.touched.address ? (formik.errors.address as string) : undefined}
-                            />
+                            <div className="pt-6 border-t border-gray-100">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682]">
+                                        Location Details
+                                    </h3>
+                                    {pinLoading && <Spinner className="w-4 h-4 text-[#202682]" />}
+                                </div>
 
-                            {profile?.address && formik.values.address !== profile.address && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        formik.setFieldValue("address", profile.address);
-                                        formik.setFieldValue("lat", profile.lat || null);
-                                        formik.setFieldValue("lng", profile.lng || null);
-                                    }}
-                                    className="mt-2 text-xs font-bold text-[rgb(32,38,130)] hover:underline flex items-center gap-1"
-                                >
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
-                                    Reset to Profile Address
-                                </button>
-                            )}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 border-2 border-slate-100 rounded-3xl">
+                                    <div className="md:col-span-2">
+                                        <InputField label="Pincode" name="pincode" type="text" formik={formik} placeholder="Enter 6-digit Pincode" maxLength={6} />
+                                        {pinError && <p className="text-xs text-red-500 mt-1 font-bold px-1">{pinError}</p>}
+                                    </div>
+                                    <InputField label="State" name="state" type="text" formik={formik} placeholder="Auto-filled from pincode" disabled className="opacity-70" />
+                                    <InputField label="City/District" name="city" type="text" formik={formik} placeholder="Auto-filled from pincode" disabled className="opacity-70" />
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Address / Location (Google Search)</label>
+                                        <LocationAutocomplete
+                                            value={formik.values.address}
+                                            onChange={formik.handleChange("address")}
+                                            onPlaceSelect={(loc) => {
+                                                formik.setFieldValue("address", loc.address);
+                                                if (loc.city) formik.setFieldValue("city", loc.city);
+                                                if (loc.state) formik.setFieldValue("state", loc.state);
+                                                if (loc.lat) formik.setFieldValue("lat", loc.lat);
+                                                if (loc.lng) formik.setFieldValue("lng", loc.lng);
+                                            }}
+                                            placeholder="Search for your building/street address..."
+                                            className="!py-3 !rounded-xl !border-slate-300 focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
 
                             <div className="pt-6 border-t border-gray-100">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-6">

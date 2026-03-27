@@ -38,18 +38,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(firebaseUser);
           if (firebaseUser) {
             let role = "user";
-            try {
-              const profile = await getUserProfile(firebaseUser.uid);
-              if (profile?.role) {
+            const profile = await getUserProfile(firebaseUser.uid);
+            if (profile?.role) {
                 role = profile.role;
-              }
-            } catch (err) {
-              console.error("Profile fetch error:", err);
             }
+            const isRegistered = !!(profile?.phone && profile?.institutionType);
             const sessionData = JSON.stringify({
               uid: firebaseUser.uid,
               email: firebaseUser.email,
               role,
+              isRegistered
             });
             document.cookie = `session=${encodeURIComponent(sessionData)}; path=/; max-age=${7 * 24 * 60 * 60}`;
           } else {

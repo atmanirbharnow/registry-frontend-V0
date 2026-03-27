@@ -40,9 +40,9 @@ export const useSchoolAutocomplete = ({
   }, [value, inputValue]);
 
   useEffect(() => {
-    if (!isLoaded) return () => {};
+    if (!isLoaded) return () => { };
     const currentInput = inputRef.current;
-    if (!currentInput) return () => {};
+    if (!currentInput) return () => { };
 
     // Gujarat, India (lat: 22.2587, lng: 71.1924, radius: 300000m)
     const gujaratBounds = new window.google.maps.Circle({
@@ -68,11 +68,11 @@ export const useSchoolAutocomplete = ({
 
       let city = "";
       let pincode = "";
-      
+
       if (place.address_components) {
         place.address_components.forEach((component: any) => {
-            if (component.types.includes("locality")) city = component.long_name;
-            if (component.types.includes("postal_code")) pincode = component.long_name;
+          if (component.types.includes("locality")) city = component.long_name;
+          if (component.types.includes("postal_code")) pincode = component.long_name;
         });
       }
 

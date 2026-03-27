@@ -14,6 +14,7 @@ import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRouter } from "next/navigation";
 import Spinner from "@/components/ui/Spinner";
 import { auth } from "@/lib/firebaseConfig";
+import { usePincodeLookup } from "@/hooks/usePincodeLookup";
 import SchoolAutocomplete from "./SchoolAutocomplete";
 import { getProjects, getSchoolActions, checkDuplicateSchool, getUserSchoolsRealtime } from "@/lib/schoolFirestoreService";
 import CustomDropdown from "./ui/CustomDropdown";
@@ -49,8 +50,12 @@ const validationSchema = [
     }),
     // Step 2: Low-Carbon Action
     Yup.object({
+        schoolName: Yup.string().required("School name is required"),
+        pincode: Yup.string().matches(/^[0-9]{6}$/, "Must be 6 digits").required("Required"),
+        state: Yup.string().required("Required"),
+        city: Yup.string().required("Required"),
+        address: Yup.string().required("Address is required"),
         actionTypes: Yup.array().of(Yup.string()).min(1, "Please select at least one action type").required("Required"),
-        address: Yup.string().required("Location is required"),
     }),
     // Step 3: Impact Summary
     Yup.object({
@@ -139,6 +144,7 @@ export default function SchoolRegistrationForm() {
             schoolName: "",
             address: "",
             city: "",
+            state: "",
             pincode: "",
             place_id: "",
             contactPerson: "",
@@ -158,7 +164,7 @@ export default function SchoolRegistrationForm() {
             baseline_source: "school_shared",
 
             actionTypes: [] as string[],
-            actionDetails: {} as Record<string, { quantity: string, unit: string, commissioningDate: string }>,
+            actionDetails: {} as Record<string, any>,
             lat: null,
             lng: null,
 
@@ -333,6 +339,27 @@ export default function SchoolRegistrationForm() {
         }
     };
 
+    const { state: pinState, city: pinCity, loading: pinLoading, error: pinError } = usePincodeLookup(formik.values.pincode);
+
+    useEffect(() => {
+        if (pinState && pinState !== formik.values.state) formik.setFieldValue("state", pinState);
+        if (pinCity && pinCity !== formik.values.city) formik.setFieldValue("city", pinCity);
+    }, [pinState, pinCity]);
+
+    useEffect(() => {
+        if (!formik.values.pincode || String(formik.values.pincode).trim().length !== 6) {
+            if (formik.values.state) formik.setFieldValue("state", "");
+            if (formik.values.city) formik.setFieldValue("city", "");
+        }
+    }, [formik.values.pincode]);
+
+    // Reset action details when action types change
+    useEffect(() => {
+        if (formik.values.actionTypes.length === 0) {
+            formik.setFieldValue("actionDetails", {});
+        }
+    }, [formik.values.actionTypes]);
+
     const handleNext = async () => {
         const errors = await formik.validateForm();
         if (Object.keys(errors).length === 0) {
@@ -500,43 +527,47 @@ export default function SchoolRegistrationForm() {
                                     );
                                 })}
 
-                                <div className="h-px bg-gray-100 my-2" />
-
-                                <div className="md:col-span-2">
-                                    <LocationPickerSection
-                                        address={formik.values.address}
-                                        lat={formik.values.lat}
-                                        lng={formik.values.lng}
-                                        onAddressChange={formik.handleChange}
+                                <div>
+                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                                        School Search
+                                    </label>
+                                    <SchoolAutocomplete
+                                        value={formik.values.schoolName}
                                         onPlaceSelect={(loc) => {
+                                            formik.setFieldValue("schoolName", loc.schoolName);
                                             formik.setFieldValue("address", loc.address);
-                                            if (loc.lat && loc.lng) {
-                                                formik.setFieldValue("lat", loc.lat);
-                                                formik.setFieldValue("lng", loc.lng);
-                                            }
+                                            formik.setFieldValue("city", loc.city);
+                                            formik.setFieldValue("pincode", loc.pincode);
+                                            formik.setFieldValue("lat", loc.lat);
+                                            formik.setFieldValue("lng", loc.lng);
+                                            formik.setFieldValue("place_id", loc.place_id);
                                         }}
-                                        onCoordsChange={(lat, lng) => {
-                                            formik.setFieldValue("lat", lat);
-                                            formik.setFieldValue("lng", lng);
-                                        }}
-                                        touched={formik.touched.address}
-                                        error={formik.errors.address}
+                                        onManualEntry={(name) => formik.setFieldValue("schoolName", name)}
+                                        error={formik.touched.schoolName ? formik.errors.schoolName : undefined}
                                     />
-                                    {profile?.address && formik.values.address !== profile.address && (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                formik.setFieldValue("address", profile.address);
-                                                formik.setFieldValue("lat", profile.lat || null);
-                                                formik.setFieldValue("lng", profile.lng || null);
-                                                formik.setFieldValue("place_id", profile.place_id || "");
-                                            }}
-                                            className="mt-2 text-xs font-bold text-[rgb(32,38,130)] hover:underline flex items-center gap-1"
-                                        >
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
-                                            Reset to Profile Address
-                                        </button>
-                                    )}
+                                </div>
+
+                                <div className="h-px bg-gray-100 my-4" />
+
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-sm font-black uppercase tracking-widest text-[#202682]">
+                                            Location Details
+                                        </h3>
+                                        {pinLoading && <Spinner className="w-4 h-4 text-[#202682]" />}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 border-2 border-slate-100 rounded-3xl">
+                                        <div className="md:col-span-2">
+                                            <InputField label="Pincode" name="pincode" type="text" formik={formik} placeholder="Enter 6-digit Pincode" maxLength={6} />
+                                            {pinError && <p className="text-xs text-red-500 mt-1 font-bold px-1">{pinError}</p>}
+                                        </div>
+                                        <InputField label="State" name="state" type="text" formik={formik} placeholder="Auto-filled" disabled className="opacity-70" />
+                                        <InputField label="City/District" name="city" type="text" formik={formik} placeholder="Auto-filled" disabled className="opacity-70" />
+                                        <div className="md:col-span-2">
+                                            <InputField label="Full Address" name="address" type="text" formik={formik} placeholder="Street, landmark, etc." />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </StepWrapper>

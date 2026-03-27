@@ -9,6 +9,7 @@ export interface School {
     name_normalized: string;
     address: string;
     city: string;
+    state: string;
     pincode: string;
     place_id: string;
     contactPerson: string;
@@ -88,6 +89,7 @@ export interface SchoolFormData {
     name_normalized?: string;
     address: string;
     city: string;
+    state: string;
     pincode: string;
     place_id: string;
     contactPerson: string;

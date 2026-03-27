@@ -11,6 +11,8 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserProfile } from "@/types/user";
+import { usePincodeLookup } from "@/hooks/usePincodeLookup";
+import Spinner from "./ui/Spinner";
 
 import SchoolAutocomplete from "./SchoolAutocomplete";
 
@@ -44,13 +46,13 @@ const BHARAT_STATES = [
 export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupProps) {
     const { user } = useAuth();
     const router = useRouter();
-    
+
     // Check if profile is complete
-    const isProfileIncomplete = !profile || 
+    const isProfileIncomplete = !profile ||
         !profile.phone || profile.phone === '+91' ||
-        !profile.contactPerson || 
-        !profile.institutionType || 
-        !profile.state || 
+        !profile.contactPerson ||
+        !profile.institutionType ||
+        !profile.state ||
         !profile.city;
 
     const [isEditing, setIsEditing] = useState(isProfileIncomplete);
@@ -73,6 +75,25 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
     });
     const [saving, setSaving] = useState(false);
 
+    // Pincode auto-detection logic
+    const { state: pinState, city: pinCity, loading: pinLoading, error: pinError } = usePincodeLookup(formData.pincode);
+
+    useEffect(() => {
+        if (pinState && pinState !== formData.state) {
+            setFormData(prev => ({ ...prev, state: pinState }));
+        }
+        if (pinCity && pinCity !== formData.city) {
+            setFormData(prev => ({ ...prev, city: pinCity }));
+        }
+    }, [pinState, pinCity]);
+
+    useEffect(() => {
+        if (!formData.pincode || formData.pincode.trim().length !== 6) {
+            if (formData.state) setFormData(prev => ({ ...prev, state: "" }));
+            if (formData.city) setFormData(prev => ({ ...prev, city: "" }));
+        }
+    }, [formData.pincode]);
+
     // Update form when profile changes (e.g. after refresh)
     useEffect(() => {
         if (profile) {
@@ -90,7 +111,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                 socialHandles: profile.socialHandles || prev.socialHandles,
                 consentVerified: !!profile.consentVerified,
             }));
-            
+
             // Only exit editing mode if the fetched profile is actually complete
             if (!isProfileIncomplete) {
                 setIsEditing(false);
@@ -222,27 +243,27 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
         <div className="min-h-[calc(100vh-82px)] bg-slate-50 py-10 px-4 sm:px-6">
             <div className="max-w-4xl mx-auto space-y-10">
                 <div className="text-center space-y-4">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-200 pb-8">
-                    <div className="space-y-2 text-center md:text-left">
-                        <h1 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight text-center md:text-left">
-                            {profile && !isProfileIncomplete ? "User Profile" : "Create Your Profile"}
-                        </h1>
-                        <p className="text-lg text-slate-500 font-medium text-center md:text-left">
-                            {profile && !isProfileIncomplete
-                                ? "Manage your identity and organization details."
-                                : "Tell us a bit more about yourself or your organization to get started."}
-                        </p>
+                    {/* Header Section */}
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-200 pb-8">
+                        <div className="space-y-2 text-center md:text-left">
+                            <h1 className="text-3xl md:text-5xl font-black text-slate-800 tracking-tight text-center md:text-left">
+                                {profile && !isProfileIncomplete ? "User Profile" : "Create Your Profile"}
+                            </h1>
+                            <p className="text-lg text-slate-500 font-medium text-center md:text-left">
+                                {profile && !isProfileIncomplete
+                                    ? "Manage your identity and organization details."
+                                    : "Tell us a bit more about yourself or your organization to get started."}
+                            </p>
+                        </div>
+                        {profile && !isEditing && (
+                            <Button
+                                onClick={handleProceed}
+                                className="bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)] !px-8 !py-4 !rounded-xl shadow-lg transform hover:-translate-y-1 transition-all"
+                            >
+                                Proceed to Register Action <span>&rarr;</span>
+                            </Button>
+                        )}
                     </div>
-                    {profile && !isEditing && (
-                        <Button
-                            onClick={handleProceed}
-                            className="bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)] !px-8 !py-4 !rounded-xl shadow-lg transform hover:-translate-y-1 transition-all"
-                        >
-                            Proceed to Register Action <span>&rarr;</span>
-                        </Button>
-                    )}
-                </div>
                 </div>
 
                 {/* Main Form Card */}
@@ -312,34 +333,53 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                                     </div>
                                                 )}
 
-                                                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                    <Input label="City" value={formData.city} onChange={(e) => handleChange("city", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
-                                                    <Input label="Pincode" value={formData.pincode} onChange={(e) => handleChange("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" maxLength={6} />
-                                                    <div className="space-y-2">
-                                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">State</label>
-                                                        <CustomDropdown options={BHARAT_STATES} value={formData.state} onChange={(val) => handleChange("state", val)} placeholder="Select state..." size="lg" />
+                                                <div className="md:col-span-2 space-y-6">
+                                                    <div className="flex items-center justify-between">
+                                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+                                                            Address Details
+                                                        </label>
+                                                        {pinLoading && <Spinner size="sm" className="text-blue-500" />}
                                                     </div>
-                                                </div>
 
-                                                <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                    <Input label="Primary Contact Person" value={formData.contactPerson} onChange={(e) => handleChange("contactPerson", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
-                                                    <Input label="Email Address" value={formData.email} disabled className="!py-4 !rounded-xl bg-slate-100 !border-slate-300 opacity-80" />
-                                                    <Input label="Phone Number" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
-                                                </div>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <div>
+                                                            <Input
+                                                                label="Pincode"
+                                                                value={formData.pincode}
+                                                                onChange={(e) => handleChange("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))}
+                                                                className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500"
+                                                                maxLength={6}
+                                                                placeholder="6-digit Pincode"
+                                                            />
+                                                            {pinError && <p className="text-[10px] text-red-500 mt-1 font-bold px-1">{pinError}</p>}
+                                                        </div>
+                                                        <Input label="City" value={formData.city} placeholder="Auto-filled" disabled className="!py-4 !rounded-xl bg-slate-50 border-slate-200 opacity-70" />
+                                                        <div className="space-y-2">
+                                                            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">State</label>
+                                                            <CustomDropdown options={BHARAT_STATES} value={formData.state} onChange={(val) => handleChange("state", val)} placeholder="Auto-filled" size="lg" disabled />
+                                                        </div>
+                                                    </div>
 
-                                                <div className="md:col-span-2 space-y-2">
-                                                    <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Full Address / Location (Google Search)</label>
-                                                    <LocationAutocomplete
-                                                        value={formData.address}
-                                                        onChange={(e) => handleChange("address", e.target.value)}
-                                                        onPlaceSelect={(loc) => {
-                                                            handleChange("address", loc.address);
-                                                            if (loc.lat) handleChange("lat", loc.lat);
-                                                            if (loc.lng) handleChange("lng", loc.lng);
-                                                        }}
-                                                        placeholder="Search for address..."
-                                                        className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500"
-                                                    />
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <Input label="Primary Contact Person" value={formData.contactPerson} onChange={(e) => handleChange("contactPerson", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
+                                                        <Input label="Email Address" value={formData.email} disabled className="!py-4 !rounded-xl bg-slate-100 !border-slate-300 opacity-80" />
+                                                        <Input label="Phone Number" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">Full Address / Location (Google Search)</label>
+                                                        <LocationAutocomplete
+                                                            value={formData.address}
+                                                            onChange={(e) => handleChange("address", e.target.value)}
+                                                            onPlaceSelect={(loc) => {
+                                                                handleChange("address", loc.address);
+                                                                if (loc.lat) handleChange("lat", loc.lat);
+                                                                if (loc.lng) handleChange("lng", loc.lng);
+                                                            }}
+                                                            placeholder="Search for your full building/street address..."
+                                                            className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
