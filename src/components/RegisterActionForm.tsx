@@ -753,8 +753,16 @@ function StepWrapper({ title, icon, children }: { title: string, icon: React.Rea
     );
 }
 
-function InputField({ label, name, type = "text", formik, textarea = false, placeholder = "", icon, maxLength, suffix, ...props }: any) {
+function InputField({ label, name, type = "text", formik, textarea = false, placeholder = "", icon, maxLength, suffix, className = "", ...props }: any) {
     const error = formik.touched[name] && formik.errors[name];
+    const isDisabled = props.disabled;
+
+    const baseInputStyles = `w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-bold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-100 focus:border-[rgb(32,38,130)] focus:bg-white"
+        } ${suffix ? "pr-12" : ""} ${isDisabled ? "disabled:opacity-100 disabled:text-gray-900 cursor-not-allowed" : ""}`;
+
+    // Merge base styles with custom className if provided
+    const mergedClassName = `${baseInputStyles} ${className}`.trim();
+
     return (
         <div className="space-y-2 text-left">
             <label className="flex items-center gap-2 text-sm font-bold text-gray-400 px-1 uppercase tracking-widest">
@@ -767,9 +775,9 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
                         name={name}
                         placeholder={placeholder}
                         maxLength={maxLength}
-                        className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-bold text-gray-900 min-h-[120px] text-base ${error ? "border-red-500 bg-red-50" : "border-gray-100 focus:border-[rgb(32,38,130)] focus:bg-white"
-                            }`}
+                        className={`${mergedClassName} min-h-[120px]`}
                         {...formik.getFieldProps(name)}
+                        {...props}
                     />
                 ) : (
                     <>
@@ -778,8 +786,7 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
                             name={name}
                             placeholder={placeholder}
                             maxLength={maxLength}
-                            className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-bold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-100 focus:border-[rgb(32,38,130)] focus:bg-white"
-                                } ${suffix ? "pr-12" : ""}`}
+                            className={mergedClassName}
                             {...formik.getFieldProps(name)}
                             {...props}
                         />
