@@ -18,7 +18,7 @@ export const usePincodeLookup = (pincode: string | undefined | null) => {
             setLoading(true);
             setError("");
             try {
-                const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+                const res = await fetch(`/api/pincode/${pincode}`);
                 const data = await res.json();
                 if (data && data[0] && data[0].Status === "Success" && data[0].PostOffice && data[0].PostOffice.length > 0) {
                     const postOffice = data[0].PostOffice[0];
