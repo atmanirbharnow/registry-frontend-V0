@@ -48,14 +48,6 @@ export default function ActionTypeSelector({
             {touched && error && (
                 <p className="text-red-500 text-xs ml-1">{error}</p>
             )}
-            <div className="flex items-center gap-2 mt-1">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">
-                    Unit:
-                </span>
-                <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg">
-                    {unitValue || "—"}
-                </span>
-            </div>
         </div>
     );
 }

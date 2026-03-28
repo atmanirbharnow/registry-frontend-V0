@@ -14,34 +14,32 @@ import { EMISSION_FACTORS_PHASE2 } from './constants/emissionFactors';
 // ============================================
 
 export interface CalculationInput {
-    actionType: string;
-    quantity: number;
-    unit: string;
+    actionType?: string;
+    quantity?: number; // Monthly action impact (kWh, L, kg) or capacity (kW, LPD)
+    unit?: string;
+    actions?: Array<{ actionType: string, quantity: number, unit?: string }>;
 
-    // Optional baseline data
-    baselineEnergyKwh?: number;
-    baselineWaterM3?: number;
-    baselineWasteKg?: number;
-
-    // Optional atmanirbhar data
-    localPercent?: number;
-    indigenousPercent?: number;
-    communityPercent?: number;
-    jobsCreated?: number;
-
-    // Optional action-specific parameters
-    oldStarRating?: number;  // For refrigerator upgrade
-    newStarRating?: number;
-    oldTempC?: number;        // For geyser temp reduction
-    newTempC?: number;
-    oldWattage?: number;      // For LED replacement
-    newWattage?: number;
-    hoursPerDay?: number;
+    // Baseline Usage (Monthly Average - Step 1)
+    baselineEnergyGrid?: number;
+    baselineEnergyDiesel?: number;
+    baselineEnergySolar?: number;
+    baselineWaterMunicipal?: number;
+    baselineWaterRain?: number;
+    baselineWaterWaste?: number;
+    baselineWasteOrganic?: number;
+    baselineWasteInorganic?: number;
+    baselineWasteHazardous?: number;
+    baselineWasteDiverted?: number;
+    
+    beneficiariesCount?: number;
 }
 
 export interface CalculationResult {
-    tCO2e: number;
+    tCO2e: number; // Total Annual Baseline Footprint
+    actionImpactTCO2e: number; // Annual Savings from the specific action
     atmanirbharScore: number;
+    circularityScore: number;
+    carbonIntensity: number; // tCO2e per beneficiary
     calculationVersion: string;
     methodology: string;
     emissionFactorUsed?: string;
@@ -55,173 +53,262 @@ export interface CalculationResult {
  * Calculate environmental impact using Phase 2 methodology
  */
 export function calculateImpactPhase2(input: CalculationInput): CalculationResult {
-    const co2eKg = calculateCO2ePhase2(input);
+    const { beneficiariesCount = 1 } = input;
+    
+    // 1. Calculate Baseline Emissions (Annualized)
+    const baselineCO2eKg = calculateBaselineCO2e(input);
+    const actionImpactKg = calculateCO2ePhase2(input);
+    
+    // 2. Scores
     const atmanirbharScore = calculateAtmanirbharPhase2(input);
+    const circularityScore = calculateCircularityScore(input);
+
+    const totalTCO2e = baselineCO2eKg / 1000;
+    const carbonIntensity = totalTCO2e / Math.max(1, beneficiariesCount);
 
     return {
-        tCO2e: co2eKg / 1000, // Convert kg to tonnes
+        tCO2e: Math.round(totalTCO2e * 1000) / 1000,
+        actionImpactTCO2e: Math.round((actionImpactKg / 1000) * 1000) / 1000,
         atmanirbharScore,
-        calculationVersion: 'v1.0-phase2',
-        methodology: 'ECF Simplified Factors',
+        circularityScore,
+        carbonIntensity: Math.round(carbonIntensity * 100) / 100,
+        calculationVersion: 'v1.2-phase2-audit-fixed',
+        methodology: 'ECF Combined Resource Ratio',
         emissionFactorUsed: getEmissionFactorDescription(input.actionType),
     };
 }
 
 // ============================================
-// CO2e CALCULATION (Using Client's Factors)
+// CIRCULARITY CALCULATION
 // ============================================
 
-function calculateCO2ePhase2(input: CalculationInput): number {
-    const { actionType, quantity, baselineEnergyKwh, baselineWaterM3, baselineWasteKg } = input;
+/**
+ * Circularity % = waste_diverted_kg / waste_generated_kg * 100
+ * Capped at 100%.
+ */
+/**
+ * Circularity % = waste_diverted / total_waste_generated * 100
+ * Capped at 100%.
+ */
+function calculateCircularityScore(input: CalculationInput): number {
+    const {
+        baselineWasteOrganic = 0,
+        baselineWasteInorganic = 0,
+        baselineWasteHazardous = 0,
+        baselineWasteDiverted = 0,
+        actionType = "",
+        quantity = 0,
+        actions = []
+    } = input;
 
-    let co2eKg = 0;
+    const totalBaselineWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
 
-    switch (actionType) {
-        case 'solar_rooftop': {
-            // Use client's exact factor: 1.23 tCO2e/yr per kW
-            const annualTonnes = quantity * EMISSION_FACTORS_PHASE2.SOLAR_ROOFTOP.factor;
-            co2eKg = annualTonnes * 1000; // Convert to kg
+    const actionList = actions.length > 0 ? actions : (actionType ? [{ actionType, quantity }] : []);
 
-            // If baseline energy provided, cap at actual consumption
-            if (baselineEnergyKwh && baselineEnergyKwh > 0) {
-                const annualGeneration = quantity * EMISSION_FACTORS_PHASE2.SOLAR_ROOFTOP.annualGeneration;
-                const actualSavings = Math.min(annualGeneration, baselineEnergyKwh);
-                co2eKg = actualSavings * EMISSION_FACTORS_PHASE2.GRID_ELECTRICITY.factor;
-            }
-            break;
-        }
-
-        case 'refrigerator_upgrade': {
-            // Use client's factor: 100 kg/yr for 2→5 star upgrade
-            co2eKg = EMISSION_FACTORS_PHASE2.REFRIGERATOR_UPGRADE.factor * quantity;
-            break;
-        }
-
-        case 'geyser_temp_reduction': {
-            // Use client's factor: 172 kg/yr for 60→40°C
-            co2eKg = EMISSION_FACTORS_PHASE2.GEYSER_TEMP_REDUCTION.factor * quantity;
-            break;
-        }
-
-        case 'led_replacement': {
-            // Use client's factor: 57 kg/yr per bulb (100W→5W, 2hrs/day)
-            co2eKg = EMISSION_FACTORS_PHASE2.LED_VS_ICL.factor * quantity;
-            break;
-        }
-
-        case 'rwh': {
-            // Rainwater harvesting - use mid-point of range
-            const avgFactor = (EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMin +
-                EMISSION_FACTORS_PHASE2.RAINWATER_HARVESTING.factorMax) / 2;
-            co2eKg = quantity * avgFactor;
-
-            if (baselineWaterM3 && baselineWaterM3 > 0) {
-                const actualSavings = Math.min(quantity, baselineWaterM3);
-                co2eKg = actualSavings * avgFactor;
-            }
-            break;
-        }
-
-        case 'biogas': {
-            // Use client's factor: 1.2 tCO2e/yr per plant
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.BIOGAS_PLANT.factor * 1000;
-            break;
-        }
-
-        case 'composting': {
-            // Use client's factor: 0.45 kg per kg waste
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.COMPOSTING.factor;
-
-            if (baselineWasteKg && baselineWasteKg > 0) {
-                const actualWaste = Math.min(quantity, baselineWasteKg);
-                co2eKg = actualWaste * EMISSION_FACTORS_PHASE2.COMPOSTING.factor;
-            }
-            break;
-        }
-
-        case 'plastic_recycling': {
-            // Use client's factor: 1.5 kg per kg plastic
-            co2eKg = quantity * EMISSION_FACTORS_PHASE2.PLASTIC_RECYCLING.factor;
-            break;
-        }
-
-        // Legacy action types (keep for backward compatibility)
-        case 'swh': {
-            // Solar water heater: 100L saves ~1500 kWh/year
-            const energySavings = (quantity / 100) * 1500;
-            co2eKg = energySavings * EMISSION_FACTORS_PHASE2.GRID_ELECTRICITY.factor;
-            break;
-        }
-
-        case 'waterless_urinal': {
-            // Each urinal saves ~150 kL per year
-            const waterSavings = quantity * 150;
-            co2eKg = waterSavings * EMISSION_FACTORS_PHASE2.BOREWELL_WATER.factor;
-            break;
-        }
-
-        case 'wastewater_recycling': {
-            // quantity = kL/day capacity
-            const annualWaterKL = quantity * 365;
-            co2eKg = annualWaterKL * EMISSION_FACTORS_PHASE2.MUNICIPAL_WATER.factor;
-            break;
-        }
-
-        case 'tree_plantation': {
-            // Trees - use approximate 22 kg/tree/year (not in client's table)
-            co2eKg = quantity * 22;
-            break;
-        }
-
-        default: {
-            // Unknown action type - return 0 (admin will enter manually)
-            co2eKg = 0;
+    let actionWasteDiverted = 0;
+    for (const act of actionList) {
+        const type = act.actionType.toLowerCase();
+        if (type.includes("waste") || type.includes("recycling") || type.includes("compost") || type.includes("biogas_digester") || type.includes("material_recovery") || type.includes("plastic") || type.includes("paper") || type.includes("metal") || type.includes("textile")) {
+            actionWasteDiverted += act.quantity || 0;
         }
     }
 
-    // Round to 3 decimal places
-    return Math.round(co2eKg * 1000) / 1000;
+    let divertedWaste = baselineWasteDiverted + actionWasteDiverted;
+
+    if (totalBaselineWaste === 0) {
+        return divertedWaste > 0 ? 100 : 0;
+    }
+
+    const score = (divertedWaste / totalBaselineWaste) * 100;
+    return Math.min(100, Math.round(score * 10) / 10);
+}
+
+// ============================================
+// BASELINE CO2e CALCULATION
+// ============================================
+
+/**
+ * Annual Baseline Footprint = Σ [Monthly Consumption × Factor × 12]
+ */
+function calculateBaselineCO2e(input: CalculationInput): number {
+    const {
+        baselineEnergyGrid = 0,
+        baselineEnergyDiesel = 0,
+        baselineEnergySolar = 0,
+        baselineWaterMunicipal = 0,
+        baselineWasteOrganic = 0,
+        baselineWasteInorganic = 0,
+        baselineWasteHazardous = 0
+    } = input;
+
+    // Energy: Grid (0.82), Diesel (2.68), Solar Credit (-0.82)
+    const energyCo2eMonthly = 
+        (baselineEnergyGrid * 0.82) + 
+        (baselineEnergyDiesel * 2.68) - 
+        (baselineEnergySolar * 0.82);
+
+    // Water: Municipal (0.5 kg/m3 = 0.0005 kg/L)
+    const waterCo2eMonthly = (baselineWaterMunicipal / 1000) * 0.5;
+
+    // Waste: Landfill (0.5 kg/kg)
+    const totalWasteMonthly = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous;
+    const wasteCo2eMonthly = totalWasteMonthly * 0.5;
+
+    const totalMonthlyKg = energyCo2eMonthly + waterCo2eMonthly + wasteCo2eMonthly;
+    return totalMonthlyKg * 12; // Annualize
+}
+
+// ============================================
+// CO2e CALCULATION (Action Specific)
+// ============================================
+
+function calculateCO2ePhase2(input: CalculationInput): number {
+    const { actionType = "", quantity = 0, actions = [] } = input;
+    let totalCo2eKg = 0;
+
+    const actionList = actions.length > 0 ? actions : (actionType ? [{ actionType, quantity }] : []);
+
+    for (const act of actionList) {
+        let co2eKg = 0;
+        const qty = act.quantity || 0;
+        switch (act.actionType) {
+            case 'solar_rooftop': {
+                co2eKg = qty * 1.23 * 1000;
+                break;
+            }
+            case 'solar_water_heater': {
+                co2eKg = (qty / 100) * 800;
+                break;
+            }
+            case 'borewell_water': {
+                co2eKg = qty * 0.67;
+                break;
+            }
+            case 'rainwater_harvesting': {
+                co2eKg = qty * 47.4; 
+                break;
+            }
+            case 'biogas_plant':
+            case 'biogas': {
+                co2eKg = qty * 1.2 * 1000;
+                break;
+            }
+            case 'composting': {
+                co2eKg = qty * 0.45;
+                break;
+            }
+            case 'plastic_recycling': {
+                co2eKg = qty * 1.5;
+                break;
+            }
+            case 'paper_recycling': {
+                co2eKg = qty * 0.9;
+                break;
+            }
+            case 'textile_recycling': {
+                co2eKg = qty * 2.2;
+                break;
+            }
+            case 'metal_recycling': {
+                co2eKg = qty * 3.0;
+                break;
+            }
+            case 'turn_off_bulb': {
+                co2eKg = qty * 17.96;
+                break;
+            }
+            case 'turn_off_fan': {
+                co2eKg = qty * 7.68;
+                break;
+            }
+            case 'wastewater_recycling': {
+                co2eKg = (qty * 365) * 0.5;
+                break;
+            }
+            case 'tree_plantation': {
+                co2eKg = qty * 22;
+                break;
+            }
+            case 'battery_storage': {
+                co2eKg = qty * 0.82 * 0.1 * 1000;
+                break;
+            }
+        }
+        totalCo2eKg += co2eKg;
+    }
+
+    return Math.round(totalCo2eKg * 1000) / 1000;
 }
 
 // ============================================
 // ATMANIRBHAR CALCULATION
 // ============================================
 
+/**
+ * Atmanirbhar % = (Σ Local Resource Value / Σ Total Resource Value) × 100
+ * = (renewable_kWh + rainwater_harvested_L + waste_processed_kg)
+ *   / (total_electricity_kWh + total_water_L + total_waste_kg) * 100
+ */
 function calculateAtmanirbharPhase2(input: CalculationInput): number {
     const {
-        localPercent = 0,
-        indigenousPercent = 0,
-        communityPercent = 0,
-        jobsCreated = 0,
+        baselineEnergyGrid = 0,
+        baselineEnergyDiesel = 0,
+        baselineEnergySolar = 0,
+        baselineWaterMunicipal = 0,
+        baselineWaterRain = 0,
+        baselineWaterWaste = 0,
+        baselineWasteOrganic = 0,
+        baselineWasteInorganic = 0,
+        baselineWasteHazardous = 0,
+        actionType = "",
+        quantity = 0,
+        actions = []
     } = input;
 
-    // If no data provided, return 0
-    if (localPercent === 0 && indigenousPercent === 0 &&
-        communityPercent === 0 && jobsCreated === 0) {
-        return 0;
+    let actionLocalEnergy = 0;
+    let actionLocalWater = 0;
+    let actionLocalWaste = 0;
+
+    const actionList = actions.length > 0 ? actions : (actionType ? [{ actionType, quantity }] : []);
+
+    for (const act of actionList) {
+        const type = act.actionType.toLowerCase();
+        const qty = act.quantity || 0;
+
+        if (type.includes("solar")) {
+            if (type.includes("rooftop")) {
+                actionLocalEnergy += qty * 125;
+            } else {
+                actionLocalEnergy += (qty / 100) * 125;
+            }
+        } else if (type.includes("rainwater") || type.includes("rwh")) {
+            actionLocalWater += qty * 30000;
+        } else if (type.includes("waste") || type.includes("recycling") || type.includes("compost")) {
+            actionLocalWaste += qty;
+        } else if (type.includes("wastewater")) {
+            actionLocalWater += qty * 30000;
+        } else if (type.includes("led") || type.includes("efficiency")) {
+            actionLocalEnergy += baselineEnergyGrid * 0.2; 
+        }
     }
 
-    // Client-approved weights
-    const WEIGHTS = {
-        local: 0.4,        // 40%
-        indigenous: 0.3,   // 30%
-        community: 0.2,    // 20%
-        jobs: 0.1,         // 10%
-    };
+    const localSum =
+        (baselineEnergySolar + actionLocalEnergy) +
+        (baselineWaterRain + baselineWaterWaste + actionLocalWater) +
+        (baselineWasteOrganic + actionLocalWaste);
 
-    // Calculate jobs score (capped at 100)
-    const jobsScore = Math.min(jobsCreated * 10, 100);
+    const totalEnergy = baselineEnergyGrid + baselineEnergyDiesel + baselineEnergySolar + actionLocalEnergy;
+    const totalWater = baselineWaterMunicipal + baselineWaterRain + baselineWaterWaste + actionLocalWater;
+    const totalWaste = baselineWasteOrganic + baselineWasteInorganic + baselineWasteHazardous + actionLocalWaste;
 
-    // Weighted average
-    const score =
-        localPercent * WEIGHTS.local +
-        indigenousPercent * WEIGHTS.indigenous +
-        communityPercent * WEIGHTS.community +
-        jobsScore * WEIGHTS.jobs;
+    const totalSum = totalEnergy + totalWater + totalWaste;
 
-    // Round to 1 decimal place
-    return Math.round(score * 10) / 10;
+    if (totalSum === 0) return 0;
+
+    const score = (localSum / totalSum) * 100;
+    return Math.min(100, Math.round(score * 10) / 10);
 }
+
 
 // ============================================
 // HELPER FUNCTIONS
@@ -229,14 +316,18 @@ function calculateAtmanirbharPhase2(input: CalculationInput): number {
 
 function getEmissionFactorDescription(actionType: string): string {
     const descriptions: Record<string, string> = {
-        solar_rooftop: '1.23 tCO2e/yr per kW (1500 kWh × 0.82 kg)',
-        refrigerator_upgrade: '100 kg/yr (2→5 Star, BEE data)',
-        geyser_temp_reduction: '172 kg/yr (60→40°C)',
-        led_replacement: '57 kg/yr (100W→5W, 2hrs/day)',
-        rwh: '0.67-1.69 kg/kL (displaced source)',
-        biogas: '1.2 tCO2e/yr per plant (methane avoidance)',
-        composting: '0.45 kg per kg waste (landfill methane)',
-        plastic_recycling: '1.5 kg per kg (virgin production)',
+        solar_rooftop: '1.23 tCO2e/yr per kW',
+        solar_water_heater: '800 kg/yr per 100 LPD',
+        borewell_water: '0.67 kg per kL (pumping 150m)',
+        rainwater_harvesting: '26.8-68 kg/yr per 1000L/day',
+        biogas: '1.2 tCO2e/yr (2m³ Plant)',
+        composting: '0.45 kg per kg food waste',
+        plastic_recycling: '1.5 kg per kg plastic',
+        paper_recycling: '0.9 kg per kg paper',
+        textile_recycling: '2.2 kg per kg textile',
+        metal_recycling: '3.0 kg per kg metal',
+        turn_off_bulb: '17.96 kg/yr per bulb (1 hr/day)',
+        turn_off_fan: '7.68 kg/yr per fan (1 hr/day)',
     };
 
     return descriptions[actionType] || 'Standard emission factor';
@@ -263,22 +354,17 @@ export function validateCalculationInput(input: CalculationInput): {
         errors.push('Unit is required');
     }
 
-    // Validate percentage fields if provided
-    const percentFields = [
-        { value: input.localPercent, name: 'Local sourcing %' },
-        { value: input.indigenousPercent, name: 'Indigenous tech %' },
-        { value: input.communityPercent, name: 'Community ownership %' },
+    // Validate baseline fields if provided
+    const baselineFields = [
+        { value: input.baselineEnergyGrid, name: 'Grid Electricity' },
+        { value: input.baselineWaterMunicipal, name: 'Water Consumption' },
     ];
 
-    percentFields.forEach(field => {
-        if (field.value !== undefined && (field.value < 0 || field.value > 100)) {
-            errors.push(`${field.name} must be between 0 and 100`);
+    baselineFields.forEach(field => {
+        if (field.value !== undefined && field.value < 0) {
+            errors.push(`${field.name} must be 0 or greater`);
         }
     });
-
-    if (input.jobsCreated !== undefined && input.jobsCreated < 0) {
-        errors.push('Jobs created must be 0 or greater');
-    }
 
     return {
         valid: errors.length === 0,
@@ -291,17 +377,17 @@ export function validateCalculationInput(input: CalculationInput): {
  */
 export function getAvailableActionTypes(): Array<{ value: string; label: string; unit: string }> {
     return [
-        { value: 'solar_rooftop', label: 'Solar Rooftop', unit: 'kW' },
-        { value: 'refrigerator_upgrade', label: 'Refrigerator Upgrade (2→5 Star)', unit: 'units' },
-        { value: 'geyser_temp_reduction', label: 'Geyser Temperature Reduction (60→40°C)', unit: 'units' },
-        { value: 'led_replacement', label: 'LED vs ICL Bulb (100W→5W)', unit: 'bulbs' },
-        { value: 'rwh', label: 'Rainwater Harvesting', unit: 'kL' },
-        { value: 'biogas', label: 'Biogas Plant (2m³)', unit: 'plants' },
-        { value: 'composting', label: 'Composting', unit: 'kg waste' },
-        { value: 'plastic_recycling', label: 'Plastic Recycling', unit: 'kg' },
-        { value: 'swh', label: 'Solar Water Heater', unit: 'liters' },
-        { value: 'waterless_urinal', label: 'Waterless Urinal', unit: 'units' },
-        { value: 'wastewater_recycling', label: 'Wastewater Recycling', unit: 'kL/day' },
-        { value: 'tree_plantation', label: 'Tree Plantation', unit: 'trees' },
+        { value: 'solar_rooftop', label: 'Solar Rooftop (1 kW)', unit: 'kW' },
+        { value: 'solar_water_heater', label: 'Solar Water Heater (100 LPD)', unit: 'units' },
+        { value: 'borewell_water', label: 'Water Borewell (1 kL)', unit: 'kL' },
+        { value: 'rainwater_harvesting', label: 'Water Rainwater (1000 L/day)', unit: 'units' },
+        { value: 'biogas', label: 'Biogas (2m³ Plant)', unit: 'plants' },
+        { value: 'composting', label: 'Waste Composting (1 kg food)', unit: 'kg' },
+        { value: 'plastic_recycling', label: 'Waste Plastic Recycling (1 kg)', unit: 'kg' },
+        { value: 'paper_recycling', label: 'Waste Paper Recycling (1 kg)', unit: 'kg' },
+        { value: 'textile_recycling', label: 'Waste Textile Recycling (1 kg)', unit: 'kg' },
+        { value: 'metal_recycling', label: 'Waste Metal Recycling (1 kg)', unit: 'kg' },
+        { value: 'turn_off_bulb', label: 'Lighting Turn Off Bulb (1 hr/day)', unit: 'bulbs' },
+        { value: 'turn_off_fan', label: 'Lighting Turn Off Fan (1 hr/day)', unit: 'fans' },
     ];
 }

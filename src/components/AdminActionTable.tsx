@@ -30,6 +30,7 @@ export default function AdminActionTable() {
     const [verifyForm, setVerifyForm] = useState({
         co2eTonnes: "",
         atmanirbharPercent: "",
+        circularityPercent: "",
         status: "verified" as "verified" | "rejected",
         adminNotes: "",
     });
@@ -84,6 +85,7 @@ export default function AdminActionTable() {
         setVerifyForm({
             co2eTonnes: action.co2eKg != null ? (action.co2eKg / 1000).toString() : "",
             atmanirbharPercent: action.atmanirbharPercent != null ? action.atmanirbharPercent.toString() : "",
+            circularityPercent: action.circularityPercent != null ? action.circularityPercent.toString() : "",
             status: "verified",
             adminNotes: action.adminNotes || ""
         });
@@ -125,6 +127,7 @@ export default function AdminActionTable() {
                     actionId: selectedAction.id,
                     co2eTonnes: Number(verifyForm.co2eTonnes) || 0,
                     atmanirbharPercent: Number(verifyForm.atmanirbharPercent) || 0,
+                    circularityPercent: Number(verifyForm.circularityPercent) || 0,
                     status: verifyForm.status,
                     adminNotes: verifyForm.adminNotes,
                     adminUid: user.uid,
@@ -385,8 +388,8 @@ export default function AdminActionTable() {
 
             {/* Verification Modal */}
             {verifyModalOpen && selectedAction && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 px-4 py-6 sm:p-6 overflow-hidden">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-full flex flex-col">
+                <div className="fixed inset-0 z-[1100] flex items-start sm:items-center justify-center bg-black/60 px-4 py-8 sm:py-12 overflow-y-auto">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl my-auto flex flex-col animate-in fade-in zoom-in-95 duration-200">
                         <div className="px-4 sm:px-5 py-3 border-b border-gray-100 shrink-0">
                             <h2 className="text-lg font-black text-gray-800 uppercase tracking-tight">Verify Action</h2>
                             <p className="text-sm font-medium text-gray-500 mt-1">
@@ -394,8 +397,8 @@ export default function AdminActionTable() {
                             </p>
                         </div>
 
-                        <form onSubmit={handleAdminVerification} className="px-4 sm:px-5 py-4 space-y-4 overflow-y-auto grow">
-                            <div className="bg-gray-50/80 rounded-xl p-4 space-y-2 text-sm border border-gray-100">
+                        <form onSubmit={handleAdminVerification} className="px-4 sm:px-5 py-3 space-y-3 overflow-y-auto grow">
+                            <div className="bg-gray-50/80 rounded-xl p-3 space-y-1.5 text-xs border border-gray-100">
                                 <p><span className="font-bold text-gray-400 uppercase tracking-wider text-[11px] mr-2">Quantity:</span>{" "}
                                     <span className="font-semibold text-gray-800">{selectedAction.quantity} {selectedAction.unit}</span></p>
                                 <p><span className="font-bold text-gray-400 uppercase tracking-wider text-[11px] mr-2">Actor:</span>{" "}
@@ -411,69 +414,130 @@ export default function AdminActionTable() {
                                         </span>
                                     </div>
                                 )}
+                                {selectedAction.co2eKg != null && (
+                                    <div className="pt-2 mt-2 border-t border-gray-200">
+                                        <span className="font-bold text-gray-400 uppercase tracking-wider text-[11px] block mb-1">Impact Metrics:</span>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                                            <p className="text-gray-700 font-medium">
+                                                <span className="text-gray-400 font-bold uppercase text-[9px] mr-1">Action Savings:</span>
+                                                {selectedAction.actionImpactTCO2e != null ? selectedAction.actionImpactTCO2e.toFixed(3) : (selectedAction.co2eKg / 1000).toFixed(3)} tCO2e/yr
+                                            </p>
+                                            <p className="text-gray-700 font-medium">
+                                                <span className="text-gray-400 font-bold uppercase text-[9px] mr-1">Total Footprint:</span>
+                                                {(selectedAction.co2eKg / 1000).toFixed(2)} tCO2e/yr
+                                            </p>
+                                            <p className="text-gray-700 font-medium">
+                                                <span className="text-gray-400 font-bold uppercase text-[9px] mr-1">Carbon Intensity:</span>
+                                                {selectedAction.carbonIntensity != null ? selectedAction.carbonIntensity.toFixed(2) : "—"} tCO2e/cap
+                                            </p>
+                                            <p className="text-gray-700 font-medium">
+                                                <span className="text-gray-400 font-bold uppercase text-[9px] mr-1">Atmanirbhar:</span>
+                                                {selectedAction.atmanirbharPercent != null ? selectedAction.atmanirbharPercent.toFixed(1) : "—"}%
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                                {selectedAction.wasteGeneratedKg != null && (
+                                    <div className="pt-1 mt-1 border-t border-gray-100">
+                                        <span className="text-gray-700 font-medium text-[10px] break-words">
+                                            Waste Generated{selectedAction.wasteGeneratedKg} kg/yr,{" "}
+                                            Waste Diverted: {selectedAction.wasteDivertedKg ?? 0} kg/yr
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* User Portfolio Context */}
-                            <div className="bg-indigo-50/50 rounded-xl p-4 border border-indigo-100/50">
+                            <div className="bg-indigo-50/50 rounded-xl p-3 border border-indigo-100/50">
                                 <h3 className="text-xs font-bold text-indigo-800 uppercase tracking-wider mb-2 flex items-center justify-between">
                                     <span>Current Portfolio Context</span>
                                     {fetchingPortfolio && <span className="animate-pulse text-indigo-400 text-[10px]">Loading...</span>}
                                 </h3>
-                                {userPortfolio ? (
+                                {(userPortfolio || selectedAction) && (
                                     <div className="grid grid-cols-3 gap-2">
-                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50 shadow-sm">
                                             <div className="text-[10px] font-bold text-orange-500 uppercase">Energy</div>
-                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.energy.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">
+                                                {(userPortfolio?.energy.tCO2e || (
+                                                    ((selectedAction.baselineEnergyGrid || 0) * 0.82 + (selectedAction.baselineEnergyDiesel || 0) * 2.68) * 12 / 1000
+                                                )).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
+                                            </div>
                                         </div>
-                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50 shadow-sm">
                                             <div className="text-[10px] font-bold text-cyan-500 uppercase">Water</div>
-                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.water.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">
+                                                {(userPortfolio?.water.tCO2e || (
+                                                    (selectedAction.baselineWaterMunicipal || 0) * 0.5 * 12 / 1000
+                                                )).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
+                                            </div>
                                         </div>
-                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50">
+                                        <div className="bg-white p-2 rounded-lg text-center border border-indigo-50 shadow-sm">
                                             <div className="text-[10px] font-bold text-emerald-500 uppercase">Waste</div>
-                                            <div className="font-black text-gray-800 text-sm mt-0.5">{userPortfolio.waste.tCO2e.toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span></div>
+                                            <div className="font-black text-gray-800 text-sm mt-0.5">
+                                                {(userPortfolio?.waste.tCO2e || (
+                                                    ((selectedAction.baselineWasteOrganic || 0) + (selectedAction.baselineWasteInorganic || 0) + (selectedAction.baselineWasteHazardous || 0)) * 0.5 * 12 / 1000
+                                                )).toFixed(1)} <span className="text-[10px] text-gray-400 font-semibold">tCO₂e</span>
+                                            </div>
                                         </div>
                                     </div>
-                                ) : !fetchingPortfolio ? (
-                                    <p className="text-xs text-gray-400 italic text-center py-2">No prior verified actions</p>
-                                ) : null}
+                                )}
                             </div>
 
-                            <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100/50">
-                                <h3 className="text-xs font-bold text-[rgb(32,38,130)] uppercase tracking-wider mb-3">Calculated Impact</h3>
+                            <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100/50">
+                                <h3 className="text-xs font-bold text-[rgb(32,38,130)] uppercase tracking-wider mb-2">Calculated Impact</h3>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div className="bg-white p-3 rounded-xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-blue-50">
-                                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">CO₂e Reduced (tonnes)</label>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <div className="bg-white p-2.5 rounded-xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-blue-50">
+                                        <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">CO₂e Reduced (tonnes)</label>
                                         {isEditMode ? (
                                             <input
                                                 type="number"
                                                 step="any"
                                                 value={verifyForm.co2eTonnes}
                                                 onChange={(e) => setVerifyForm(f => ({ ...f, co2eTonnes: e.target.value }))}
-                                                className="w-full px-2 py-1.5 border-b-2 border-blue-200 text-lg font-black text-green-600 focus:border-[rgb(32,38,130)] outline-none bg-transparent"
+                                                className="w-full px-2 py-1 border-b-2 border-blue-200 text-base font-black text-green-600 focus:border-[rgb(32,38,130)] outline-none bg-transparent"
                                                 placeholder="e.g. 23.5"
                                             />
                                         ) : (
-                                            <div className="text-xl font-black text-green-600 truncate">
-                                                {verifyForm.co2eTonnes || "0"} <span className="text-[10px] font-bold text-green-500">tCO₂e</span>
+                                            <div className="text-lg font-black text-green-600 truncate">
+                                                {verifyForm.co2eTonnes || "0"} <span className="text-[9px] font-bold text-green-500">tCO₂e</span>
                                             </div>
                                         )}
                                     </div>
-                                    <div className="bg-white p-3 rounded-xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-blue-50">
-                                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Atmanirbhar Score</label>
+                                    <div className="bg-white p-2.5 rounded-xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-blue-50">
+                                        <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Atmanirbhar Score</label>
                                         {isEditMode ? (
                                             <input
                                                 type="number"
                                                 step="any"
                                                 value={verifyForm.atmanirbharPercent}
                                                 onChange={(e) => setVerifyForm(f => ({ ...f, atmanirbharPercent: e.target.value }))}
-                                                className="w-full px-2 py-1.5 border-b-2 border-blue-200 text-lg font-black text-blue-600 focus:border-[rgb(32,38,130)] outline-none bg-transparent"
+                                                className="w-full px-2 py-1 border-b-2 border-blue-200 text-base font-black text-blue-600 focus:border-[rgb(32,38,130)] outline-none bg-transparent"
                                                 placeholder="e.g. 50"
                                             />
                                         ) : (
-                                            <div className="text-xl font-black text-blue-600 truncate">
-                                                {verifyForm.atmanirbharPercent || "0"}<span className="text-[10px] font-bold text-blue-500">%</span>
+                                            <div className="text-lg font-black text-blue-600 truncate">
+                                                {verifyForm.atmanirbharPercent || "0"}<span className="text-[9px] font-bold text-blue-500">%</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="bg-white p-2.5 rounded-xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-emerald-50">
+                                        <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Circularity Score</label>
+                                        {isEditMode ? (
+                                            <input
+                                                type="number"
+                                                step="any"
+                                                min="0"
+                                                max="100"
+                                                value={verifyForm.circularityPercent}
+                                                onChange={(e) => setVerifyForm(f => ({ ...f, circularityPercent: e.target.value }))}
+                                                className="w-full px-2 py-1 border-b-2 border-emerald-200 text-base font-black text-emerald-600 focus:border-[rgb(32,38,130)] outline-none bg-transparent"
+                                                placeholder="0 - 100"
+                                            />
+                                        ) : (
+                                            <div className="text-lg font-black text-emerald-600">
+                                                {verifyForm.circularityPercent || "0"}<span className="text-[9px] font-bold text-emerald-500">%</span>
+                                                <div className="text-[9px] font-medium text-gray-400 mt-0.5">waste diverted</div>
                                             </div>
                                         )}
                                     </div>
@@ -483,7 +547,7 @@ export default function AdminActionTable() {
                                         <button
                                             type="button"
                                             onClick={() => setIsEditMode(false)}
-                                            className="col-span-2 w-full px-4 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+                                            className="sm:col-span-3 w-full px-4 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
                                         >
                                             Save Edited Values
                                         </button>

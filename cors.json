@@ -2,6 +2,7 @@
     {
         "origin": [
             "http://localhost:3000",
+            "https://climateassetregistry.org",
             "https://registryearthcarbon.org",
             "https://registry-frontend-dev--earthcarbonregistry-1e6ba.asia-southeast1.hosted.app"
         ],

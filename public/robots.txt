@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /admin
 
-Sitemap: https://registryearthcarbon.org/sitemap.xml
+Sitemap: https://climateassetregistry.org/sitemap.xml

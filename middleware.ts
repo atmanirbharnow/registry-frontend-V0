@@ -13,6 +13,7 @@ export function middleware(request: NextRequest) {
       if (data.uid && data.email) {
         isValidSession = true;
         userRole = data.role || "user";
+        // Optionally used for more granular redirects
       }
     } catch {
       // invalid cookie
@@ -45,7 +46,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (authRoutes.includes(pathname)) {
+  if (authRoutes.includes(pathname) || pathname === "/") {
+    if (isValidSession) {
+      return NextResponse.redirect(new URL("/profile", request.url));
+    }
     return NextResponse.next();
   }
 

@@ -55,7 +55,7 @@ export default function RegisterSuccessPage() {
                     No registry ID was provided or the action could not be found.
                 </p>
                 <Link href="/register">
-                    <Button>Register New Action</Button>
+                    <Button>Register Current Usage</Button>
                 </Link>
             </div>
         );
@@ -66,16 +66,16 @@ export default function RegisterSuccessPage() {
     const atmanirbhar = action.atmanirbharPercent != null ? action.atmanirbharPercent.toFixed(0) : null;
     const year = new Date().getFullYear();
 
-    const shareText = action.status === "verified" && tco2e && atmanirbhar
-        ? `I just verified a low-carbon action with Earth Carbon Registry!\nReduced: ${tco2e} tCO2e\n${atmanirbhar}% Atmanirbhar | ${year}\n${ACTION_LABELS[action.actionType] || action.actionType}\nVerify: ${verifyUrl}`
+    const shareText = tco2e && atmanirbhar
+        ? `Registered a low-carbon action on Earth Carbon Registry!\nEstimated Impact: ${tco2e} tCO2e | ${atmanirbhar}% Atmanirbhar (pending verification)\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`
         : `Registered a low-carbon action on Earth Carbon Registry!\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`;
 
     return (
         <div className="min-h-[calc(100vh-82px)] bg-gray-50 px-4 md:px-8 py-12">
             <div className="max-w-xl mx-auto text-center space-y-8">
                 <div className="space-y-4">
-                    <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
+                    <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>

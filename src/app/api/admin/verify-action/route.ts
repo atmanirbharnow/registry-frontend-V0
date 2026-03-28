@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
             actionId,
             co2eTonnes,
             atmanirbharPercent,
+            circularityPercent,
             status,
             adminNotes,
             adminUid,
@@ -100,6 +101,7 @@ export async function POST(request: NextRequest) {
             }
             updateData.co2eKg = Number(co2eTonnes) * 1000;
             updateData.atmanirbharPercent = Number(atmanirbharPercent);
+            updateData.circularityPercent = circularityPercent != null ? Number(circularityPercent) : 0;
         }
 
         if (hasAdminCredentials) {

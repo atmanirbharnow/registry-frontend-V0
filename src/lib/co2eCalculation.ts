@@ -1,3 +1,5 @@
+import { EMISSION_FACTORS_PHASE2 } from "./constants/emissionFactors";
+
 interface ActionInput {
     actionType: string;
     quantity: number;
@@ -16,44 +18,63 @@ export function calculateCo2eEnhanced(input: ActionInput): number | null {
         : 1;
 
     let co2eKg = 0;
+    const ef = EMISSION_FACTORS_PHASE2;
 
     switch (actionType) {
         case "solar_rooftop": {
-            const generationPerYear = quantity * 1500;
-            const actualSavings = baselineEnergyKwh && baselineEnergyKwh > 0
-                ? Math.min(generationPerYear, baselineEnergyKwh)
-                : generationPerYear;
-            co2eKg = actualSavings * 0.82 * years;
+            const annualImpact = quantity * ef.SOLAR_ROOFTOP.factor; // 1.23 tCO2e = 1230 kg
+            co2eKg = annualImpact * 1000 * years;
             break;
         }
-        case "swh":
-            co2eKg = (quantity / 100) * 1500 * 0.82 * years;
+        case "solar_water_heater": {
+            // Factor is 800 kg per 100 LPD unit
+            co2eKg = (quantity / 100) * ef.SOLAR_WATER_HEATER.factor * years;
             break;
-        case "rwh": {
-            const waterSavings = baselineWaterM3 && baselineWaterM3 > 0
-                ? Math.min(quantity, baselineWaterM3)
-                : quantity;
-            co2eKg = waterSavings * 0.5 * 0.82 * years;
+        }
+        case "borewell_water": {
+            co2eKg = quantity * ef.BOREWELL_WATER.factor * years;
+            break;
+        }
+        case "rainwater_harvesting": {
+            // Average of min (replacing borewell) and max (replacing municipal)
+            const avgFactor = (ef.RAINWATER_HARVESTING.factorMin + ef.RAINWATER_HARVESTING.factorMax) / 2;
+            co2eKg = (quantity / 1000) * avgFactor * years;
             break;
         }
         case "biogas": {
-            const wasteProcessed = baselineWasteKg && baselineWasteKg > 0
-                ? Math.min(quantity, baselineWasteKg)
-                : quantity;
-            co2eKg = wasteProcessed * 0.1 * 1.3 * years;
+            co2eKg = quantity * ef.BIOGAS_PLANT.factor * 1000 * years;
             break;
         }
-        case "waterless_urinal":
-            co2eKg = quantity * 150 * 0.5 * 0.82 * years;
+        case "composting": {
+            co2eKg = quantity * ef.COMPOSTING.factor * years;
             break;
-        case "wastewater_recycling":
-            co2eKg = quantity * 365 * 0.8 * 0.82 * years;
+        }
+        case "plastic_recycling": {
+            co2eKg = quantity * ef.PLASTIC_RECYCLING.factor * years;
             break;
-        case "led_replacement":
-            co2eKg = quantity * 0.04 * 10 * 365 * 0.82 * years;
+        }
+        case "paper_recycling": {
+            co2eKg = quantity * ef.PAPER_RECYCLING.factor * years;
             break;
+        }
+        case "textile_recycling": {
+            co2eKg = quantity * ef.TEXTILE_RECYCLING.factor * years;
+            break;
+        }
+        case "metal_recycling": {
+            co2eKg = quantity * ef.METAL_RECYCLING.factor * years;
+            break;
+        }
+        case "turn_off_bulb": {
+            co2eKg = quantity * ef.LIGHTING_BULB.factor * years;
+            break;
+        }
+        case "turn_off_fan": {
+            co2eKg = quantity * ef.LIGHTING_FAN.factor * years;
+            break;
+        }
         case "tree_plantation":
-            co2eKg = quantity * 22 * years;
+            co2eKg = quantity * 22 * years; // Default tree factor
             break;
         default:
             return null;

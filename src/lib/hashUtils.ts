@@ -36,3 +36,30 @@ export function generateActionHash(fields: {
     const canonical = buildCanonicalString(fields);
     return generateSHA256Hash(canonical);
 }
+
+export function buildSchoolCanonicalString(fields: {
+    registryId: string;
+    schoolName: string;
+    address: string;
+    userId: string;
+    createdAt: string;
+}): string {
+    return [
+        fields.registryId,
+        fields.schoolName,
+        fields.address,
+        fields.userId,
+        fields.createdAt,
+    ].join("|");
+}
+
+export function generateSchoolHash(fields: {
+    registryId: string;
+    schoolName: string;
+    address: string;
+    userId: string;
+    createdAt: string;
+}): string {
+    const canonical = buildSchoolCanonicalString(fields);
+    return generateSHA256Hash(canonical);
+}
