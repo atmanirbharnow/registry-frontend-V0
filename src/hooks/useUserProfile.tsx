@@ -50,8 +50,11 @@ export function useUserProfile() {
 
     const needsSetup =
         profile !== null &&
-        (!profile.socialHandles ||
-            profile.socialHandles.every((h) => h.trim() === ""));
+        (!profile.phone ||
+            profile.phone.trim() === "" ||
+            !profile.contactPerson ||
+            profile.contactPerson.trim() === "" ||
+            !profile.institutionType);
 
     return {
         profile,

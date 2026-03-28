@@ -91,7 +91,7 @@ export default function LocationPickerSection({
                 Use My GPS Location
             </button>
 
-            {lat !== null && lng !== null && (
+            {typeof lat === 'number' && typeof lng === 'number' && (
                 <div className="flex items-center gap-2 text-xs text-gray-400 ml-1">
                     <span className="font-medium">Coordinates:</span>
                     <span className="px-2 py-1 bg-gray-50 rounded text-gray-600 font-mono">

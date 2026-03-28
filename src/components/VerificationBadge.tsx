@@ -6,19 +6,19 @@ import { ActionStatus } from "@/types/action";
 import { ReactNode } from "react";
 
 interface VerificationBadgeProps {
-    status: ActionStatus;
+    status: string;
 }
 
 const badgeConfig: Record<
-    ActionStatus,
+    string,
     { label: string; sublabel: string; bg: string; border: string; text: string; icon: ReactNode }
 > = {
     verified: {
         label: "VERIFIED",
         sublabel: "Carbon Credit Eligible",
-        bg: "bg-green-50",
-        border: "border-green-200",
-        text: "text-green-700",
+        bg: "bg-blue-50",
+        border: "border-blue-200",
+        text: "text-blue-700",
         icon: (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -49,10 +49,22 @@ const badgeConfig: Record<
             </svg>
         ),
     },
+    pledged: {
+        label: "PLEDGED",
+        sublabel: "Awaiting Review",
+        bg: "bg-yellow-50",
+        border: "border-yellow-200",
+        text: "text-yellow-700",
+        icon: (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+        ),
+    },
 };
 
 export default function VerificationBadge({ status }: VerificationBadgeProps) {
-    const config = badgeConfig[status] || badgeConfig.pending;
+    const config = (badgeConfig as any)[status] || badgeConfig.pending;
 
     return (
         <div

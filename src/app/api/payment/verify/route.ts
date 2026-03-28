@@ -138,6 +138,7 @@ export async function POST(request: NextRequest) {
 
     try {
         if (!isSimulation && !hasSecret) {
+            console.error("[verify] Config guard blocked: missing RAZORPAY_KEY_SECRET");
             return NextResponse.json(
                 { error: "Payment configuration error: RAZORPAY_KEY_SECRET is missing" },
                 { status: 500 }
@@ -152,6 +153,7 @@ export async function POST(request: NextRequest) {
             userIdToken,
             formData,
         } = body;
+
 
         if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
             return NextResponse.json(
@@ -177,24 +179,44 @@ export async function POST(request: NextRequest) {
         const counterNext = await incrementCounter(userIdToken);
         const registryId = `ECF-${String(counterNext).padStart(4, "0")}`;
         const now = new Date().toISOString();
+        const bOrganic = Number(formData.baselineWasteOrganic) || 0;
+        const bInorganic = Number(formData.baselineWasteInorganic) || 0;
+        const bHazardous = Number(formData.baselineWasteHazardous) || 0;
+        const calculatedDiverted = bOrganic + bInorganic + bHazardous;
+
+        const actionsData = formData.actionsData ? JSON.parse(formData.actionsData) : [];
+        const primaryAction = actionsData.length > 0 ? actionsData[0] : { actionType: formData.actionType || "", quantity: Number(formData.quantity) || 0, unit: formData.unit || "" };
+
         const impact = calculateImpactPhase2({
-            actionType: formData.actionType,
-            quantity: Number(formData.quantity),
-            unit: formData.unit,
-            localPercent: formData.localPercent ? Number(formData.localPercent) : undefined,
-            indigenousPercent: formData.indigenousPercent ? Number(formData.indigenousPercent) : undefined,
-            communityPercent: formData.communityPercent ? Number(formData.communityPercent) : undefined,
-            jobsCreated: formData.jobsCreated ? Number(formData.jobsCreated) : undefined,
+            actionType: primaryAction.actionType,
+            quantity: primaryAction.quantity,
+            unit: primaryAction.unit,
+            actions: actionsData,
+            // Baseline fields (Step 1 structure)
+            baselineEnergyGrid: Number(formData.baselineEnergyGrid) || 0,
+            baselineEnergyDiesel: Number(formData.baselineEnergyDiesel) || 0,
+            baselineEnergySolar: Number(formData.baselineEnergySolar) || 0,
+            baselineWaterMunicipal: Number(formData.baselineWaterMunicipal) || 0,
+            baselineWaterRain: Number(formData.baselineWaterRain) || 0,
+            baselineWaterWaste: Number(formData.baselineWaterWaste) || 0,
+            baselineWasteOrganic: bOrganic,
+            baselineWasteInorganic: bInorganic,
+            baselineWasteHazardous: bHazardous,
+            baselineWasteDiverted: calculatedDiverted,
+            beneficiariesCount: Number(formData.beneficiariesCount) || 1,
         });
 
         const co2eKg = impact.tCO2e * 1000;
+        const actionImpactTCO2e = impact.actionImpactTCO2e;
+        const carbonIntensity = impact.carbonIntensity;
         const atmanirbharPercent = impact.atmanirbharScore;
+        const circularityPercent = impact.circularityScore;
 
         const sha256Hash = generateActionHash({
             registryId,
-            actionType: formData.actionType,
-            quantity: Number(formData.quantity),
-            unit: formData.unit,
+            actionType: primaryAction.actionType,
+            quantity: primaryAction.quantity,
+            unit: primaryAction.unit,
             address: formData.address,
             userId: formData.userId,
             createdAt: now,
@@ -203,9 +225,10 @@ export async function POST(request: NextRequest) {
         const actionData: Record<string, unknown> = {
             registryId,
             institutionId: formData.institutionId || null,
-            actionType: formData.actionType,
-            quantity: Number(formData.quantity),
-            unit: formData.unit,
+            actionType: primaryAction.actionType,
+            quantity: primaryAction.quantity,
+            unit: primaryAction.unit,
+            actions: actionsData,
             address: formData.address,
             lat: formData.lat || null,
             lng: formData.lng || null,
@@ -217,16 +240,45 @@ export async function POST(request: NextRequest) {
             phone: formData.phone,
             email: formData.email,
             status: "pending",
+            sector: formData.sector || null,
+            state: formData.state || null,
+            pincode: formData.pincode || null,
             co2eKg,
+            actionImpactTCO2e,
+            carbonIntensity,
             atmanirbharPercent,
+            circularityPercent,
+            // Usage Data (Step 2 - Comparison for summary/verification)
+            electricityUseKwh: Number(formData.electricityUseKwh) || null,
+            waterUsageKLD: Number(formData.waterUsageKLD) || null,
+            wasteGeneratedKg: Number(formData.wasteGeneratedKg) || null,
+            wasteDivertedKg: calculatedDiverted,
+            // Baseline Data (Step 1 - 9-field authoritative structure)
+            baselineEnergyGrid: Number(formData.baselineEnergyGrid) || 0,
+            baselineEnergyDiesel: Number(formData.baselineEnergyDiesel) || 0,
+            baselineEnergySolar: Number(formData.baselineEnergySolar) || 0,
+            baselineWaterMunicipal: Number(formData.baselineWaterMunicipal) || 0,
+            baselineWaterRain: Number(formData.baselineWaterRain) || 0,
+            baselineWaterWaste: Number(formData.baselineWaterWaste) || 0,
+            baselineWasteOrganic: bOrganic,
+            baselineWasteInorganic: bInorganic,
+            baselineWasteHazardous: bHazardous,
+            beneficiariesCount: Number(formData.beneficiariesCount) || null,
+            // Verification Photos (Updated mapping)
+            energyBillCopy: formData.energyBillCopy || null,
+            meterPhoto: formData.meterPhoto || null,
+            moreDetailsPhoto: formData.moreDetailsPhoto || null,
+            siteOverviewPhoto: formData.siteOverviewPhoto || null,
             sha256Hash,
             meterPhotos: (formData.meterPhotos || []).filter(Boolean),
             sitePhoto: formData.sitePhoto || null,
             commissioningDate: formData.commissioningDate || null,
-            localPercent: Number(formData.localPercent) || null,
-            indigenousPercent: Number(formData.indigenousPercent) || null,
-            communityPercent: Number(formData.communityPercent) || null,
-            jobsCreated: Number(formData.jobsCreated) || null,
+            // Action Specific
+            capacityKw: formData.capacityKw || null,
+            installationDate: formData.installationDate || null,
+            capacity: formData.capacity || null,
+            tankCapacityKL: formData.tankCapacityKL || null,
+            capacityM3: formData.capacityM3 || null,
             razorpayOrderId: razorpay_order_id,
             razorpayPaymentId: razorpay_payment_id,
             calculationVersion: impact.calculationVersion,
@@ -247,6 +299,7 @@ export async function POST(request: NextRequest) {
     } catch (error: unknown) {
         const message =
             error instanceof Error ? error.message : "Payment verification failed";
+        console.error("[verify] CAUGHT ERROR:", message, error);
         return NextResponse.json({ error: message }, { status: 500 });
     }
 }

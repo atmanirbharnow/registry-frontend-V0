@@ -34,25 +34,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(
       auth,
       async (firebaseUser) => {
-        setUser(firebaseUser);
-        if (firebaseUser) {
-          let role = "user";
-          try {
+        try {
+          setUser(firebaseUser);
+          if (firebaseUser) {
+            let role = "user";
             const profile = await getUserProfile(firebaseUser.uid);
             if (profile?.role) {
-              role = profile.role;
+                role = profile.role;
             }
-          } catch {
-            // profile fetch failed, default to user role
+            const isRegistered = !!(profile?.phone && profile?.institutionType);
+            const sessionData = JSON.stringify({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              role,
+              isRegistered
+            });
+            document.cookie = `session=${encodeURIComponent(sessionData)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+          } else {
+            document.cookie = "session=; path=/; max-age=0";
           }
-          const sessionData = JSON.stringify({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            role,
-          });
-          document.cookie = `session=${encodeURIComponent(sessionData)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+        } catch (err) {
+          console.error("Auth callback error:", err);
+        } finally {
+          setLoading(false);
         }
-        setLoading(false);
       },
       (error) => {
         console.error("Auth listener error:", error);
@@ -66,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
+      toast.success("Successfully logged in with Google!");
     } catch (error: unknown) {
       const firebaseError = error as { code?: string; message?: string };
       if (firebaseError.code === "auth/popup-closed-by-user") {

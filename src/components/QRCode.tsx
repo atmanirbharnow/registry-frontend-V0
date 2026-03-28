@@ -6,10 +6,13 @@ import { APP_URL } from "@/lib/constants";
 interface QRCodeProps {
     registryId: string;
     size?: number;
+    type?: 'action' | 'school';
 }
 
-export default function QRCode({ registryId, size = 150 }: QRCodeProps) {
-    const verifyUrl = `${APP_URL}/verify/${registryId}`;
+export default function QRCode({ registryId, size = 150, type = 'action' }: QRCodeProps) {
+    const verifyUrl = type === 'school' 
+        ? `${APP_URL}/verify/school/${registryId}`
+        : `${APP_URL}/verify/${registryId}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(verifyUrl)}`;
 
     return (

@@ -37,9 +37,9 @@ export const useLocationAutocomplete = ({
   }, [value, inputValue]);
 
   useEffect(() => {
-    if (!isLoaded) return () => {};
+    if (!isLoaded) return () => { };
     const currentInput = inputRef.current;
-    if (!currentInput) return () => {};
+    if (!currentInput) return () => { };
 
     const autocomplete = new window.google.maps.places.Autocomplete(
       currentInput,

@@ -17,13 +17,11 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import { Action, ActionStatus } from "@/types/action";
-import { Institution } from "@/types/institution";
 import { UserProfile } from "@/types/user";
 
 const COLLECTIONS = {
     USERS: "users",
     ACTIONS: "actions",
-    INSTITUTIONS: "institutions",
     META: "meta",
 } as const;
 
@@ -48,10 +46,10 @@ export async function updateUserProfile(
     uid: string,
     data: Partial<UserProfile>
 ): Promise<void> {
-    await updateDoc(doc(db, COLLECTIONS.USERS, uid), {
+    await setDoc(doc(db, COLLECTIONS.USERS, uid), {
         ...data,
         updatedAt: serverTimestamp(),
-    });
+    }, { merge: true });
 }
 
 export async function createAction(
@@ -180,43 +178,6 @@ export async function getAllUsers(): Promise<UserProfile[]> {
     const q = query(collection(db, COLLECTIONS.USERS));
     const snap = await getDocs(q);
     return snap.docs.map((d) => ({ uid: d.id, ...d.data() })) as UserProfile[];
-}
-
-export async function createInstitution(
-    data: Omit<Institution, "id" | "createdAt" | "totalActions" | "totalTco2e">
-): Promise<string> {
-    const docRef = await addDoc(collection(db, COLLECTIONS.INSTITUTIONS), {
-        ...data,
-        totalActions: 0,
-        totalTco2e: 0,
-        createdAt: serverTimestamp(),
-    });
-    return docRef.id;
-}
-
-export async function getUserInstitutions(
-    userId: string
-): Promise<Institution[]> {
-    const q = query(
-        collection(db, COLLECTIONS.INSTITUTIONS),
-        where("userId", "==", userId)
-    );
-    const snap = await getDocs(q);
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as Institution[];
-}
-
-export async function updateInstitution(
-    id: string,
-    data: Partial<Institution>
-): Promise<void> {
-    await updateDoc(doc(db, COLLECTIONS.INSTITUTIONS, id), {
-        ...data,
-        updatedAt: serverTimestamp(),
-    });
-}
-
-export async function deleteInstitution(id: string): Promise<void> {
-    await deleteDoc(doc(db, COLLECTIONS.INSTITUTIONS, id));
 }
 
 export async function getNextRegistryId(): Promise<string> {

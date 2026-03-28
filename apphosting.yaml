@@ -23,4 +23,8 @@ env:
   - variable: RAZORPAY_SIMULATION_MODE
     value: "false"
   - variable: NEXT_PUBLIC_APP_URL
-    value: https://registry-frontend-dev--earthcarbonregistry-1e6ba.asia-southeast1.hosted.app/
+    value: https://climateassetregistry.org
+
+runConfig:
+  minInstances: 0
+  maxInstances: 10

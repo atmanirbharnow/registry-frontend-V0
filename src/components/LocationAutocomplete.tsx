@@ -7,6 +7,7 @@ interface LocationAutocompleteProps extends React.InputHTMLAttributes<HTMLInputE
   onPlaceSelect?: (location: any) => void;
   error?: any;
   fallbackErrorMessage?: string;
+  disableValidation?: boolean;
 }
 
 const LocationAutocomplete = ({
@@ -17,6 +18,7 @@ const LocationAutocomplete = ({
   className = "",
   error,
   fallbackErrorMessage = "Please select a location from the dropdown suggestions",
+  disableValidation = false,
   ...props
 }: LocationAutocompleteProps) => {
   const {
@@ -40,6 +42,8 @@ const LocationAutocomplete = ({
     );
   }
 
+  const hasError = !disableValidation && !isValidSelection && inputValue.trim() !== "";
+
   return (
     <div className="relative">
       <input
@@ -49,10 +53,10 @@ const LocationAutocomplete = ({
         onChange={handleInputChange}
         onBlur={handleInputBlur}
         placeholder={placeholder}
-        className={`w-full px-5 py-4 rounded-xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:border-blue-400 transition-all duration-200 outline-none font-medium text-gray-700 placeholder:text-gray-300 ${className} ${(!isValidSelection && inputValue.trim() !== "") || error ? "border-red-500" : ""}`}
+        className={`w-full px-5 py-4 rounded-xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:border-blue-400 transition-all duration-200 outline-none font-medium text-gray-700 placeholder:text-gray-300 ${className} ${(hasError || error) ? "border-red-500" : ""}`}
         {...props}
       />
-      {((!isValidSelection && inputValue.trim() !== "") || error) && (
+      {(hasError || error) && (
         <div className="mt-1 text-xs text-red-500">
           {error || fallbackErrorMessage}
         </div>

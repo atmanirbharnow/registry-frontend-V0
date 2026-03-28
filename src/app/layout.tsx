@@ -4,17 +4,13 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://registryearthcarbon.org"),
   title: {
-    default: "Climate Asset Registry | Aggregate. Verify. Monetize.",
-    template: "%s | Climate Asset Registry",
+    default: "Earth Carbon Registry | Verified Carbon Actions",
+    template: "%s | Earth Carbon Registry",
   },
   description: "Register and verify carbon-reducing actions. Track CO₂e reduction and Atmanirbhar impact with verified digital certificates.",
   keywords: ["carbon registry", "climate action", "atmanirbhar", "carbon credits", "India", "sustainability", "CO2e", "low carbon"],
-  authors: [{ name: "Earth Green Foundation" }],
-  alternates: {
-    canonical: "./",
-  },
+  authors: [{ name: "Earth Carbon Foundation" }],
   openGraph: {
     type: "website",
     locale: "en_IN",

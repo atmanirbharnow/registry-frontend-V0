@@ -9,7 +9,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       {children}
-      <ToastContainer position='top-right' autoClose={3000} />
+      <ToastContainer position='top-center' autoClose={3000} />
     </AuthProvider>
   );
 }

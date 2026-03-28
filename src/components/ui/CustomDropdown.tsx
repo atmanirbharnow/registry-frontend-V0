@@ -5,10 +5,11 @@ import React, { useState, useRef, useEffect } from "react";
 export interface DropdownOption {
     value: string;
     label: string;
+    disabled?: boolean;
 }
 
 export interface CustomDropdownProps {
-    options: DropdownOption[];
+    options: readonly DropdownOption[];
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
@@ -85,7 +86,7 @@ export default function CustomDropdown({
                 onKeyDown={handleKeyDown}
                 className={`
                     flex items-center justify-between w-full
-                    border border-gray-100 bg-gray-50/50 hover:bg-white focus:bg-white focus:border-blue-400
+                    border border-slate-300 bg-white hover:border-blue-400 focus:border-blue-500
                     transition-all duration-200 outline-none font-medium
                     ${sizeClasses[size]}
                     ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
@@ -122,19 +123,29 @@ export default function CustomDropdown({
                                     key={option.value}
                                     role="option"
                                     aria-selected={isSelected}
-                                    onClick={() => {
+                                    aria-disabled={option.disabled}
+                                    onClick={(e) => {
+                                        if (option.disabled) {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            return;
+                                        }
                                         onChange(option.value);
                                         setIsOpen(false);
                                     }}
                                     className={`
-                                        px-4 py-2.5 flex items-center justify-between cursor-pointer
-                                        transition-colors duration-150 hover:bg-gray-50
-                                        ${isSelected ? "text-[rgb(32,38,130)] font-semibold bg-blue-50/30" : "text-gray-700"}
+                                        px-4 py-2.5 flex items-center justify-between
+                                        transition-colors duration-150
+                                        ${option.disabled ? "opacity-50 cursor-not-allowed bg-slate-50 text-slate-400" : "cursor-pointer hover:bg-gray-50 text-gray-700"}
+                                        ${isSelected && !option.disabled ? "text-[rgb(32,38,130)] font-semibold bg-blue-50/30" : ""}
                                         ${size === "sm" ? "text-xs px-3 py-2" : size === "lg" ? "text-base px-5" : "text-sm"}
                                     `}
                                 >
-                                    <span className="truncate pr-4">{option.label}</span>
-                                    {isSelected && (
+                                    <span className="truncate pr-4 flex items-center gap-2">
+                                        {option.label}
+                                        {option.disabled && <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded-md bg-white">Registered</span>}
+                                    </span>
+                                    {isSelected && !option.disabled && (
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="flex-shrink-0">
                                             <polyline points="20 6 9 17 4 12" />
                                         </svg>

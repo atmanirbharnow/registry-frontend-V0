@@ -69,8 +69,8 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
 
   if (actions.length === 0) {
     return (
-      <div className='bg-white/50 border-2 border-dashed border-gray-300 rounded-[2.5rem] p-20 flex flex-col items-center justify-center text-center mt-6'>
-        <h3 className='text-gray-500 font-semibold text-lg'>No actions yet</h3>
+      <div className='bg-white/50 border-2 border-dashed border-gray-300 rounded-3xl p-16 flex flex-col items-center justify-center text-center mt-6'>
+        <h3 className='text-gray-500 font-semibold text-base'>No actions yet</h3>
         <p className='text-gray-400 text-sm max-w-[500px] mt-1'>
           Start by adding your first action today.
         </p>
@@ -82,7 +82,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
     <>
       <div className='space-y-6 mt-6'>
         {/* Desktop Grid View */}
-        <div className='hidden md:block bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden'>
+        <div className='hidden md:block bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden'>
           <div className='min-w-full'>
             {/* Header */}
             <div className='grid grid-cols-[1.5fr_1fr_2.5fr_1fr_1fr] bg-gray-50/50 border-b border-gray-100/50'>
@@ -154,11 +154,11 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
           {currentItems.map((action) => (
             <div
               key={action.id}
-              className='bg-white rounded-[1.5rem] border border-gray-100 p-5 shadow-sm space-y-4'
+              className='bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4'
             >
               <div className='flex justify-between items-start'>
                 <div>
-                  <h3 className='font-semibold text-gray-800 text-lg'>
+                  <h3 className='font-semibold text-gray-800 text-base'>
                     {ACTION_LABELS[action.actionType] || action.actionType}
                   </h3>
                   <p className='text-xs text-gray-400 mt-1'>
@@ -204,7 +204,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
               : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
               }`}
           >
-            <span className='text-lg font-bold'>&lt;</span>
+            <span className='text-base font-bold'>&lt;</span>
           </button>
           <span className='text-sm font-semibold text-gray-600 min-w-fit'>
             Page {currentPage} of {totalPages}
@@ -217,7 +217,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
               : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
               }`}
           >
-            <span className='text-lg font-bold'>&gt;</span>
+            <span className='text-base font-bold'>&gt;</span>
           </button>
         </div>
 
@@ -229,7 +229,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
         />
       </div>
 
-      <h2 className='text-lg font-bold text-gray-800 mt-8'>Locations</h2>
+      <h2 className='text-base font-bold text-gray-800 mt-8'>Locations</h2>
       <GoogleMapVIew locations={actions} />
     </>
   );

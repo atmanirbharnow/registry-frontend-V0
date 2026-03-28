@@ -21,11 +21,11 @@ export interface PortfolioMetrics {
  * based on the verified actions in a user's portfolio.
  */
 export function calculatePortfolioMetrics(actions: Action[]): PortfolioMetrics {
-    // Only aggregate actions that have been verified by an admin
-    const verifiedActions = actions.filter(a => a.status === "verified");
+    // Aggregate actions that are verified OR pending (provisional feedback)
+    const activeActions = actions.filter(a => a.status === "verified" || a.status === "pending");
 
     const getPillarActions = (pillar: "energy" | "water" | "waste" | "other") =>
-        verifiedActions.filter(a => ACTION_PILLAR_MAP[a.actionType] === pillar);
+        activeActions.filter(a => ACTION_PILLAR_MAP[a.actionType] === pillar);
 
     const energyActions = getPillarActions("energy");
     const waterActions = getPillarActions("water");
@@ -67,19 +67,18 @@ export function calculatePortfolioMetrics(actions: Action[]): PortfolioMetrics {
         atmanirbharAvg: calculatePillarAvg(otherActions)
     };
 
-    // Client Requirement: Total Atmanirbhar % should represent the actual self-reliance.
-    // To prevent the score from being divided by 3 when a user lacks actions in a pillar,
-    // we only average across active pillars.
+    // Include other in active pillars count if it has actions
     let activePillars = 0;
     if (energy.actions.length > 0) activePillars++;
     if (water.actions.length > 0) activePillars++;
     if (waste.actions.length > 0) activePillars++;
+    if (other.actions.length > 0) activePillars++;
 
     const divisor = activePillars > 0 ? activePillars : 1;
-    const sumPillarAverages = energy.atmanirbharAvg + water.atmanirbharAvg + waste.atmanirbharAvg;
+    const sumPillarAverages = energy.atmanirbharAvg + water.atmanirbharAvg + waste.atmanirbharAvg + other.atmanirbharAvg;
     const totalAtmanirbharPercent = Math.round((sumPillarAverages / divisor) * 10) / 10;
 
-    // Client Requirement: Total tCO2e = Energy + Water + Waste (plus any 'other' actions like trees to avoid losing impact)
+    // Total tCO2e = sum of all pillars
     const totalTCO2eRaw = energy.tCO2e + water.tCO2e + waste.tCO2e + other.tCO2e;
     const totalTCO2e = Math.round(totalTCO2eRaw * 1000) / 1000;
 
