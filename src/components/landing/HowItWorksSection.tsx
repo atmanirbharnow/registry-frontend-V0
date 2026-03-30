@@ -81,7 +81,10 @@ export default function HowItWorksSection() {
                   <span className="relative z-10">{step.icon}</span>
                 </div>
                 
-                <div className="px-4 text-center">
+                <div className="relative px-4 text-center">
+                  <span className="absolute -top-12 left-1/2 -translate-x-1/2 text-[120px] font-black text-slate-100/50 -z-10 select-none pointer-events-none group-hover:text-[rgb(32,38,130)]/5 transition-colors duration-500">
+                    {step.number}
+                  </span>
                   <h3 className="text-xl font-black text-[rgb(32,38,130)] mb-3">{step.title}</h3>
                   <p className="text-sm text-[#414942] font-semibold leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
                     {step.description}

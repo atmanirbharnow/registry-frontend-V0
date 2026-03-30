@@ -17,7 +17,8 @@ export const useSignIn = () => {
   const handleSignIn = async () => {
     try {
       await loginWithGoogle();
-      // Redirect is handled by the useEffect above once loading is false
+      router.push("/profile");
+      // Redirect is handled by the handleSignIn and the useEffect above as fallback
     } catch (error) {
       console.error("Sign in failed:", error);
     }

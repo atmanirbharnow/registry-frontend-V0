@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import HeroSection from "@/components/landing/HeroSection";
-import LiveStatsBar from "@/components/landing/LiveStatsBar";
 import KPIGrid from "@/components/landing/KPIGrid";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
 import ScopeSection from "@/components/landing/ScopeSection";
@@ -32,7 +31,6 @@ export default function LandingPage() {
     <div className="flex flex-col w-full bg-[#f9faf5]">
       {/* Sections with unique IDs for scroll-spy and anchors */}
       <HeroSection />           {/* id="home" */}
-      <LiveStatsBar />          {/* (no anchor, follows hero) */}
       <KPIGrid />               {/* id="stats" */}
       <HowItWorksSection />     {/* id="how-it-works" */}
       <ScopeSection />          {/* id="scope" */}

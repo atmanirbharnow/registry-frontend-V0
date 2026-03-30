@@ -27,7 +27,7 @@ export default function LandingNavbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-16 flex items-center bg-[rgb(32,38,130)] shadow-lg shadow-blue-900/20`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-20 flex items-center bg-[rgb(32,38,130)] shadow-lg shadow-blue-900/20`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8 w-full flex items-center justify-between">
         {/* Logo */}

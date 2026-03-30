@@ -7,15 +7,15 @@ export default function HeroSection() {
   return (
     <section 
       id="home" 
-      className="relative min-h-screen flex items-center pt-24 pb-16 px-4 md:px-8 bg-[#f8fafc] overflow-hidden"
+      className="relative min-h-screen flex items-center pt-10 md:pt-16 pb-16 px-4 md:px-8 bg-[#f8fafc] overflow-hidden"
     >
       {/* Background Blob */}
       <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-[#bfdbfe] opacity-15 blur-3xl rounded-full" />
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative z-10">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
         
         {/* Left Side: Content */}
-        <div className="md:col-span-7 flex flex-col items-start gap-6">
+        <div className="md:col-span-7 flex flex-col items-start gap-4">
           <span className="text-xs font-bold uppercase tracking-widest text-[#414942]">
             Earth Carbon Foundation
           </span>
