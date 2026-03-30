@@ -1,5 +1,5 @@
 import { initializeApp, getApps, App, cert } from "firebase-admin/app";
-import { getFirestore } from "firebase-admin/firestore";
+import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 
 function getAdminApp(): App {
@@ -40,4 +40,5 @@ function getAdminApp(): App {
 const adminApp = getAdminApp();
 export const adminDb = getFirestore(adminApp, "asia-pacific");
 export const adminStorage = getStorage(adminApp);
+export const adminFieldValue = FieldValue;
 
