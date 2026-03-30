@@ -47,7 +47,16 @@ export default function Navbar() {
           href="/profile"
           className="flex items-center gap-3 no-underline group"
         >
-          <div className="font-black text-xl tracking-tighter text-white flex flex-col leading-none">
+          <div className="relative h-10 w-16 bg-white p-0.5 rounded-sm">
+            <Image
+              src="/earth carbon logo bw.jpg"
+              alt="Earth Carbon Registry Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <div className="font-black text-xl tracking-tighter text-white flex flex-col leading-none group-hover:opacity-80 transition-opacity">
             <span>Earth Carbon Registry</span>
           </div>
         </Link>

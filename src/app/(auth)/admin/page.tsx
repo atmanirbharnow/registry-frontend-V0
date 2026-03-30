@@ -4,17 +4,17 @@ import React, { useEffect, useState } from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import AdminActionTable from "@/components/AdminActionTable";
 import AdminUserTable from "@/components/AdminUserTable";
-import AdminSchoolTable from "@/components/AdminSchoolTable";
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { db } from "@/lib/firebaseConfig";
 
 export default function AdminPage() {
     const { profile, loading } = useUserProfile();
     const router = useRouter();
 
-    const [activeTab, setActiveTab] = useState<"actions" | "users" | "schools">("actions");
+    const [activeTab, setActiveTab] = useState<"actions" | "users">("actions");
 
     useEffect(() => {
         if (!loading && profile && profile.role !== "admin") {
@@ -22,6 +22,7 @@ export default function AdminPage() {
             router.replace("/profile");
         }
     }, [loading, profile, router]);
+
 
     if (loading) {
         return (
@@ -33,10 +34,11 @@ export default function AdminPage() {
 
     if (!profile || profile.role !== "admin") return null;
 
+
     return (
         <main className="min-h-[calc(100vh-82px)] bg-gray-50 px-4 sm:px-6 lg:px-8 py-6">
             <div className="w-full space-y-6">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-black text-gray-800 tracking-tight">
                             Admin Dashboard
@@ -46,51 +48,31 @@ export default function AdminPage() {
                         </p>
                     </div>
 
-                    <div className="flex w-full sm:w-fit p-1 bg-gray-200/60 rounded-xl">
-                        <button
-                            onClick={() => setActiveTab("actions")}
-                            className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "actions"
-                                ? "bg-white text-[rgb(32,38,130)] shadow-sm"
-                                : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
-                                }`}
-                        >
-                            Individuals
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("schools")}
-                            className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "schools"
-                                ? "bg-white text-[rgb(32,38,130)] shadow-sm"
-                                : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
-                                }`}
-                        >
-                            Schools/Education Institutes
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("users")}
-                            className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "users"
-                                ? "bg-white text-[rgb(32,38,130)] shadow-sm"
-                                : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
-                                }`}
-                        >
-                            Users
-                        </button>
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+
+                        <div className="flex w-full sm:w-fit p-1 bg-gray-200/60 rounded-xl">
+                            <button
+                                className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "actions"
+                                    ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                    : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+                                    }`}
+                            >
+                                Registry Actions
+                            </button>
+                            <button
+                                onClick={() => setActiveTab("users")}
+                                className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "users"
+                                    ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                    : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
+                                    }`}
+                            >
+                                Users
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {activeTab === "actions" && <AdminActionTable />}
-                {activeTab === "schools" && (
-                    <div className="space-y-6">
-                        <div className="flex justify-end">
-                            <Link 
-                                href="/school-register"
-                                className="bg-[rgb(32,38,130)] text-white px-6 py-3 rounded-xl font-black text-sm shadow-xl shadow-blue-900/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
-                            >
-                                <span>+ Register New School</span>
-                            </Link>
-                        </div>
-                        <AdminSchoolTable />
-                    </div>
-                )}
                 {activeTab === "users" && <AdminUserTable />}
             </div>
         </main>
