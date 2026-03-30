@@ -105,7 +105,16 @@ export async function POST(request: NextRequest) {
         }
 
         if (hasAdminCredentials) {
+            const { adminDb, adminFieldValue } = await import("@/lib/firebaseAdmin");
             await verifyActionAdmin(actionId, updateData);
+
+            // Increment public stats if verified
+            if (status === "verified") {
+                await adminDb.collection("public_stats").doc("totals").update({
+                    totalVerifiedActions: adminFieldValue.increment(1),
+                    totalCO2eTonnes: adminFieldValue.increment(Number(co2eTonnes))
+                });
+            }
         } else {
             await verifyActionREST(actionId, updateData, adminIdToken);
         }
