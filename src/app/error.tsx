@@ -9,7 +9,7 @@ export default function GlobalError({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
-    //deploy feat/dev
+
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
             <div className="max-w-md w-full text-center space-y-6">
