@@ -11,7 +11,7 @@ interface LocationData {
   lat?: number;
   lng?: number;
 }
-//deployed web-app
+//deployed web
 
 interface ActionModalProps {
   isOpen: boolean;
