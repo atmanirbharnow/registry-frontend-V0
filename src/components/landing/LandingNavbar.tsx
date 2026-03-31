@@ -32,12 +32,12 @@ export default function LandingNavbar() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 w-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group no-underline">
-          <div className="relative h-10 w-16 bg-white p-0.5 rounded-sm shadow-sm">
+          <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-sm shadow-sm">
             <Image
               src="/earth carbon logo bw.jpg"
               alt="Logo"
               fill
-              className="object-contain"
+              className="object-cover"
               priority
             />
           </div>

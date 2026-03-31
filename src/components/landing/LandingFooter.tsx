@@ -12,12 +12,12 @@ export default function LandingFooter() {
           {/* Brand */}
           <div className="flex flex-col gap-6">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative h-10 w-16 bg-white p-0.5 rounded-sm">
+              <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-sm">
                 <Image
                   src="/earth carbon logo bw.jpg"
                   alt="Earth Carbon Registry Logo"
                   fill
-                  className="object-contain"
+                  className="object-cover"
                 />
               </div>
               <span className="text-xl font-black text-white tracking-tight group-hover:opacity-80 transition-opacity">

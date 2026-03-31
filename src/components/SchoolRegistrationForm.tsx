@@ -23,6 +23,7 @@ import ImpactSummaryStep from "./ImpactSummaryStep";
 import Card from "./ui/Card";
 import PhotoUploadSection from "./forms/PhotoUploadSection";
 import LocationPickerSection from "./forms/LocationPickerSection";
+import UnifiedAddressSection from "./forms/UnifiedAddressSection";
 
 declare global {
     interface Window {
@@ -423,7 +424,7 @@ export default function SchoolRegistrationForm() {
 
                             <div className="md:col-span-2 mt-6">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Energy Usage (Monthly)
+                                    Energy Usage (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
@@ -434,7 +435,7 @@ export default function SchoolRegistrationForm() {
 
                             <div className="md:col-span-2 mt-4">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Water Usage (Monthly)
+                                    Water Usage (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Municipal Intake (AMC) (Liters)" name="baselineWaterMunicipal" type="number" formik={formik} />
@@ -445,7 +446,7 @@ export default function SchoolRegistrationForm() {
 
                             <div className="md:col-span-2 mt-4">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Waste Generated (Monthly)
+                                    Waste Generated (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
@@ -565,7 +566,20 @@ export default function SchoolRegistrationForm() {
                                         <InputField label="State" name="state" type="text" formik={formik} placeholder="Auto-filled" disabled className="bg-slate-100/80 !border-slate-200" />
                                         <InputField label="City/District" name="city" type="text" formik={formik} placeholder="Auto-filled" disabled className="bg-slate-100/80 !border-slate-200" />
                                         <div className="md:col-span-2">
-                                            <InputField label="Full Address" name="address" type="text" formik={formik} placeholder="Street, landmark, etc." />
+                                            <UnifiedAddressSection
+                                                label="Full Address (Google Search / GPS Recommended)"
+                                                isIndividual={false}
+                                                value={formik.values.address}
+                                                onChange={(val) => formik.setFieldValue("address", val)}
+                                                onLocationSelect={(loc) => {
+                                                    formik.setFieldValue("address", loc.address);
+                                                    if (loc.lat) formik.setFieldValue("lat", loc.lat);
+                                                    if (loc.lng) formik.setFieldValue("lng", loc.lng);
+                                                }}
+                                                error={formik.touched.address ? (formik.errors.address as string) : undefined}
+                                                touched={formik.touched.address}
+                                                placeholder="Street, landmark, or search school location..."
+                                            />
                                         </div>
                                     </div>
                                 </div>

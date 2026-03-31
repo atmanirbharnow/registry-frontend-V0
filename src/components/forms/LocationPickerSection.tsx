@@ -41,7 +41,7 @@ export default function LocationPickerSection({
 
                 try {
                     const response = await fetch(
-                        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${gpsLat},${gpsLng}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+                        `/api/google/geocode?lat=${gpsLat}&lng=${gpsLng}`
                     );
                     const data = await response.json();
                     if (data.results?.[0]?.formatted_address) {
