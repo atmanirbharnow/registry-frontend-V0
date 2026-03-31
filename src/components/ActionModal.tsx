@@ -11,6 +11,7 @@ interface LocationData {
   lat?: number;
   lng?: number;
 }
+//deployed web-app
 
 interface ActionModalProps {
   isOpen: boolean;
@@ -100,8 +101,8 @@ const ActionModal: React.FC<ActionModalProps> = ({
                   name='quantity'
                   type='number'
                   className={`w-full px-5 py-4 pr-32 rounded-xl border bg-gray-50/50 focus:bg-white transition-all duration-200 outline-none font-medium text-gray-700 placeholder:text-gray-300 ${formik.touched.quantity && formik.errors.quantity
-                      ? "border-red-400 focus:border-red-400"
-                      : "border-gray-100 focus:border-blue-400"
+                    ? "border-red-400 focus:border-red-400"
+                    : "border-gray-100 focus:border-blue-400"
                     }`}
                   value={formik.values.quantity}
                   onChange={formik.handleChange}
@@ -151,8 +152,8 @@ const ActionModal: React.FC<ActionModalProps> = ({
                 type='submit'
                 disabled={isSubmitting}
                 className={`py-3 px-6 rounded-xl font-semibold text-white shadow-sm transition-all duration-200 text-sm flex items-center justify-center gap-2 ${isSubmitting
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[rgb(32,38,130)] hover:bg-[rgb(25,30,110)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[rgb(32,38,130)] hover:bg-[rgb(25,30,110)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                   }`}
               >
                 {isSubmitting ? (
