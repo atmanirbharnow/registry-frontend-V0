@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const input = searchParams.get("input");
+        const input = searchParams.get("input")?.trim();
         const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
         if (!input || !apiKey) {
@@ -20,16 +20,21 @@ export async function GET(request: NextRequest) {
             next: { revalidate: 3600 } // Cache for 1 hour
         });
 
-        if (!res.ok) {
-            throw new Error(`Google API responded with status: ${res.status}`);
+        const data = await res.json();
+
+        if (!res.ok || data.status === "REQUEST_DENIED" || data.status === "INVALID_REQUEST") {
+            const googleError = data.error_message || data.status || "Unknown Google API error";
+            return NextResponse.json(
+                { error: "Google API Error", details: googleError, googleStatus: data.status },
+                { status: res.status === 200 ? 400 : res.status }
+            );
         }
 
-        const data = await res.json();
         return NextResponse.json(data);
     } catch (error: any) {
         console.error("Places proxy error:", error);
         return NextResponse.json(
-            { error: "Failed to fetch suggestions", details: error.message },
+            { error: "Internal Server Error", details: error.message },
             { status: 500 }
         );
     }

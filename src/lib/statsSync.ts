@@ -8,8 +8,8 @@ import { db } from "./firebaseConfig";
 export async function syncPlatformStats(adminUid: string) {
   // 1. Fetch Registered Actions (Individual + School)
   const actionsSnap = await getDocs(collection(db, "actions"));
-  const schoolActionsSnap = await getDocs(collection(db, "schoolActions"));
-  const totalRegisteredActions = actionsSnap.size + schoolActionsSnap.size;
+  const schoolsSnap = await getDocs(collection(db, "schools"));
+  const totalRegisteredActions = actionsSnap.size + schoolsSnap.size;
 
   // 2. Fetch Verified Actions and Sum CO2e
   let totalVerifiedActions = 0;
@@ -23,11 +23,13 @@ export async function syncPlatformStats(adminUid: string) {
     }
   });
 
-  schoolActionsSnap.forEach(docSnap => {
+  schoolsSnap.forEach(docSnap => {
     const data = docSnap.data();
     if (data.status === "verified" || data.status === "Verified") {
       totalVerifiedActions++;
-      totalCO2eKg += data.co2eKg || (data.actionImpactTCO2e * 1000) || 0;
+      // Schools often store as tCO2e, so we convert to Kg for standard summation
+      const schoolCo2Kg = data.co2eKg || (data.tco2e_annual ? data.tco2e_annual * 1000 : 0) || (data.actionImpactTCO2e * 1000) || 0;
+      totalCO2eKg += schoolCo2Kg;
     }
   });
 

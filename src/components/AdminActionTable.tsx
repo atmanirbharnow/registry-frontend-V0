@@ -567,6 +567,24 @@ export default function AdminActionTable() {
                         <span>+ Register Action</span>
                     </Link>
                     <button
+                        onClick={async () => {
+                            if (!user?.uid) return;
+                            const t = toast.loading("Syncing platform stats...");
+                            try {
+                                await syncPlatformStats(user.uid);
+                                toast.update(t, { render: "Stats synced successfully!", type: "success", isLoading: false, autoClose: 3000 });
+                            } catch (err) {
+                                toast.update(t, { render: "Sync failed", type: "error", isLoading: false, autoClose: 3000 });
+                            }
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-100 bg-transparent text-green-600 hover:bg-green-50 transition-colors text-sm font-medium"
+                    >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+                        </svg>
+                        Sync Dashboard
+                    </button>
+                    <button
                         onClick={handleExportCSV}
                         className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-100 bg-transparent text-[rgb(32,38,130)] hover:bg-[rgba(32,38,130,0.05)] transition-colors text-sm font-medium"
                     >
