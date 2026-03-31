@@ -17,6 +17,7 @@ import Spinner from "./ui/Spinner";
 import SchoolAutocomplete from "./SchoolAutocomplete";
 
 import LocationAutocomplete from "./LocationAutocomplete";
+import UnifiedAddressSection from "./forms/UnifiedAddressSection";
 
 interface ProfileSetupProps {
     uid: string;
@@ -366,23 +367,19 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                                         <Input label="Phone Number" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
-                                                            Full Address {formData.institutionType !== 'Individual' && '/ Location (Google Search)'}
-                                                        </label>
-                                                        <LocationAutocomplete
-                                                            disableValidation={formData.institutionType === 'Individual'}
+                                                        <UnifiedAddressSection
+                                                            label={`Full Address ${formData.institutionType !== 'Individual' ? '/ Location (Google Search)' : ''}`}
+                                                            isIndividual={formData.institutionType === 'Individual'}
                                                             value={formData.address}
-                                                            onChange={(e) => handleChange("address", e.target.value)}
-                                                            onPlaceSelect={(loc) => {
+                                                            onChange={(val) => handleChange("address", val)}
+                                                            onLocationSelect={(loc) => {
                                                                 handleChange("address", loc.address);
                                                                 if (loc.lat) handleChange("lat", loc.lat);
                                                                 if (loc.lng) handleChange("lng", loc.lng);
                                                             }}
                                                             placeholder={formData.institutionType === 'Individual' ? "Enter your full address..." : "Search for your full building/street address..."}
-                                                            className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500"
+                                                            className="w-full"
                                                         />
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

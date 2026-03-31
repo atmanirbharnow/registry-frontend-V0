@@ -194,7 +194,7 @@ export default function RegisterActionForm() {
             // Organisation Details
             entityType: "",
             sector: "",
-            reportingYear: "2026",
+            reportingYear: "2025",
             beneficiariesCount: "",
 
             // Baseline Usage (Monthly)
@@ -424,13 +424,13 @@ export default function RegisterActionForm() {
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField label="Number of Beneficiaries" name="beneficiariesCount" type="number" formik={formik} placeholder="e.g. 1 for self, 4 for family" />
-                                <DropdownField label="Reporting Year" name="reportingYear" options={[{ value: "2024", label: "2024" }, { value: "2025", label: "2025" }, { value: "2026", label: "2026" }, { value: "2027", label: "2027" }, { value: "2028", label: "2028" }]} formik={formik} />
+                                <DropdownField label="Reporting Year" name="reportingYear" options={[{ value: "2018", label: "2018" }, { value: "2019", label: "2019" }, { value: "2020", label: "2020" }, { value: "2021", label: "2021" }, { value: "2022", label: "2022" }, { value: "2023", label: "2023" }, { value: "2024", label: "2024" }, { value: "2025", label: "2025" }]} formik={formik} />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                        Energy Usage (Monthly)
+                                        Energy Usage (Yearly)
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
                                         <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
@@ -441,7 +441,7 @@ export default function RegisterActionForm() {
 
                                 <div className="md:col-span-2 mt-4">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                        Water Usage (Monthly)
+                                        Water Usage (Yearly)
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
                                         <InputField label="Municipal (AMC) (L)" name="baselineWaterMunicipal" type="number" formik={formik} />
@@ -452,7 +452,7 @@ export default function RegisterActionForm() {
 
                                 <div className="md:col-span-2 mt-4">
                                     <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                        Waste Generated (Monthly)
+                                        Waste Generated (Yearly)
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
                                         <InputField label="Organic (kg)" name="baselineWasteOrganic" type="number" formik={formik} />

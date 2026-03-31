@@ -13,12 +13,12 @@ export default function PublicHeader() {
     <header className='w-full bg-[rgb(32,38,130)] text-white relative z-50'>
       <div className='max-w-6xl mx-auto px-4 py-3 md:py-4 flex items-center justify-between'>
         <Link href="/" className="flex items-center gap-3 group no-underline">
-          <div className="relative h-9 w-14 bg-white p-0.5 rounded-sm shadow-sm group-hover:scale-105 transition-transform">
+          <div className="relative h-9 w-[54px] bg-white overflow-hidden rounded-sm shadow-sm group-hover:scale-105 transition-transform">
             <Image
               src="/earth carbon logo bw.jpg"
               alt="Logo"
               fill
-              className="object-contain"
+              className="object-cover"
               priority
             />
           </div>

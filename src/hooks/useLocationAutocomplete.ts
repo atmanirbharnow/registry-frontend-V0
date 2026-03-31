@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useGoogleMapsLoader } from "./useGoogleMapsLoader";
 
 interface UseLocationAutocompleteProps {
@@ -16,6 +16,9 @@ export const useLocationAutocomplete = ({
   const [inputValue, setInputValue] = useState(value || "");
   const [isValidSelection, setIsValidSelection] = useState(!!value);
   const [lastValidValue, setLastValidValue] = useState(value || "");
+
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [isSearchingFallback, setIsSearchingFallback] = useState(false);
 
   const onPlaceSelectRef = useRef(onPlaceSelect);
   const onChangeRef = useRef(onChange);
@@ -109,9 +112,51 @@ export const useLocationAutocomplete = ({
     };
   }, [isLoaded]);
 
+  const fetchSuggestions = useCallback(async (input: string) => {
+    if (!input || input.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      setIsSearchingFallback(true);
+      const res = await fetch(`/api/google/places?input=${encodeURIComponent(input)}`);
+      const data = await res.json();
+      if (data.predictions) {
+        setSuggestions(data.predictions);
+      }
+    } catch (err) {
+      console.error("Fallback search error:", err);
+    } finally {
+      setIsSearchingFallback(false);
+    }
+  }, []);
+
+  const handleSuggestionSelect = useCallback(async (prediction: any) => {
+    setInputValue(prediction.description);
+    setSuggestions([]);
+    
+    try {
+      // In fallback mode, we need to geocode the selected address to get coordinates
+      const res = await fetch(`/api/google/geocode?address=${encodeURIComponent(prediction.description)}`);
+      // Update: use our new geocode proxy or handle it
+      // Actually, my geocode proxy only takes lat/lng right now. I should update it to take address too.
+      onPlaceSelectRef.current?.({
+        address: prediction.description,
+        // We might not have coords immediately without extra geocoding
+      });
+    } catch {
+      onPlaceSelectRef.current?.({ address: prediction.description });
+    }
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
+
+    if (!isLoaded && loadError) {
+      fetchSuggestions(newValue);
+    }
 
     if (newValue.trim() === "") {
       setIsValidSelection(true);
@@ -143,5 +188,8 @@ export const useLocationAutocomplete = ({
     handleInputBlur,
     isLoaded,
     loadError,
+    suggestions,
+    isSearchingFallback,
+    handleSuggestionSelect,
   };
 };

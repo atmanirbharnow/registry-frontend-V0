@@ -133,11 +133,7 @@ export default function ImpactSummaryStep({
                         </h3>
                     </div>
                     <div className="p-5">
-                        {isSchool ? (
-                            <SchoolDetailsGrid values={formValues} />
-                        ) : (
-                            <IndividualDetailsGrid values={formValues} />
-                        )}
+                        <UnifiedDetailsGrid isSchool={isSchool} values={formValues} userProfile={userProfile} />
                     </div>
                 </div>
             </div>
@@ -241,32 +237,79 @@ function PersonalDetailsGrid({ userProfile }: { userProfile: any }) {
     return <DetailTable rows={rows} />;
 }
 
-function IndividualDetailsGrid({ values }: { values: Record<string, any> }) {
-    const actionLabel = ACTION_LABELS[values.action_type] || values.actionType || "—";
-    const rows: [string, string][] = [
-        ["Action Type", actionLabel],
-        ["Action Capacity", `${values.actionQuantity || values.electricity_kWh_year || values.quantity || 0} units`],
-        ["Location", values.address || "—"],
-        ["Baseline Energy", `${Number(values.baselineEnergyGrid || 0) + Number(values.baselineEnergyDiesel || 0) + Number(values.baselineEnergySolar || 0)} kWh/mo`],
-        ["Baseline Water", `${Number(values.baselineWaterMunicipal || 0) + Number(values.baselineWaterRain || 0) + Number(values.baselineWaterWaste || 0)} L/mo`],
-        ["Baseline Waste", `${Number(values.baselineWasteOrganic || 0) + Number(values.baselineWasteInorganic || 0) + Number(values.baselineWasteHazardous || 0)} kg/mo`],
-    ];
+function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boolean; values: Record<string, any>; userProfile?: any }) {
+    // Collect categories
+    const categories = [];
+    const hasEnergy = Number(values.baselineEnergyGrid || 0) + Number(values.baselineEnergyDiesel || 0) + Number(values.baselineEnergySolar || 0) > 0;
+    const hasWater = Number(values.baselineWaterMunicipal || 0) + Number(values.baselineWaterRain || 0) + Number(values.baselineWaterWaste || 0) > 0;
+    const hasWaste = Number(values.baselineWasteOrganic || 0) + Number(values.baselineWasteInorganic || 0) + Number(values.baselineWasteHazardous || 0) > 0;
+    if (hasEnergy) categories.push("Energy");
+    if (hasWater) categories.push("Water");
+    if (hasWaste) categories.push("Waste");
 
-    return <DetailTable rows={rows} />;
+    const reportingYear = values.reporting_year || values.reportingYear || "—";
+    const beneficiaryLabel = isSchool ? "Students/Staff" : "Number of Beneficiaries";
+    const beneficiaryValue = values.students_count || values.beneficiariesCount || "—";
+
+    // Actions List
+    const actionTypes = values.actionTypes || (values.action_type || values.actionType ? [values.action_type || values.actionType] : []);
+    
+    return (
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4">
+                <DetailRow label={isSchool ? "School / Org" : "Contact Person"} value={values.schoolName || values.actorName || userProfile?.displayName || "—"} />
+                <DetailRow label="Location" value={values.address || userProfile?.address || "—"} />
+                <DetailRow label={beneficiaryLabel} value={beneficiaryValue} />
+                <DetailRow label="Reporting Duration" value={`Year ${reportingYear}`} />
+                <DetailRow label="Baseline Categories Provided" value={categories.length > 0 ? categories.join(", ") : "No Baseline Data provided"} />
+            </div>
+
+            <div className="pt-4 border-t border-gray-100">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Actions Registered</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {actionTypes.length > 0 ? (
+                        actionTypes.map((type: string, idx: number) => {
+                            const label = ACTION_LABELS[type] || type;
+                            const details = values.actionDetails?.[type];
+                            const date = details?.commissioningDate || values.commissioningDate || "—";
+                            const quantity = details?.quantity || values.actionQuantity || values.quantity || "";
+                            const unit = details?.unit || values.unit || "";
+                            
+                            return (
+                                <div key={idx} className="flex flex-col p-3 bg-slate-50 rounded-xl border border-slate-100 transition-all hover:border-[rgb(32,38,130)]/30 group">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <span className="text-xs font-black text-slate-800 uppercase tracking-tight group-hover:text-[rgb(32,38,130)] transition-colors">
+                                            {label}
+                                        </span>
+                                        {quantity && (
+                                            <span className="text-[10px] font-bold text-[rgb(32,38,130)] bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                                                {quantity} {unit}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-bold italic">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                                        Commissioned: {date}
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="text-xs text-gray-400 font-medium italic py-2">No actions registered</div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
 
-function SchoolDetailsGrid({ values }: { values: Record<string, any> }) {
-    const rows: [string, string][] = [
-        ["School / Org", values.schoolName || values.actorName || "—"],
-        ["Location", values.address || "—"],
-        ["Students/Staff", values.students_count || "—"],
-        ["Baseline Energy", `${Number(values.baselineEnergyGrid || 0) + Number(values.baselineEnergyDiesel || 0) + Number(values.baselineEnergySolar || 0)} kWh/mo`],
-        ["Baseline Water", `${Number(values.baselineWaterMunicipal || 0) + Number(values.baselineWaterRain || 0) + Number(values.baselineWaterWaste || 0)} L/mo`],
-        ["Baseline Waste", `${Number(values.baselineWasteOrganic || 0) + Number(values.baselineWasteInorganic || 0) + Number(values.baselineWasteHazardous || 0)} kg/mo`],
-        ["Registered Action", ACTION_LABELS[values.action_type] || values.action_type || "—"],
-    ];
-
-    return <DetailTable rows={rows} />;
+function DetailRow({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="flex flex-col py-1 border-b border-gray-50 last:border-0 sm:last:border-b">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{label}</span>
+            <span className="text-sm font-black text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
+        </div>
+    );
 }
 
 function DetailTable({ rows }: { rows: [string, string][] }) {
