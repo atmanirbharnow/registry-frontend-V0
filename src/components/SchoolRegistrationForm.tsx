@@ -423,7 +423,7 @@ export default function SchoolRegistrationForm() {
 
                             <div className="md:col-span-2 mt-6">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Energy Usage (Monthly)
+                                    Energy Usage (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
@@ -434,7 +434,7 @@ export default function SchoolRegistrationForm() {
 
                             <div className="md:col-span-2 mt-4">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Water Usage (Monthly)
+                                    Water Usage (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Municipal Intake (AMC) (Liters)" name="baselineWaterMunicipal" type="number" formik={formik} />
@@ -445,7 +445,7 @@ export default function SchoolRegistrationForm() {
 
                             <div className="md:col-span-2 mt-4">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
-                                    Waste Generated (Monthly)
+                                    Waste Generated (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
