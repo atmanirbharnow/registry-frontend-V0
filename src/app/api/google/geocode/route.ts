@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
+        const { searchParams } = request.nextUrl;
         const lat = searchParams.get("lat")?.trim();
         const lng = searchParams.get("lng")?.trim();
         const address = searchParams.get("address")?.trim();
@@ -16,15 +16,18 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Missing API Key" }, { status: 500 });
         }
 
-        let url = `https://maps.googleapis.com/maps/api/geocode/json?key=${apiKey}`;
+        const googleQuery = new URLSearchParams({ key: apiKey });
+        
         if (address) {
-            url += `&address=${encodeURIComponent(address)}`;
+            googleQuery.set("address", address);
         } else if (lat && lng) {
-            url += `&latlng=${lat},${lng}`;
+            googleQuery.set("latlng", `${lat},${lng}`);
         } else {
             return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
         }
 
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?${googleQuery.toString()}`;
+        
         const res = await fetch(url, {
             next: { revalidate: 3600 } // Cache for 1 hour
         });
@@ -33,6 +36,7 @@ export async function GET(request: NextRequest) {
 
         if (!res.ok || data.status === "REQUEST_DENIED" || data.status === "INVALID_REQUEST") {
             const googleError = data.error_message || data.status || "Unknown Google API error";
+            console.error("Google Geocode API Error:", googleError, "Full Status:", data.status);
             return NextResponse.json(
                 { error: "Google API Error", details: googleError, googleStatus: data.status },
                 { status: res.status === 200 ? 400 : res.status }
