@@ -52,6 +52,7 @@ export default function AdminPage() {
 
                         <div className="flex w-full sm:w-fit p-1 bg-gray-200/60 rounded-xl">
                             <button
+                                onClick={() => setActiveTab("actions")}
                                 className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "actions"
                                     ? "bg-white text-[rgb(32,38,130)] shadow-sm"
                                     : "text-gray-500 hover:text-gray-700 hover:bg-white/50"

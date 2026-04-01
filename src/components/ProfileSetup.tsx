@@ -14,10 +14,11 @@ import { UserProfile } from "@/types/user";
 import { usePincodeLookup } from "@/hooks/usePincodeLookup";
 import Spinner from "./ui/Spinner";
 
-import SchoolAutocomplete from "./SchoolAutocomplete";
+
 
 import LocationAutocomplete from "./LocationAutocomplete";
 import UnifiedAddressSection from "./forms/UnifiedAddressSection";
+import UnifiedSchoolSection from "./forms/UnifiedSchoolSection";
 
 interface ProfileSetupProps {
     uid: string;
@@ -310,24 +311,22 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                         <div className="md:col-span-2 p-8 bg-slate-50/50 rounded-2xl border-2 border-slate-200">
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                                 {formData.institutionType === 'School' ? (
-                                                    <div className="md:col-span-2 space-y-2">
-                                                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
-                                                            {getNameLabel()}
-                                                        </label>
-                                                        <SchoolAutocomplete
-                                                            value={formData.displayName}
-                                                            onPlaceSelect={(loc) => {
-                                                                handleChange("displayName", loc.schoolName);
-                                                                handleChange("address", loc.address);
-                                                                handleChange("city", loc.city);
-                                                                handleChange("pincode", loc.pincode);
-                                                                handleChange("lat", loc.lat);
-                                                                handleChange("lng", loc.lng);
-                                                                handleChange("place_id", loc.place_id);
-                                                            }}
-                                                            onManualEntry={(name) => handleChange("displayName", name)}
-                                                        />
-                                                    </div>
+                                                    <UnifiedSchoolSection
+                                                        label={getNameLabel()}
+                                                        value={formData.displayName}
+                                                        onChange={(name) => handleChange("displayName", name)}
+                                                        onPlaceSelect={(loc) => {
+                                                            handleChange("displayName", loc.schoolName);
+                                                            handleChange("address", loc.address);
+                                                            handleChange("city", loc.city);
+                                                            handleChange("pincode", loc.pincode);
+                                                            handleChange("lat", loc.lat);
+                                                            handleChange("lng", loc.lng);
+                                                            handleChange("place_id", loc.place_id);
+                                                        }}
+                                                        placeholder={getNameLabel()}
+                                                        className="md:col-span-2"
+                                                    />
                                                 ) : (
                                                     <div className="md:col-span-2">
                                                         <Input

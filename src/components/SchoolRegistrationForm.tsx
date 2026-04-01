@@ -200,7 +200,7 @@ export default function SchoolRegistrationForm() {
                 // Feature 2: Final Duplicate Check
                 const dupCheck = await checkDuplicateSchool(values.place_id, values.schoolName, values.lat || 0, values.lng || 0, auth.currentUser?.uid, values.action_type);
                 if (dupCheck.isDuplicate && dupCheck.type === 'BLOCK') {
-                    toast.error(`This school is already registered as ${dupCheck.registryId}. View profile: /verify/school/${dupCheck.registryId}`, { autoClose: 10000 });
+                    toast.error(`This school is already registered as ${dupCheck.registryId}. View profile: /verify/${dupCheck.registryId}`, { autoClose: 10000 });
                     setSubmitting(false);
                     return;
                 }
