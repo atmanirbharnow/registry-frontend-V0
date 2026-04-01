@@ -85,7 +85,7 @@ export default function UserSchoolTable() {
                             <tr key={school.id} className="hover:bg-gray-50/50 transition-colors">
                                 <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[rgb(32,38,130)]">
                                     {school.registryId ? (
-                                        <a href={`/verify/school/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                        <a href={`/verify/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                                             {school.registryId}
                                         </a>
                                     ) : (

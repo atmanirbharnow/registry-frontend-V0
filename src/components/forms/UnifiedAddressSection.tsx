@@ -86,11 +86,11 @@ export default function UnifiedAddressSection({
 
     return (
         <div className={`space-y-4 ${className}`}>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                     {label}
                 </label>
-                <div className="flex p-1 bg-slate-100 rounded-xl">
+                <div className="flex p-1 bg-slate-100 rounded-xl w-fit self-end sm:self-auto">
                     <button
                         type="button"
                         onClick={() => setMode("search")}

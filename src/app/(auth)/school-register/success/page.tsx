@@ -7,8 +7,9 @@ import { School } from "@/types/school";
 import Button from "@/components/ui/Button";
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
+import { APP_URL } from "@/lib/constants";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
+
 
 export default function SchoolRegisterSuccessPage() {
     const searchParams = useSearchParams();
@@ -58,7 +59,7 @@ export default function SchoolRegisterSuccessPage() {
         );
     }
 
-    const verifyUrl = `${APP_URL}/verify/school/${school.registryId}`;
+    const verifyUrl = `${APP_URL}/verify/${school.registryId}`;
     const tco2e = school.tco2e_annual != null ? school.tco2e_annual.toFixed(2) : "0.00";
 
     return (

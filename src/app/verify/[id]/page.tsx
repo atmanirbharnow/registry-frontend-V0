@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { getActionByRegistryId, getActionsByUserId } from "@/lib/firestoreService";
 import { getSchoolByRegistryId } from "@/lib/schoolFirestoreService";
-import { ACTION_LABELS, ACTION_TYPES } from "@/lib/constants";
+import { ACTION_LABELS, ACTION_TYPES, APP_URL } from "@/lib/constants";
 import { Action } from "@/types/action";
 import { School } from "@/types/school";
 import { calculatePortfolioMetrics, PortfolioMetrics } from "@/lib/portfolioCalculator";
@@ -17,7 +17,7 @@ import Link from "next/link";
 import ImpactCertificate, { Highlight } from "@/components/ImpactCertificate";
 import ShareButtons from "@/components/ShareButtons";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
+
 
 export default function VerifyPage() {
     const params = useParams();
@@ -148,6 +148,17 @@ export default function VerifyPage() {
             const energyConsumed = ((school!.baselineEnergyGrid || 0) + (school!.baselineEnergyDiesel || 0) + (school!.baselineEnergySolar || 0)) * 12;
             const finalEnergy = energyConsumed || school!.electricity_kWh_year || 0;
             h.push({ icon: "", text: `${finalEnergy} kWh Energy consumed / yr` });
+            
+            let wasteDiverted = 0;
+            const type = (school!.action_type || school!.action_id || "").toLowerCase();
+            if (type.includes("waste") || type.includes("compost") || type.includes("biogas") || type.includes("recycl")) {
+                wasteDiverted = (school! as any).actionQuantity || 0;
+            } else {
+                wasteDiverted = school!.waste_diverted_kg || 0;
+            }
+            if (wasteDiverted > 0) {
+                h.push({ icon: "", text: `${wasteDiverted} kg Waste diverted from landfill` });
+            }
             return h;
         })()
     };
