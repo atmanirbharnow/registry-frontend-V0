@@ -28,10 +28,11 @@ interface ProfileSetupProps {
 const INSTITUTION_TYPES = [
     { value: "Individual", label: "Individual Actor" },
     { value: "School", label: "Educational Institution (School/College)" },
-    { value: "MSME", label: "MSME (Micro, Small & Medium Enterprise)" },
-    { value: "Commercial", label: "Commercial (Office/Retail/Hotel)" },
-    { value: "NGO", label: "Non-Profit Organization (NGO)" },
-    { value: "Government", label: "Government Body" },
+    // { value: "MSME", label: "MSME (Micro, Small & Medium Enterprise)" },
+    { value: "Organization", label: "Organization" },
+    // { value: "Commercial", label: "Commercial (Office/Retail/Hotel)" },
+    // { value: "NGO", label: "Non-Profit Organization (NGO)" },
+    // { value: "Government", label: "Government Body" },
 ] as const;
 
 const BHARAT_STATES = [
@@ -235,8 +236,10 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
     const handleProceed = () => {
         if (formData.institutionType === "School") {
             router.push("/school-register");
-        } else {
+        } else if (formData.institutionType === "Individual") {
             router.push("/register/action");
+        } else {
+            router.push("/enterprise-contact");
         }
     };
 
@@ -261,7 +264,9 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                 onClick={handleProceed}
                                 className="bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)] !px-8 !py-4 !rounded-xl shadow-lg transform hover:-translate-y-1 transition-all"
                             >
-                                Proceed to Register Action <span>&rarr;</span>
+                                {["School", "Individual"].includes(formData.institutionType)
+                                    ? "Proceed to Register Action"
+                                    : "Contact Us for Next Steps"} <span>&rarr;</span>
                             </Button>
                         )}
                     </div>
@@ -367,19 +372,19 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                                         <Input label="Phone Number" value={formData.phone} onChange={(e) => handleChange("phone", e.target.value)} className="!py-4 !rounded-xl !border-slate-300 focus:!border-blue-500" />
                                                     </div>
 
-                                                        <UnifiedAddressSection
-                                                            label={`Full Address ${formData.institutionType !== 'Individual' ? '/ Location (Google Search)' : ''}`}
-                                                            isIndividual={formData.institutionType === 'Individual'}
-                                                            value={formData.address}
-                                                            onChange={(val) => handleChange("address", val)}
-                                                            onLocationSelect={(loc) => {
-                                                                handleChange("address", loc.address);
-                                                                if (loc.lat) handleChange("lat", loc.lat);
-                                                                if (loc.lng) handleChange("lng", loc.lng);
-                                                            }}
-                                                            placeholder={formData.institutionType === 'Individual' ? "Enter your full address..." : "Search for your full building/street address..."}
-                                                            className="w-full"
-                                                        />
+                                                    <UnifiedAddressSection
+                                                        label={`Full Address ${formData.institutionType !== 'Individual' ? '/ Location (Google Search)' : ''}`}
+                                                        isIndividual={formData.institutionType === 'Individual'}
+                                                        value={formData.address}
+                                                        onChange={(val) => handleChange("address", val)}
+                                                        onLocationSelect={(loc) => {
+                                                            handleChange("address", loc.address);
+                                                            if (loc.lat) handleChange("lat", loc.lat);
+                                                            if (loc.lng) handleChange("lng", loc.lng);
+                                                        }}
+                                                        placeholder={formData.institutionType === 'Individual' ? "Enter your full address..." : "Search for your full building/street address..."}
+                                                        className="w-full"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
