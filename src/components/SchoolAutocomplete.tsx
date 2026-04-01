@@ -25,23 +25,45 @@ const SchoolAutocomplete = ({
     handleInputChange,
     isLoaded,
     loadError,
+    suggestions,
+    isSearchingFallback,
+    handleSuggestionSelect,
   } = useSchoolAutocomplete({ value, onChange, onPlaceSelect });
 
   return (
     <div className="relative space-y-2">
-      <input
-        ref={inputRef}
-        type="text"
-        value={inputValue}
-        onChange={handleInputChange}
-        placeholder={isLoaded ? placeholder : "Loading search..."}
-        className={`w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 transition-all outline-none font-bold text-gray-900 placeholder:text-gray-400 text-lg ${
-          error ? "border-red-500 bg-red-50" : "border-slate-300 focus:border-[rgb(32,38,130)] focus:bg-white focus:shadow-lg focus:shadow-blue-900/5"
-        } ${className}`}
-        {...props}
-      />
+      <div className="relative">
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          placeholder={isLoaded ? placeholder : (loadError ? "Search school..." : "Loading search...")}
+          className={`w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 transition-all outline-none font-bold text-gray-900 placeholder:text-gray-400 text-lg ${
+            error ? "border-red-500 bg-red-50" : "border-slate-300 focus:border-[rgb(32,38,130)] focus:bg-white focus:shadow-lg focus:shadow-blue-900/5"
+          } ${className}`}
+          {...props}
+        />
+        
+        {/* Fallback Suggestions Dropdown */}
+        {loadError && suggestions.length > 0 && (
+          <div className="absolute top-full left-0 right-0 z-[1001] mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => handleSuggestionSelect(s)}
+                className="w-full text-left px-5 py-4 text-sm hover:bg-blue-50 transition-colors border-b border-slate-50 last:border-0"
+              >
+                <div className="font-bold text-slate-800">{s.structured_formatting?.main_text || s.description}</div>
+                <div className="text-[10px] text-slate-500 truncate">{s.description}</div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       
-      {!isValidSelection && inputValue.length > 2 && (
+      {!isValidSelection && inputValue.length > 2 && !isSearchingFallback && (
         <button
           type="button"
           onClick={() => onManualEntry?.(inputValue)}
@@ -52,7 +74,11 @@ const SchoolAutocomplete = ({
       )}
 
       {error && <p className="text-xs font-bold text-red-500 px-1">{error}</p>}
-      {loadError && <p className="text-xs text-orange-500 px-1">Location search unavailable</p>}
+      {loadError && !suggestions.length && (
+        <p className="text-[10px] text-orange-500 font-bold px-1 italic">
+          Google Maps SDK blocked by domain. Using secure server-side backup search.
+        </p>
+      )}
     </div>
   );
 };

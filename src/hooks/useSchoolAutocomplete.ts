@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useGoogleMapsLoader } from "./useGoogleMapsLoader";
 
 interface UseSchoolAutocompleteProps {
@@ -16,6 +16,9 @@ export const useSchoolAutocomplete = ({
   const [inputValue, setInputValue] = useState(value || "");
   const [isValidSelection, setIsValidSelection] = useState(!!value);
   const [lastValidValue, setLastValidValue] = useState(value || "");
+
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [isSearchingFallback, setIsSearchingFallback] = useState(false);
 
   const onPlaceSelectRef = useRef(onPlaceSelect);
   const onChangeRef = useRef(onChange);
@@ -102,9 +105,81 @@ export const useSchoolAutocomplete = ({
     };
   }, [isLoaded]);
 
+  const fetchSuggestions = useCallback(async (input: string) => {
+    if (!input || input.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      setIsSearchingFallback(true);
+      const res = await fetch(`/api/google/places?input=${encodeURIComponent(input)}&types=school`);
+      const data = await res.json();
+      if (data.predictions) {
+        setSuggestions(data.predictions);
+      }
+    } catch (err) {
+      console.error("Fallback search error:", err);
+    } finally {
+      setIsSearchingFallback(false);
+    }
+  }, []);
+
+  const handleSuggestionSelect = useCallback(async (prediction: any) => {
+    setInputValue(prediction.description);
+    setSuggestions([]);
+    
+    try {
+      // In fallback mode, we need to geocode the selected address to get coordinates
+      const res = await fetch(`/api/google/geocode?address=${encodeURIComponent(prediction.description)}`);
+      const data = await res.json();
+      
+      let lat: number | undefined;
+      let lng: number | undefined;
+      let city = "";
+      let pincode = "";
+
+      if (data.results && data.results[0]) {
+        const result = data.results[0];
+        lat = result.geometry.location.lat;
+        lng = result.geometry.location.lng;
+        
+        result.address_components.forEach((component: any) => {
+          if (component.types.includes("locality")) city = component.long_name;
+          if (component.types.includes("postal_code")) pincode = component.long_name;
+        });
+      }
+
+      onPlaceSelectRef.current?.({
+        schoolName: prediction.structured_formatting?.main_text || prediction.description,
+        address: prediction.description,
+        city,
+        pincode,
+        lat,
+        lng,
+        place_id: prediction.place_id
+      });
+      
+      setIsValidSelection(true);
+      setLastValidValue(prediction.description);
+    } catch (err) {
+      console.error("Fallback geocode error:", err);
+      onPlaceSelectRef.current?.({ 
+        schoolName: prediction.structured_formatting?.main_text || prediction.description,
+        address: prediction.description,
+        place_id: prediction.place_id
+      });
+      setIsValidSelection(true);
+    }
+  }, []);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     setInputValue(newValue);
+
+    if (!isLoaded && loadError) {
+      fetchSuggestions(newValue);
+    }
 
     if (newValue.trim() === "") {
       setIsValidSelection(true);
@@ -123,5 +198,8 @@ export const useSchoolAutocomplete = ({
     handleInputChange,
     isLoaded,
     loadError,
+    suggestions,
+    isSearchingFallback,
+    handleSuggestionSelect,
   };
 };

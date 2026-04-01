@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         const url = `https://maps.googleapis.com/maps/api/geocode/json?${googleQuery.toString()}`;
         
         const res = await fetch(url, {
-            next: { revalidate: 3600 } // Cache for 1 hour
+            next: { revalidate: 300 } // Cache for 5 min (short to avoid caching errors)
         });
 
         const data = await res.json();
