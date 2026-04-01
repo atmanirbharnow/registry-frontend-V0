@@ -28,12 +28,12 @@ export async function POST(request: NextRequest) {
         }
 
         if (!hasAdminCredentials) {
-            const bytes = await file.arrayBuffer();
-            const buffer = Buffer.from(bytes);
-            const base64 = buffer.toString("base64");
-            const mimeType = file.type || "application/octet-stream";
-            const dataUrl = `data:${mimeType};base64,${base64}`;
-            return NextResponse.json({ url: dataUrl, simulated: true });
+            // Return a small mock URL for simulation to keep document size under 1MB
+            // High-resolution Base64 would exceed Firestore's 1MB limit for multi-photo actions
+            return NextResponse.json({ 
+                url: "https://placehold.co/400x400/202682/ffffff?text=Simulated+Upload", 
+                simulated: true 
+            });
         }
 
         const { getStorage } = await import("firebase-admin/storage");
