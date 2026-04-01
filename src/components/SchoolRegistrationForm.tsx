@@ -74,6 +74,7 @@ export default function SchoolRegistrationForm() {
     const { profile } = useUserProfile();
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
+    const [isSimulationMode, setIsSimulationMode] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
     const [projects, setProjects] = useState<any[]>([]);
     const [actions, setActions] = useState<any[]>([]);
@@ -207,6 +208,29 @@ export default function SchoolRegistrationForm() {
                 const orderRes = await fetch("/api/school/payment/create", { method: "POST" });
                 const orderData = await orderRes.json();
                 if (orderData.error) throw new Error(orderData.error);
+
+                if (orderData.simulated) {
+                    setIsSimulationMode(true);
+                    const finalValues = {
+                        ...values,
+                        contactPerson: profile?.contactPerson || "",
+                        phone: profile?.phone || "",
+                        email: profile?.email || auth.currentUser?.email || "",
+                        sector: profile?.institutionType || "School",
+                        state: profile?.state || null,
+                        pincode: profile?.pincode || null,
+                    };
+
+                    await processPaymentVerification(
+                        {
+                            razorpay_order_id: orderData.orderId,
+                            razorpay_payment_id: `pay_SIM_${Date.now()}`,
+                            razorpay_signature: "SIMULATED_SIGNATURE",
+                        },
+                        finalValues
+                    );
+                    return;
+                }
 
                 const options = {
                     key: orderData.key,
@@ -412,6 +436,18 @@ export default function SchoolRegistrationForm() {
             </div>
 
             <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(); }} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {isSimulationMode && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-3 flex items-center gap-2">
+                        <span className="text-xl flex items-center justify-center">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                            </svg>
+                        </span>
+                        <span className="text-sm font-semibold text-yellow-700">
+                            Payment Simulation Mode — No real charges
+                        </span>
+                    </div>
+                )}
                 {currentStep === 1 && (
                     <StepWrapper title="Baseline Usage (Monthly Average)" icon={<EnergyIcon />}>
                         <p className="text-xs text-blue-600 bg-blue-50 p-3 rounded-xl font-medium border border-blue-100 mb-6">

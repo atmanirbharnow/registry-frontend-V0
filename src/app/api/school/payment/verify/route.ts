@@ -121,6 +121,23 @@ async function commitBatchREST(
     }
 }
 
+function sanitizeLargeData(data: Record<string, any>): Record<string, any> {
+    const MAX_VAL_SIZE = 100 * 1024; // 100KB safeguard
+    const result = { ...data };
+    for (const [key, value] of Object.entries(result)) {
+        if (typeof value === "string" && value.length > MAX_VAL_SIZE) {
+            if (value.startsWith("data:image")) {
+                console.warn(`[sanitize-school] Truncating large image field: ${key} (${value.length} bytes)`);
+                result[key] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="; // 1x1 transparent
+            } else {
+                console.warn(`[sanitize-school] Truncating large field: ${key} (${value.length} bytes)`);
+                result[key] = value.substring(0, 1024) + "... [truncated]";
+            }
+        }
+    }
+    return result;
+}
+
 export async function POST(request: NextRequest) {
     const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
     
@@ -272,6 +289,8 @@ export async function POST(request: NextRequest) {
             siteOverviewPhoto: formData.get("siteOverviewPhoto") || null,
         };
 
+        const sanitizedSchool = sanitizeLargeData(schoolDocData);
+
         // Collection 2: schoolBaselines (admin only, raw data + impact)
         const baselineDocData = {
             ...impact,
@@ -293,6 +312,8 @@ export async function POST(request: NextRequest) {
             last_calculated: now,
             userId, // Include userId for security rules
         };
+
+        const sanitizedBaseline = sanitizeLargeData(baselineDocData);
 
         const schoolId = hasAdminCredentials ? adminDb.collection("schools").doc().id : crypto.randomUUID();
 
@@ -333,16 +354,18 @@ export async function POST(request: NextRequest) {
             userId, // Include userId for security rules
         };
 
+        const sanitizedAction = sanitizeLargeData(actionData);
+
         if (hasAdminCredentials) {
             const batch = adminDb.batch();
-            batch.set(adminDb.collection("schools").doc(schoolId), schoolDocData);
-            batch.set(adminDb.collection("schoolBaselines").doc(schoolId), baselineDocData);
-            batch.set(adminDb.collection("schoolActions").doc(), actionData);
+            batch.set(adminDb.collection("schools").doc(schoolId), sanitizedSchool);
+            batch.set(adminDb.collection("schoolBaselines").doc(schoolId), sanitizedBaseline);
+            batch.set(adminDb.collection("schoolActions").doc(), sanitizedAction);
             await batch.commit();
         } else {
             const actionRef = crypto.randomUUID();
             await commitBatchREST(
-                [{ schoolRef: schoolId, schoolData: schoolDocData, baselineRef: schoolId, baselineData: baselineDocData, actionRef: actionRef, actionData: actionData }],
+                [{ schoolRef: schoolId, schoolData: sanitizedSchool, baselineRef: schoolId, baselineData: sanitizedBaseline, actionRef: actionRef, actionData: sanitizedAction }],
                 userIdToken
             );
         }

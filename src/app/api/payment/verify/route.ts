@@ -122,10 +122,28 @@ async function incrementCounter(bearerToken?: string): Promise<number> {
 }
 
 async function createActionDoc(data: Record<string, unknown>, bearerToken?: string): Promise<string> {
+    const sanitized = sanitizeLargeData(data);
     if (checkAdminCredentials()) {
-        return createActionDocAdmin(data);
+        return createActionDocAdmin(sanitized);
     }
-    return createActionDocREST(data, bearerToken!);
+    return createActionDocREST(sanitized, bearerToken!);
+}
+
+function sanitizeLargeData(data: Record<string, unknown>): Record<string, unknown> {
+    const MAX_VAL_SIZE = 100 * 1024; // 100KB safeguard
+    const result = { ...data };
+    for (const [key, value] of Object.entries(result)) {
+        if (typeof value === "string" && value.length > MAX_VAL_SIZE) {
+            if (value.startsWith("data:image")) {
+                // console.warn(`[sanitize] Truncating large image field: ${key} (${value.length} bytes)`);
+                result[key] = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="; // 1x1 transparent
+            } else {
+                // console.warn(`[sanitize] Truncating large field: ${key} (${value.length} bytes)`); 
+                result[key] = value.substring(0, 1024) + "... [truncated]";
+            }
+        }
+    }
+    return result;
 }
 
 export async function POST(request: NextRequest) {
