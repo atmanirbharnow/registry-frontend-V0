@@ -18,7 +18,7 @@ const Input = React.forwardRef<HTMLInputElement & HTMLTextAreaElement, InputProp
             focus:bg-white transition-all duration-200 outline-none
             font-medium text-gray-700 placeholder:text-gray-300
             disabled:bg-gray-50/80 disabled:text-gray-800 disabled:cursor-not-allowed disabled:opacity-100
-            ${error ? "border-red-400 focus:border-red-400" : "border-slate-300 focus:border-blue-500"}
+            ${error ? "border-red-400 focus:border-red-400" : "border-slate-300 focus:border-[#003527]"}
             ${className}
         `;
 

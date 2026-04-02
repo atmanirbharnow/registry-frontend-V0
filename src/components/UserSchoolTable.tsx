@@ -83,7 +83,7 @@ export default function UserSchoolTable() {
                     <tbody className="divide-y divide-gray-50">
                         {schools.map((school) => (
                             <tr key={school.id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[rgb(32,38,130)]">
+                                <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[#003527]">
                                     {school.registryId ? (
                                         <a href={`/verify/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                                             {school.registryId}
@@ -109,7 +109,7 @@ export default function UserSchoolTable() {
                                 </td>
                                 <td className="py-3.5 px-5 text-sm">
                                     {school.registryId ? (
-                                        <a href={`/verify/school/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[rgb(32,38,130)] font-medium hover:underline text-xs">
+                                        <a href={`/verify/school/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[#003527] font-medium hover:underline text-xs">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
                                                 <polyline points="15 3 21 3 21 9" />

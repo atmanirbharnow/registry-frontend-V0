@@ -32,25 +32,25 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
     };
 
     return (
-        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-[rgb(32,38,130)] shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-[360px] sm:max-w-md mx-auto">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-[#003527] shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-[360px] sm:max-w-md mx-auto">
             <div className="text-center mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 border-gray-100">
                 <h2 className="text-base sm:text-lg font-black text-gray-800 uppercase tracking-tight mb-2 sm:mb-3">
                     Earth Carbon Registry
                 </h2>
                 {action.status === "verified" ? (
-                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-100 rounded-full">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-blue-700">
+                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#b0f0d6] rounded-full">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-[#003527]">
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
-                        <span className="text-xs sm:text-sm font-bold text-blue-700">VERIFIED</span>
+                        <span className="text-xs sm:text-sm font-bold text-[#003527]">VERIFIED</span>
                     </div>
                 ) : (
                     <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-yellow-100 rounded-full">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-yellow-700">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#112000]">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                         </svg>
-                        <span className="text-xs sm:text-sm font-bold text-yellow-700">REGISTERED</span>
+                        <span className="text-xs sm:text-sm font-bold text-[#112000]">REGISTERED</span>
                     </div>
                 )}
             </div>
@@ -69,8 +69,8 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Carbon Reduced</div>
                         {action.status === "verified" ? (
                             <>
-                                <div className="text-xl sm:text-2xl font-black text-blue-600">-{tco2e}</div>
-                                <div className="text-[10px] sm:text-xs font-bold text-blue-600">tCO₂e</div>
+                                <div className="text-xl sm:text-2xl font-black text-[#003527]">-{tco2e}</div>
+                                <div className="text-[10px] sm:text-xs font-bold text-[#003527]">tCO₂e</div>
                             </>
                         ) : (
                             <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
@@ -80,8 +80,8 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Atmanirbhar</div>
                         {action.status === "verified" ? (
                             <>
-                                <div className="text-xl sm:text-2xl font-black text-blue-600">{atmanirbhar}%</div>
-                                <div className="text-[10px] sm:text-xs font-bold text-blue-600">{year}</div>
+                                <div className="text-xl sm:text-2xl font-black text-[#003527]">{atmanirbhar}%</div>
+                                <div className="text-[10px] sm:text-xs font-bold text-[#003527]">{year}</div>
                             </>
                         ) : (
                             <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
@@ -139,7 +139,7 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                 <p className="text-[10px] sm:text-xs text-gray-400 mb-1">Verify online:</p>
                 <Link
                     href={verifyPath}
-                    className="text-[10px] sm:text-xs font-mono text-[rgb(32,38,130)] break-all cursor-pointer hover:underline"
+                    className="text-[10px] sm:text-xs font-mono text-[#003527] break-all cursor-pointer hover:underline"
                 >
                     registryearthcarbon.org/verify/{action.registryId}
                 </Link>

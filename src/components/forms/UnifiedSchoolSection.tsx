@@ -1,6 +1,5 @@
-"use client";
-
 import React, { useState } from "react";
+import { Search, Pencil } from "lucide-react";
 import SchoolAutocomplete from "../SchoolAutocomplete";
 import Input from "../ui/Input";
 
@@ -41,28 +40,30 @@ export default function UnifiedSchoolSection({
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                     {label}
                 </label>
-                <div className="flex p-1 bg-slate-100 rounded-xl w-fit self-end sm:self-auto">
+                <div className="flex p-1 bg-slate-100 rounded-none w-fit self-end sm:self-auto">
                     <button
                         type="button"
                         onClick={() => setMode("search")}
-                        className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                        className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-none transition-all flex items-center gap-2 ${
                             mode === "search" 
-                            ? "bg-white text-[rgb(32,38,130)] shadow-sm" 
+                            ? "bg-white text-[#003527] shadow-sm" 
                             : "text-slate-400 hover:text-slate-600"
                         }`}
                     >
-                        🔍 Search & Fill
+                        <Search className="w-3 h-3" />
+                        Search & Fill
                     </button>
                     <button
                         type="button"
                         onClick={() => setMode("manual")}
-                        className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                        className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-none transition-all flex items-center gap-2 ${
                             mode === "manual" 
-                            ? "bg-white text-[rgb(32,38,130)] shadow-sm" 
+                            ? "bg-white text-[#003527] shadow-sm" 
                             : "text-slate-400 hover:text-slate-600"
                         }`}
                     >
-                        🖊️ Manual Entry
+                        <Pencil className="w-3 h-3" />
+                        Manual Entry
                     </button>
                 </div>
             </div>
@@ -81,14 +82,14 @@ export default function UnifiedSchoolSection({
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Type your school name manually..."
-                        className="!py-4 !rounded-2xl !border-slate-300 focus:!border-blue-500 !text-lg !font-bold"
+                        className="!py-4 !rounded-none !border-slate-300 focus:!border-[#003527] !text-lg !font-bold"
                         error={error}
                     />
                 )}
             </div>
 
             {mode === "manual" && (
-                <div className="flex items-center gap-2 p-3 bg-blue-50/50 border border-blue-100 rounded-xl text-[10px] text-blue-600 font-bold uppercase tracking-widest leading-tight">
+                <div className="flex items-center gap-2 p-3 bg-[#eff7f2]/50 border border-[#b0f0d6] rounded-none text-[10px] text-[#003527] font-bold uppercase tracking-widest leading-tight">
                     <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>

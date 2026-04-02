@@ -114,7 +114,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
                     {ACTION_LABELS[action.actionType] || action.actionType}
                   </div>
                   <div className='py-5 px-6'>
-                    <span className='inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-sm font-medium rounded-lg'>
+                    <span className='inline-flex items-center px-3 py-1.5 bg-[#b0f0d6] text-[#003527] text-sm font-medium rounded-lg'>
                       {action.quantity} {action.unit}
                     </span>
                   </div>
@@ -165,7 +165,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
                     {formatDate(action.createdAt)}
                   </p>
                 </div>
-                <span className='inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-lg'>
+                <span className='inline-flex items-center px-3 py-1.5 bg-[#b0f0d6] text-[#003527] text-xs font-medium rounded-lg'>
                   {action.quantity} {action.unit}
                 </span>
               </div>
@@ -201,7 +201,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
             disabled={currentPage === 1}
             className={`p-3 rounded-xl border-2 flex items-center justify-center  ${currentPage === 1
               ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
-              : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
+              : "bg-white text-[#003527] hover:bg-blue-50 border-[#003527] cursor-pointer"
               }`}
           >
             <span className='text-base font-bold'>&lt;</span>
@@ -214,7 +214,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
             disabled={currentPage === totalPages}
             className={`p-3 rounded-xl border-2 flex items-center justify-center ${currentPage === totalPages
               ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
-              : "bg-white text-[rgb(32,38,130)] hover:bg-blue-50 border-[rgb(32,38,130)] cursor-pointer"
+              : "bg-white text-[#003527] hover:bg-blue-50 border-[#003527] cursor-pointer"
               }`}
           >
             <span className='text-base font-bold'>&gt;</span>

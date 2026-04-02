@@ -505,15 +505,15 @@ export default function AdminActionTable() {
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Verified</p>
-                    <p className="text-3xl font-black text-green-600 mt-1">{stats.verified}</p>
+                    <p className="text-3xl font-black text-[#003527] mt-1">{stats.verified}</p>
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total CO₂e</p>
-                    <p className="text-3xl font-black text-[rgb(32,38,130)] mt-1">{(stats.totalCo2e / 1000).toLocaleString("en-IN", { maximumFractionDigits: 3 })} <span className="text-sm font-bold text-gray-400">tCO₂e</span></p>
+                    <p className="text-3xl font-black text-[#003527] mt-1">{(stats.totalCo2e / 1000).toLocaleString("en-IN", { maximumFractionDigits: 3 })} <span className="text-sm font-bold text-gray-400">tCO₂e</span></p>
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Organizations</p>
-                    <p className="text-3xl font-black text-blue-600 mt-1">{stats.orgCount}</p>
+                    <p className="text-3xl font-black text-[#003527] mt-1">{stats.orgCount}</p>
                 </div>
                 <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Revenue</p>
@@ -562,7 +562,7 @@ export default function AdminActionTable() {
                 <div className="flex flex-wrap items-center gap-3">
                     <Link
                         href="/profile"
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[rgb(32,38,130)] text-white hover:bg-[rgb(22,28,100)] transition-colors text-sm font-bold shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#003527] text-white hover:bg-[rgb(22,28,100)] transition-colors text-sm font-bold shadow-sm"
                     >
                         <span>+ Register Action</span>
                     </Link>
@@ -577,7 +577,7 @@ export default function AdminActionTable() {
                                 toast.update(t, { render: "Sync failed", type: "error", isLoading: false, autoClose: 3000 });
                             }
                         }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-100 bg-transparent text-green-600 hover:bg-green-50 transition-colors text-sm font-medium"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-100 bg-transparent text-[#003527] hover:bg-green-50 transition-colors text-sm font-medium"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
@@ -586,7 +586,7 @@ export default function AdminActionTable() {
                     </button>
                     <button
                         onClick={handleExportCSV}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-100 bg-transparent text-[rgb(32,38,130)] hover:bg-[rgba(32,38,130,0.05)] transition-colors text-sm font-medium"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-100 bg-transparent text-[#003527] hover:bg-[rgba(32,38,130,0.05)] transition-colors text-sm font-medium"
                     >
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
@@ -638,7 +638,7 @@ export default function AdminActionTable() {
                             <tbody className="divide-y divide-gray-50">
                                 {unifiedItems.map((item) => (
                                     <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
-                                        <td className="py-4 px-6 text-sm font-mono font-semibold text-[rgb(32,38,130)]">
+                                        <td className="py-4 px-6 text-sm font-mono font-semibold text-[#003527]">
                                             {item.registryId ? (
                                                 <a
                                                     href={`/verify/${item.registryId}`}
@@ -653,7 +653,7 @@ export default function AdminActionTable() {
                                             )}
                                         </td>
                                         <td className="py-4 px-6">
-                                            <span className={`px-2 py-1 rounded text-[10px] font-black uppercase ${item.entityType === 'school' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
+                                            <span className={`px-2 py-1 rounded text-[10px] font-black uppercase ${item.entityType === 'school' ? 'bg-orange-100 text-orange-600' : 'bg-[#b0f0d6] text-[#003527]'}`}>
                                                 {item.entityType}
                                             </span>
                                         </td>
@@ -679,7 +679,7 @@ export default function AdminActionTable() {
                                             {item.status === "pending" || item.status === "pledged" ? (
                                                 <button
                                                     onClick={() => item.entityType === 'school' ? openVerifySchoolModal(item.originalData as School) : openVerifyModal(item.originalData as Action)}
-                                                    className="w-full max-w-[120px] px-3 py-2 bg-[rgb(32,38,130)] text-white text-xs font-bold rounded-lg hover:bg-[rgb(22,28,100)] transition-colors text-center block mx-auto outline-none"
+                                                    className="w-full max-w-[120px] px-3 py-2 bg-[#003527] text-white text-xs font-bold rounded-lg hover:bg-[rgb(22,28,100)] transition-colors text-center block mx-auto outline-none"
                                                 >
                                                     Verify
                                                 </button>
@@ -732,7 +732,7 @@ export default function AdminActionTable() {
                                     {/* Baseline Section (Step 1) */}
                                     <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 space-y-4">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="bg-[rgb(32,38,130)] p-2 rounded-lg text-white">
+                                            <div className="bg-[#003527] p-2 rounded-lg text-white">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
                                             </div>
                                             <h3 className="font-black text-slate-800 uppercase tracking-wider text-sm">Step 1: Baseline Usage (Monthly)</h3>
@@ -757,7 +757,7 @@ export default function AdminActionTable() {
                                                         value={verifyForm[field.key as keyof typeof verifyForm]}
                                                         readOnly={!isEditMode}
                                                         onChange={(e) => setVerifyForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-blue-200 bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                             ))}
@@ -767,7 +767,7 @@ export default function AdminActionTable() {
                                     {/* Action Section (Step 2) */}
                                     <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100 space-y-4">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="bg-blue-600 p-2 rounded-lg text-white">
+                                            <div className="bg-[#003527] p-2 rounded-lg text-white">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                                             </div>
                                             <h3 className="font-black text-blue-800 uppercase tracking-wider text-sm">Step 2: Carbon Action</h3>
@@ -780,7 +780,7 @@ export default function AdminActionTable() {
                                                     disabled={!isEditMode}
                                                     value={verifyForm.actionType}
                                                     onChange={(e) => setVerifyForm(f => ({ ...f, actionType: e.target.value }))}
-                                                    className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-blue-200 bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent cursor-default'}`}
+                                                    className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent cursor-default'}`}
                                                 >
                                                     {ACTION_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                                                 </select>
@@ -793,7 +793,7 @@ export default function AdminActionTable() {
                                                         value={verifyForm.quantity}
                                                         readOnly={!isEditMode}
                                                         onChange={(e) => setVerifyForm(f => ({ ...f, quantity: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-blue-200 bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
@@ -803,7 +803,7 @@ export default function AdminActionTable() {
                                                         value={verifyForm.unit}
                                                         readOnly={!isEditMode}
                                                         onChange={(e) => setVerifyForm(f => ({ ...f, unit: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-blue-200 bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                             </div>
@@ -824,7 +824,7 @@ export default function AdminActionTable() {
 
                                 {/* Right Side: Results Header & Calculations */}
                                 <div className="space-y-6">
-                                    <div className="bg-indigo-600 rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+                                    <div className="bg-[#003527] rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
                                         <div className="relative z-10 space-y-6">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="font-black uppercase tracking-widest text-xs opacity-80">Impact Performance</h3>
@@ -879,7 +879,7 @@ export default function AdminActionTable() {
                                                 <select
                                                     value={verifyForm.status}
                                                     onChange={(e) => setVerifyForm(f => ({ ...f, status: e.target.value as ActionStatus }))}
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[rgb(32,38,130)] transition-all outline-none"
+                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] transition-all outline-none"
                                                 >
                                                     <option value="verified">Verified</option>
                                                     <option value="pending">Pending</option>
@@ -893,7 +893,7 @@ export default function AdminActionTable() {
                                                     value={verifyForm.adminNotes}
                                                     onChange={(e) => setVerifyForm(f => ({ ...f, adminNotes: e.target.value }))}
                                                     placeholder="Reason for rejection or verification notes..."
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[rgb(32,38,130)] outline-none"
+                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -909,7 +909,7 @@ export default function AdminActionTable() {
                                             <button
                                                 type="submit"
                                                 disabled={verifySubmitting}
-                                                className="flex-[2] px-6 py-4 rounded-2xl bg-[rgb(32,38,130)] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
+                                                className="flex-[2] px-6 py-4 rounded-2xl bg-[#003527] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
                                             >
                                                 {verifySubmitting ? "Syncing..." : "Submit Verification"}
                                             </button>
@@ -977,7 +977,7 @@ export default function AdminActionTable() {
                                     {/* School Context & Action */}
                                     <div className="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-100 space-y-4">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <div className="bg-indigo-600 p-2 rounded-lg text-white">
+                                            <div className="bg-[#003527] p-2 rounded-lg text-white">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg>
                                             </div>
                                             <h3 className="font-black text-indigo-800 uppercase tracking-wider text-sm">Step 2: School Action & Details</h3>
@@ -1031,7 +1031,7 @@ export default function AdminActionTable() {
 
                                 {/* Right Side: Results & Final Decision */}
                                 <div className="space-y-6">
-                                    <div className="bg-blue-600 rounded-[2rem] p-6 text-white shadow-xl shadow-blue-100 relative overflow-hidden">
+                                    <div className="bg-[#003527] rounded-[2rem] p-6 text-white shadow-xl shadow-blue-100 relative overflow-hidden">
                                         <div className="relative z-10 space-y-6">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="font-black uppercase tracking-widest text-xs opacity-80">Calculated School Impact</h3>
@@ -1082,7 +1082,7 @@ export default function AdminActionTable() {
                                                 <select
                                                     value={verifySchoolForm.status}
                                                     onChange={(e) => setVerifySchoolForm(f => ({ ...f, status: e.target.value as SchoolStatus }))}
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[rgb(32,38,130)] transition-all outline-none"
+                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] transition-all outline-none"
                                                 >
                                                     <option value="verified">Verified</option>
                                                     <option value="rejected">Rejected</option>
@@ -1096,7 +1096,7 @@ export default function AdminActionTable() {
                                                     value={verifySchoolForm.adminNotes}
                                                     onChange={(e) => setVerifySchoolForm(f => ({ ...f, adminNotes: e.target.value }))}
                                                     placeholder="Reason for decision..."
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[rgb(32,38,130)] outline-none"
+                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -1112,7 +1112,7 @@ export default function AdminActionTable() {
                                             <button
                                                 type="submit"
                                                 disabled={verifySubmitting}
-                                                className="flex-[2] px-6 py-4 rounded-2xl bg-[rgb(32,38,130)] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
+                                                className="flex-[2] px-6 py-4 rounded-2xl bg-[#003527] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
                                             >
                                                 {verifySubmitting ? "Syncing..." : "Submit Verification"}
                                             </button>

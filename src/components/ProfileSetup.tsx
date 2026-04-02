@@ -29,11 +29,6 @@ interface ProfileSetupProps {
 const INSTITUTION_TYPES = [
     { value: "Individual", label: "Individual Actor" },
     { value: "School", label: "Educational Institution (School/College)" },
-    // { value: "MSME", label: "MSME (Micro, Small & Medium Enterprise)" },
-    { value: "Organization", label: "Organization" },
-    // { value: "Commercial", label: "Commercial (Office/Retail/Hotel)" },
-    // { value: "NGO", label: "Non-Profit Organization (NGO)" },
-    // { value: "Government", label: "Government Body" },
 ] as const;
 
 const BHARAT_STATES = [
@@ -237,10 +232,8 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
     const handleProceed = () => {
         if (formData.institutionType === "School") {
             router.push("/school-register");
-        } else if (formData.institutionType === "Individual") {
-            router.push("/register/action");
         } else {
-            router.push("/enterprise-contact");
+            router.push("/register/action");
         }
     };
 
@@ -263,11 +256,9 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                         {profile && !isEditing && (
                             <Button
                                 onClick={handleProceed}
-                                className="bg-[rgb(32,38,130)] hover:bg-[rgb(40,48,160)] !px-8 !py-4 !rounded-xl shadow-lg transform hover:-translate-y-1 transition-all"
+                                className="bg-[#003527] hover:bg-[#064e3b] !px-8 !py-4 !rounded-xl shadow-lg transform hover:-translate-y-1 transition-all"
                             >
-                                {["School", "Individual"].includes(formData.institutionType)
-                                    ? "Proceed to Register Action"
-                                    : "Contact Us for Next Steps"} <span>&rarr;</span>
+                                Proceed to Register Action <span>&rarr;</span>
                             </Button>
                         )}
                     </div>
@@ -283,7 +274,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                             {profile && !isEditing && (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="text-[rgb(32,38,130)] font-bold text-sm uppercase tracking-widest hover:underline flex items-center gap-2"
+                                    className="text-[#003527] font-bold text-sm uppercase tracking-widest hover:underline flex items-center gap-2"
                                 >
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                                     Edit Details
@@ -393,7 +384,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                 <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-200">
                                     <label className="flex items-start gap-4 cursor-pointer group">
                                         <div className="mt-0.5 relative">
-                                            <input type="checkbox" checked={formData.consentVerified} onChange={(e) => handleChange("consentVerified", (e.target.checked as any))} className="peer appearance-none w-6 h-6 border-2 border-slate-400 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer" />
+                                            <input type="checkbox" checked={formData.consentVerified} onChange={(e) => handleChange("consentVerified", (e.target.checked as any))} className="peer appearance-none w-6 h-6 border-2 border-slate-400 rounded-lg checked:border-[#003527] checked:bg-[#003527] transition-all cursor-pointer" />
                                             <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                         </div>
                                         <span className="text-sm font-bold text-slate-600 group-hover:text-slate-900 transition-colors leading-relaxed">
@@ -413,7 +404,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                     <Button
                                         onClick={handleSubmit}
                                         disabled={saving}
-                                        className="flex-1 px-8 py-4 bg-[rgb(32,38,130)] text-white uppercase tracking-widest font-black text-xs shadow-xl shadow-blue-900/20 active:scale-95 transition-all"
+                                        className="flex-1 px-8 py-4 bg-[#003527] text-white uppercase tracking-widest font-black text-xs shadow-xl shadow-emerald-900/20 active:scale-95 transition-all"
                                     >
                                         {saving ? "Saving..." : "Create Profile & Continue"}
                                     </Button>

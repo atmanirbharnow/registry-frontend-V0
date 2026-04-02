@@ -27,12 +27,12 @@ export default function LandingNavbar() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-20 flex items-center bg-[rgb(32,38,130)] shadow-lg shadow-blue-900/20`}
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 h-20 flex items-center bg-[#003527] shadow-lg shadow-[#001a10]/20`}
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8 w-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group no-underline">
-          <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-sm shadow-sm">
+          <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-none shadow-sm">
             <Image
               src="/earth carbon logo bw.jpg"
               alt="Logo"
@@ -55,7 +55,7 @@ export default function LandingNavbar() {
                 key={link.name}
                 href={link.href}
                 className={`text-sm tracking-wide transition-all ${
-                  isActive ? "text-white border-b-2 border-white pb-1 font-black" : "text-white/80 hover:text-white font-bold"
+                  isActive ? "text-white border-b-2 border-white pb-1 font-black" : "text-white/60 hover:text-white font-bold"
                 }`}
               >
                 {link.name}
@@ -66,12 +66,7 @@ export default function LandingNavbar() {
 
         {/* CTA & Mobile Toggle */}
         <div className="flex items-center gap-4">
-          <Link
-            href="/signin"
-            className="hidden md:block bg-white text-[rgb(32,38,130)] px-6 py-2 rounded-xl font-black text-sm shadow-xl hover:bg-[#bfdbfe] transition-all hover:scale-[1.02]"
-          >
-            Register Action →
-          </Link>
+
           
           <button
             className="md:hidden p-2 text-white"
@@ -86,7 +81,7 @@ export default function LandingNavbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="absolute top-16 left-0 w-full bg-[rgb(32,38,130)] border-t border-white/10 shadow-2xl md:hidden overflow-hidden transition-all">
+        <div className="absolute top-16 left-0 w-full bg-[#003527] border-t border-white/10 shadow-2xl md:hidden overflow-hidden transition-all">
           <div className="flex flex-col p-6 gap-6">
             {NAV_LINKS.map((link) => (
               <a
@@ -98,13 +93,7 @@ export default function LandingNavbar() {
                 {link.name}
               </a>
             ))}
-            <Link
-              href="/signin"
-              onClick={() => setIsOpen(false)}
-              className="mt-4 bg-white text-[rgb(32,38,130)] text-center px-6 py-4 rounded-xl font-black text-xl shadow-2xl"
-            >
-              Register Action →
-            </Link>
+
           </div>
         </div>
       )}

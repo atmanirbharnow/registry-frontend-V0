@@ -66,8 +66,8 @@ export default function SchoolRegisterSuccessPage() {
         <div className="min-h-screen bg-slate-50 px-4 md:px-8 py-20">
             <div className="max-w-2xl mx-auto text-center space-y-10">
                 <div className="space-y-4">
-                    <div className="w-24 h-24 bg-blue-100 rounded-[2rem] flex items-center justify-center mx-auto shadow-sm">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[rgb(32,38,130)]">
+                    <div className="w-24 h-24 bg-[#b0f0d6] rounded-[2rem] flex items-center justify-center mx-auto shadow-sm">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#003527]">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
@@ -84,7 +84,7 @@ export default function SchoolRegisterSuccessPage() {
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl shadow-slate-200 border border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-8 text-left">
                     <div className="space-y-1">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Registry ID</p>
-                        <p className="text-2xl font-black font-mono text-[rgb(32,38,130)]">{school.registryId}</p>
+                        <p className="text-2xl font-black font-mono text-[#003527]">{school.registryId}</p>
                     </div>
                     <div className="space-y-1">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Annual Impact</p>
@@ -92,12 +92,12 @@ export default function SchoolRegisterSuccessPage() {
                     </div>
                     <div className="sm:col-span-2 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-[rgb(32,38,130)] font-black">
+                            <div className="w-10 h-10 rounded-xl bg-[#eff7f2] flex items-center justify-center text-[#003527] font-black">
                                 {school.attribution_percentage}%
                             </div>
                             <p className="text-xs font-bold text-slate-500">Credited Attribution</p>
                         </div>
-                        <Link href={verifyUrl} className="text-sm font-black text-[rgb(32,38,130)] hover:underline">
+                        <Link href={verifyUrl} className="text-sm font-black text-[#003527] hover:underline">
                             View Public Certificate →
                         </Link>
                     </div>
@@ -110,7 +110,7 @@ export default function SchoolRegisterSuccessPage() {
                         </button>
                     </Link>
                     <Link href={verifyUrl}>
-                        <button className="px-10 py-5 bg-[rgb(32,38,130)] text-white rounded-2xl font-black shadow-xl shadow-blue-900/20 hover:scale-[1.05] transition-all active:scale-[0.98]">
+                        <button className="px-10 py-5 bg-[#003527] text-white rounded-2xl font-black shadow-xl shadow-emerald-900/20 hover:scale-[1.05] transition-all active:scale-[0.98]">
                             View Verification Page
                         </button>
                     </Link>

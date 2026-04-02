@@ -3,17 +3,20 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import HeroSection from "@/components/landing/HeroSection";
+import ActionHubSection from "@/components/landing/ActionHubSection";
+
 import KPIGrid from "@/components/landing/KPIGrid";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import ScopeSection from "@/components/landing/ScopeSection";
+import TrustAndScopeSection from "@/components/landing/ScopeSection";
 import WhyRegisterSection from "@/components/landing/WhyRegisterSection";
-import VerificationSection from "@/components/landing/VerificationSection";
 import CTABannerSection from "@/components/landing/CTABannerSection";
 import ContactSection from "@/components/landing/ContactSection";
+import ContactModal from "@/components/landing/ContactModal";
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [isContactModalOpen, setIsContactModalOpen] = React.useState(false);
 
   useEffect(() => {
     if (user && !loading) {
@@ -30,14 +33,21 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col w-full bg-[#f9faf5]">
       {/* Sections with unique IDs for scroll-spy and anchors */}
-      <HeroSection />           {/* id="home" */}
+      <HeroSection onStartStructuring={() => setIsContactModalOpen(true)} />           {/* id="home" */}
+      <ActionHubSection onStartStructuring={() => setIsContactModalOpen(true)} />
+
       <KPIGrid />               {/* id="stats" */}
+      <TrustAndScopeSection />  {/* id="trust-scope" */}
       <HowItWorksSection />     {/* id="how-it-works" */}
-      <ScopeSection />          {/* id="scope" */}
       <WhyRegisterSection />    {/* id="why-register" */}
-      <VerificationSection />   {/* id="verification" */}
       <CTABannerSection />      {/* (no anchor) */}
       <ContactSection />        {/* id="contact" */}
+      
+      {/* Hidden Modals */}
+      <ContactModal 
+        isOpen={isContactModalOpen} 
+        onClose={() => setIsContactModalOpen(false)} 
+      />
     </div>
   );
 }

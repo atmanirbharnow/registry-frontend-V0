@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://registryearthcarbon.org"),
   title: {
     default: "Earth Carbon Registry | Verified Carbon Actions",
     template: "%s | Earth Carbon Registry",
@@ -41,11 +42,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;500;700;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Merriweather+Sans:wght@400;500;700;900&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="antialiased text-slate-800">
         <Providers>{children}</Providers>
       </body>
     </html>

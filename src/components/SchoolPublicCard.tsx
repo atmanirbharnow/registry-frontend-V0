@@ -19,10 +19,10 @@ export default function SchoolPublicCard({ school }: SchoolPublicCardProps) {
                     <div className="space-y-2">
                         <VerificationBadge status={school.status} />
                         <h2 className="text-3xl font-black text-gray-800 tracking-tight">{school.schoolName}</h2>
-                        <p className="text-sm font-mono font-bold text-[rgb(32,38,130)]">{school.registryId}</p>
+                        <p className="text-sm font-mono font-bold text-[#003527]">{school.registryId}</p>
                     </div>
                     <div className="bg-green-50 px-6 py-4 rounded-3xl border border-green-100 text-center">
-                        <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-1">Impact Reduction</p>
+                        <p className="text-[10px] font-black text-[#003527] uppercase tracking-widest mb-1">Impact Reduction</p>
                         <p className="text-3xl font-black text-green-700">-{tco2e} <span className="text-sm">tCO₂e</span></p>
                     </div>
                 </div>
@@ -39,7 +39,7 @@ export default function SchoolPublicCard({ school }: SchoolPublicCardProps) {
                     </div>
                 </div>
             </div>
-            <div className="bg-[rgb(32,38,130)] px-8 py-4 flex justify-between items-center">
+            <div className="bg-[#003527] px-8 py-4 flex justify-between items-center">
                 <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Earth Carbon Registry • {new Date().getFullYear()}</span>
                 <span className="text-[10px] font-black text-white uppercase tracking-widest italic flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />

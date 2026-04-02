@@ -55,7 +55,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             <button
               onClick={onClose}
               disabled={isDeleting}
-              className={`py-3 px-6 rounded-xl font-semibold text-[rgb(32,38,130)] bg-white border border-[rgb(32,38,130)] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm ${
+              className={`py-3 px-6 rounded-xl font-semibold text-[#003527] bg-white border border-[#003527] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm ${
                 isDeleting ? "cursor-not-allowed" : "cursor-pointer"
               }`}
             >

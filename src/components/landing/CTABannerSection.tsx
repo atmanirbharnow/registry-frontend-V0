@@ -1,40 +1,56 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 
 export default function CTABannerSection() {
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      window.location.href = `/signin?email=${encodeURIComponent(email)}`;
+    }
+  };
+
   return (
-    <section className="py-24 px-4 md:px-8 bg-slate-50">
-      <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-[2.5rem] p-8 md:p-14 shadow-[0_40px_100px_rgba(0,0,0,0.06)] border border-slate-100 flex flex-col items-center text-center gap-8 group transition-all duration-700 hover:shadow-[0_40px_100px_rgba(0,0,0,0.1)]">
+    <section className="w-full bg-[#f9faf5] px-4 md:px-16 lg:px-32 py-16 md:py-24">
+      <div className="relative w-full border border-[#003527]/10 rounded-none overflow-hidden shadow-2xl">
+        {/* Background Image with Overlay */}
+        <div 
+          className="absolute inset-0 z-0 bg-cover bg-center grayscale opacity-10"
+          style={{ backgroundImage: "url('/earth carbon logo bw.jpg')" }}
+        />
+        <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#003527] via-[#003527] to-[#004d39]" />
 
-          <div className="flex flex-col gap-4">
-            <span className="text-xs font-black uppercase tracking-[0.4em] text-[rgb(32,38,130)] opacity-60">
-              Join the Registry
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black leading-tight text-[rgb(32,38,130)]">
-              Start Your Climate <br /> Journey Today
-            </h2>
-            <p className="text-base md:text-xl text-slate-500 font-bold max-w-2xl leading-relaxed">
-              Verified. Transparent. Permanent climate records for India.
-            </p>
-          </div>
+        <div className="relative z-20 px-8 py-16 md:py-24 text-center">
+          <h2
+            className="text-2xl md:text-4xl font-black text-white mb-6 leading-tight max-w-2xl mx-auto"
+            style={{ fontFamily: "Manrope, sans-serif", letterSpacing: "-0.01em" }}
+          >
+            Ready to quantify your impact?
+          </h2>
+          <p className="text-sm md:text-lg text-white/70 mb-12 max-w-xl mx-auto leading-relaxed font-medium">
+            Join 1,200+ organizations building a more structured green economy. 
+            Secure your digital certificate today.
+          </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <Link
-              href="/signin"
-              className="bg-[rgb(32,38,130)] text-white font-black px-8 py-4 rounded-xl hover:bg-[#1e40af] transition-all hover:scale-[1.05] text-lg shadow-2xl shadow-blue-900/20"
+          {/* Email input + CTA */}
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-0 max-w-lg mx-auto shadow-2xl">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your business email"
+              className="flex-1 px-6 py-4 bg-white/10 border border-white/20 rounded-none text-white placeholder:text-white/40 text-sm font-bold outline-none focus:bg-white/20 focus:border-[#a8f928] transition-all"
+            />
+            <button 
+              type="submit"
+              className="px-10 py-4 bg-[#a8f928] border border-[#a8f928] text-[#003527] font-black text-xs uppercase tracking-widest rounded-none hover:bg-[#96e020] transition-all whitespace-nowrap"
             >
-              Register Your Action →
-            </Link>
-            <Link
-              href="/signin"
-              className="border-2 border-slate-200 text-[rgb(32,38,130)] font-black px-8 py-4 rounded-xl hover:bg-slate-50 transition-all hover:scale-[1.05] text-lg"
-            >
-              Explore the Registry
-            </Link>
-          </div>
-
+              Request Access
+            </button>
+          </form>
         </div>
       </div>
     </section>

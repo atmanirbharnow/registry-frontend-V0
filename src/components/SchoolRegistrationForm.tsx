@@ -8,7 +8,7 @@ import {
     BASELINE_SOURCE_OPTIONS,
     REPORTING_YEAR_OPTIONS,
 } from "@/lib/constants/schoolConstants";
-import { ACTION_TYPES, PAYMENT_AMOUNT_PAISE, PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS } from "@/lib/constants";
+import { ACTION_TYPES, PAYMENT_AMOUNT_PAISE, PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS, ACTION_LABELS } from "@/lib/constants";
 import { toast } from "react-toastify";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRouter } from "next/navigation";
@@ -257,7 +257,7 @@ export default function SchoolRegistrationForm() {
                         email: profile?.email || auth.currentUser?.email || "",
                         contact: profile?.phone || "",
                     },
-                    theme: { color: "rgb(32,38,130)" },
+                    theme: { color: "#003527" },
                     modal: {
                         ondismiss: () => setSubmitting(false),
                     },
@@ -410,14 +410,14 @@ export default function SchoolRegistrationForm() {
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
                     {[1, 2, 3, 4].map((step) => (
                         <div key={step} className="flex flex-col items-center flex-1 min-w-[90px] px-2 text-center">
-                            <div className={`text-[9px] sm:text-[10px] font-bold mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-400"}`}>
+                            <div className={`text-[9px] sm:text-[10px] font-bold mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[#003527]" : "text-gray-400"}`}>
                                 {step === 1 && "Baseline Usage"}
                                 {step === 2 && "Low-Carbon Action"}
                                 {step === 3 && "Impact Summary"}
                                 {step === 4 && "Payment"}
                             </div>
-                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" :
-                                currentStep > step ? "bg-green-500 border-green-100 text-white" :
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[#003527] border-[#eff7f2] text-white scale-110" :
+                                currentStep > step ? "bg-[#a8f928] border-green-100 text-white" :
                                     "bg-white border-gray-100 text-gray-300"
                                 }`}>
                                 {currentStep > step ? (
@@ -429,7 +429,7 @@ export default function SchoolRegistrationForm() {
                 </div>
                 <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
                     <div
-                        className="h-full bg-gradient-to-r from-[rgb(32,38,130)] to-blue-500 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(32,38,130,0.4)]"
+                        className="h-full bg-gradient-to-r from-[#003527] to-[#a8f928] rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(0,53,39,0.4)]"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -443,14 +443,14 @@ export default function SchoolRegistrationForm() {
                                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                             </svg>
                         </span>
-                        <span className="text-sm font-semibold text-yellow-700">
+                        <span className="text-sm font-semibold text-[#112000]">
                             Payment Simulation Mode — No real charges
                         </span>
                     </div>
                 )}
                 {currentStep === 1 && (
                     <StepWrapper title="Baseline Usage (Monthly Average)" icon={<EnergyIcon />}>
-                        <p className="text-xs text-blue-600 bg-blue-50 p-3 rounded-xl font-medium border border-blue-100 mb-6">
+                        <p className="text-xs text-[#003527] bg-[#eff7f2] p-3 rounded-xl font-medium border border-[#b0f0d6] mb-6">
                             Note: Baseline Usage represents your EXISTING usage BEFORE the new low-carbon action.
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -459,7 +459,7 @@ export default function SchoolRegistrationForm() {
                             <DropdownField label="Data Source" name="baseline_source" options={BASELINE_SOURCE_OPTIONS} formik={formik} />
 
                             <div className="md:col-span-2 mt-6">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
                                     Energy Usage (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
@@ -470,7 +470,7 @@ export default function SchoolRegistrationForm() {
                             </div>
 
                             <div className="md:col-span-2 mt-4">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
                                     Water Usage (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
@@ -481,7 +481,7 @@ export default function SchoolRegistrationForm() {
                             </div>
 
                             <div className="md:col-span-2 mt-4">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
                                     Waste Generated (Yearly)
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
@@ -520,7 +520,7 @@ export default function SchoolRegistrationForm() {
 
                                     return (
                                         <div key={type} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
-                                            <h4 className="font-semibold text-[rgb(32,38,130)]">{index + 1}. {label}</h4>
+                                            <h4 className="font-semibold text-[#003527]">{index + 1}. {label}</h4>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div>
                                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Installed Capacity / Quantity</label>
@@ -535,10 +535,10 @@ export default function SchoolRegistrationForm() {
                                                                     [type]: { ...(current[type] || {}), quantity: e.target.value, unit: defaultUnit }
                                                                 });
                                                             }}
-                                                            className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                            className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
                                                             required
                                                         />
-                                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-widest text-[#202682]/50 pointer-events-none">
+                                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-widest text-[#003527]/50 pointer-events-none">
                                                             {defaultUnit}
                                                         </span>
                                                     </div>
@@ -555,7 +555,7 @@ export default function SchoolRegistrationForm() {
                                                                 [type]: { ...(current[type] || {}), commissioningDate: e.target.value, unit: defaultUnit }
                                                             });
                                                         }}
-                                                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
                                                         required
                                                     />
                                                 </div>
@@ -588,10 +588,10 @@ export default function SchoolRegistrationForm() {
 
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-sm font-black uppercase tracking-widest text-[#202682]">
+                                        <h3 className="text-sm font-black uppercase tracking-widest text-[#003527]">
                                             Location Details
                                         </h3>
-                                        {pinLoading && <Spinner className="w-4 h-4 text-[#202682]" />}
+                                        {pinLoading && <Spinner className="w-4 h-4 text-[#003527]" />}
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 border-2 border-slate-100 rounded-3xl">
@@ -624,22 +624,16 @@ export default function SchoolRegistrationForm() {
 
                         <PhotoUploadSection
                             userId={auth.currentUser?.uid || "anonymous"}
-                            slots={[
-                                { key: "energyBillCopy", label: "Energy Bill Copy" },
-                                { key: "meterPhoto", label: "Meter Photo" },
-                                { key: "moreDetailsPhoto", label: "More Details Photo" },
-                                { key: "siteOverviewPhoto", label: "Site Overview of System" },
-                            ]}
-                            photos={{
-                                energyBillCopy: formik.values.energyBillCopy || null,
-                                meterPhoto: formik.values.meterPhoto || null,
-                                moreDetailsPhoto: formik.values.moreDetailsPhoto || null,
-                                siteOverviewPhoto: formik.values.siteOverviewPhoto || null,
-                            }}
+                            slots={formik.values.actionTypes.map(type => ({
+                                key: type,
+                                label: ACTION_LABELS[type] || type
+                            }))}
+                            photos={formik.values.actionTypes.reduce((acc, type) => ({
+                                ...acc,
+                                [type]: (formik.values as any)[type] || null
+                            }), {})}
                             onPhotoChange={(key, url) => {
                                 formik.setFieldValue(key, url);
-                                // Set photo_file as a flag for Yup if needed, 
-                                // but we manually check in handleNext
                             }}
                         />
                     </div>
@@ -666,7 +660,7 @@ export default function SchoolRegistrationForm() {
                                             name="consent_confirmed"
                                             checked={formik.values.consent_confirmed}
                                             onChange={formik.handleChange}
-                                            className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                            className="peer appearance-none w-6 h-6 border-2 border-slate-300 rounded-lg checked:border-[#003527] checked:bg-[#003527] transition-all cursor-pointer"
                                         />
                                         <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
@@ -676,15 +670,15 @@ export default function SchoolRegistrationForm() {
                                 </label>
                             </div>
 
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-gradient-to-br from-white to-blue-50/50 rounded-3xl border-2 border-blue-100 shadow-xl">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-gradient-to-br from-white to-[#eff7f2]/50 rounded-3xl border-2 border-[#b0f0d6] shadow-xl">
                                 <div>
                                     <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Registration Fee</p>
-                                    <p className="text-4xl font-black text-[rgb(32,38,130)]">₹1</p>
+                                    <p className="text-4xl font-black text-[#003527]">₹1</p>
                                 </div>
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full md:w-auto px-12 py-5 bg-[rgb(32,38,130)] text-white rounded-2xl font-black shadow-2xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
+                                    className="w-full md:w-auto px-12 py-5 bg-[#003527] text-white rounded-2xl font-black shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
                                 >
                                     {submitting ? "Processing..." : "Pay & Register School"}
                                 </button>
@@ -709,7 +703,7 @@ export default function SchoolRegistrationForm() {
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full sm:w-40 px-6 py-3 rounded-xl bg-[rgb(32,38,130)] text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                            className="w-full sm:w-40 px-6 py-3 rounded-xl bg-[#003527] text-white font-bold text-sm shadow-xl shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
                         >
                             Next Step
                         </button>
@@ -723,7 +717,7 @@ export default function SchoolRegistrationForm() {
 function StepWrapper({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) {
     return (
         <div className="bg-white rounded-3xl p-6 shadow-2xl shadow-gray-200 border border-gray-100 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-lg font-black text-white bg-[rgb(32,38,130)] -mx-6 -mt-6 p-5 rounded-t-3xl flex items-center gap-3">
+            <h2 className="text-lg font-black text-white bg-[#003527] -mx-6 -mt-6 p-5 rounded-t-3xl flex items-center gap-3">
                 <span className="p-2 bg-white/20 rounded-lg">{icon}</span>
                 {title}
             </h2>
@@ -736,7 +730,7 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
     const error = formik.touched[name] && formik.errors[name];
     const isDisabled = props.disabled;
 
-    const baseInputStyles = `w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[rgb(32,38,130)] focus:bg-white"
+    const baseInputStyles = `w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[#003527] focus:bg-white"
         } ${suffix ? "pr-12" : ""} ${isDisabled ? "disabled:opacity-100 disabled:text-gray-900 cursor-not-allowed" : ""}`;
 
     // Merge base styles with custom className if provided

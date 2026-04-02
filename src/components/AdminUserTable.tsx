@@ -136,7 +136,7 @@ export default function AdminUserTable() {
                                                         ? "bg-gray-100 text-gray-300 cursor-not-allowed"
                                                         : u.role === "admin"
                                                             ? "bg-red-50 text-red-600 hover:bg-red-100"
-                                                            : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100"
+                                                            : "bg-yellow-50 text-[#112000] hover:bg-yellow-100"
                                                         } ${updatingUid === u.uid ? "opacity-50" : ""}`}
                                                 >
                                                     {updatingUid === u.uid ? (

@@ -108,7 +108,7 @@ export default function PhotoUploadSection({
                                 ) : (
                                     <div
                                         onClick={() => fileRefs.current[slot.key]?.click()}
-                                        className="flex items-center justify-center h-full hover:border-blue-300 hover:bg-blue-50/30 transition-all cursor-pointer"
+                                        className="flex items-center justify-center h-full hover:border-[#b0f0d6] hover:bg-[#eff7f2]/30 transition-all cursor-pointer"
                                     >
                                         <span className="text-gray-400 text-xs">+ Upload</span>
                                     </div>

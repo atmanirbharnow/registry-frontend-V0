@@ -27,7 +27,7 @@ export default function QRCode({ registryId, size = 150, type = 'action' }: QRCo
             <a
                 href={qrUrl}
                 download={`${registryId}-qr.png`}
-                className="text-xs font-semibold text-[rgb(32,38,130)] hover:underline cursor-pointer"
+                className="text-xs font-semibold text-[#003527] hover:underline cursor-pointer"
             >
                 Download QR Code
             </a>

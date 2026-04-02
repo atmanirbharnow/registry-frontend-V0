@@ -91,7 +91,7 @@ export default function PerformanceBreakdownModal({
                 {/* Header */}
                 <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center shrink-0">
                     <div>
-                        <h2 className="text-xl sm:text-2xl font-black text-[rgb(32,38,130)] tracking-tight">Digital Climate Signature</h2>
+                        <h2 className="text-xl sm:text-2xl font-black text-[#003527] tracking-tight">Digital Climate Signature</h2>
                         <p className="text-sm font-semibold text-gray-500 mt-1">Holistic Resource Independence</p>
                     </div>
                     <button
@@ -111,12 +111,12 @@ export default function PerformanceBreakdownModal({
                     <div className="grid grid-cols-2 gap-3 mb-6">
                         <div className="bg-green-50/50 border border-green-100 rounded-xl p-4 text-center">
                             <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Impact</div>
-                            <div className="text-2xl font-black text-green-600">-{portfolio.totalTCO2e.toFixed(3)}</div>
+                            <div className="text-2xl font-black text-[#003527]">-{portfolio.totalTCO2e.toFixed(3)}</div>
                             <div className="text-[10px] font-bold text-green-500">tCO₂e Reduced</div>
                         </div>
                         <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 text-center">
                             <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Atmanirbhar</div>
-                            <div className="text-2xl font-black text-blue-600">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
+                            <div className="text-2xl font-black text-[#003527]">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
                             <div className="text-[10px] font-bold text-blue-500">Resource Independence</div>
                         </div>
                     </div>

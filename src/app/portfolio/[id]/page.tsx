@@ -106,7 +106,7 @@ export default function PublicPortfolioPage() {
                         {savingsData && (
                             <div
                                 data-testid={testId}
-                                className="mt-1 cursor-default group relative inline-flex items-center gap-1 text-[11px] font-bold text-indigo-600 bg-indigo-50/80 px-2 py-0.5 rounded-full border border-indigo-100"
+                                className="mt-1 cursor-default group relative inline-flex items-center gap-1 text-[11px] font-bold text-[#003527] bg-[#eff7f2]/80 px-2 py-0.5 rounded-full border border-[#b0f0d6]"
                             >
                                 ₹ {Number(savingsData.amount).toLocaleString("en-IN")} INR Saved
 
@@ -148,7 +148,7 @@ export default function PublicPortfolioPage() {
                 <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden flex flex-col mb-8">
 
                     {/* Header */}
-                    <div className="bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] p-6 sm:p-8 relative overflow-hidden">
+                    <div className="bg-gradient-to-br from-[#003527] to-[#002219] p-6 sm:p-8 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
                             <svg width="140" height="140" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M22 12A10 10 0 1 1 12 2a10 10 0 0 1 10 10z" />
@@ -159,32 +159,32 @@ export default function PublicPortfolioPage() {
                         </div>
                         <div className="relative z-10 text-center space-y-2">
                             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">Public Digital Climate Signature</h1>
-                            <p className="text-blue-200 font-medium text-xs sm:text-sm">Verified Holistic Resource Independence Portfolio</p>
-                            <p className="text-[10px] text-blue-300 font-mono mt-2 bg-black/20 inline-block px-3 py-1 rounded-full border border-blue-400/30">ID: {userId}</p>
+                            <p className="text-[#a8f928] font-medium text-xs sm:text-sm">Verified Holistic Resource Independence Portfolio</p>
+                            <p className="text-[10px] text-emerald-100 font-mono mt-2 bg-black/20 inline-block px-3 py-1 rounded-full border border-[#a8f928]/30">ID: {userId}</p>
                         </div>
                     </div>
 
                     {/* Summary Cards */}
                     <div className="px-5 py-6 sm:px-8 border-b border-gray-100 bg-gray-50/30">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="bg-white border-2 border-blue-100 rounded-2xl p-4 text-center shadow-[0_4px_12px_rgb(0,0,0,0.03)] flex flex-col justify-center items-center relative overflow-hidden group hover:border-blue-300 transition-colors">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-[rgb(32,38,130)] rounded-t-2xl"></div>
-                                <div className="p-1.5 bg-blue-50 rounded-full text-blue-500 mb-2 group-hover:scale-110 transition-transform">
+                            <div className="bg-white border-2 border-[#b0f0d6] rounded-2xl p-4 text-center shadow-[0_4px_12px_rgb(0,0,0,0.03)] flex flex-col justify-center items-center relative overflow-hidden group hover:border-[#a8f928] transition-colors">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#003527] to-[#a8f928] rounded-t-2xl"></div>
+                                <div className="p-1.5 bg-[#eff7f2] rounded-full text-[#003527] mb-2 group-hover:scale-110 transition-transform">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                 </div>
                                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Impact</div>
-                                <div className="text-3xl font-black text-blue-600 tracking-tighter">-{portfolio.totalTCO2e.toFixed(3)}</div>
-                                <div className="text-[10px] font-bold text-blue-500 mt-1">tCO₂e Reduced</div>
+                                <div className="text-3xl font-black text-[#003527] tracking-tighter">-{portfolio.totalTCO2e.toFixed(3)}</div>
+                                <div className="text-[10px] font-bold text-[#003527] mt-1">tCO₂e Reduced</div>
                             </div>
 
-                            <div className="bg-white border-2 border-cyan-100 rounded-2xl p-4 text-center shadow-[0_4px_12px_rgb(0,0,0,0.03)] flex flex-col justify-center items-center relative overflow-hidden group hover:border-cyan-300 transition-colors">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-t-2xl"></div>
-                                <div className="p-1.5 bg-cyan-50 rounded-full text-cyan-500 mb-2 group-hover:scale-110 transition-transform">
+                            <div className="bg-white border-2 border-emerald-100 rounded-2xl p-4 text-center shadow-[0_4px_12px_rgb(0,0,0,0.03)] flex flex-col justify-center items-center relative overflow-hidden group hover:border-emerald-300 transition-colors">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#a8f928] to-[#003527] rounded-t-2xl"></div>
+                                <div className="p-1.5 bg-emerald-50 rounded-full text-emerald-500 mb-2 group-hover:scale-110 transition-transform">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
                                 </div>
                                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Total Atmanirbhar</div>
-                                <div className="text-3xl font-black text-cyan-600 tracking-tighter">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
-                                <div className="text-[10px] font-bold text-cyan-500 mt-1">Resource Independence</div>
+                                <div className="text-3xl font-black text-emerald-600 tracking-tighter">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
+                                <div className="text-[10px] font-bold text-emerald-500 mt-1">Resource Independence</div>
                             </div>
                         </div>
                     </div>
@@ -197,8 +197,8 @@ export default function PublicPortfolioPage() {
                         </h2>
 
                         {renderPillar("Energy", "border-orange-100", "bg-orange-50/40", "text-orange-600", portfolio.energy)}
-                        {renderPillar("Water", "border-cyan-100", "bg-cyan-50/40", "text-cyan-600", portfolio.water)}
-                        {renderPillar("Waste", "border-blue-100", "bg-blue-50/40", "text-[rgb(32,38,130)]", portfolio.waste)}
+                        {renderPillar("Water", "border-teal-100", "bg-teal-50/40", "text-teal-600", portfolio.water)}
+                        {renderPillar("Waste", "border-[#b0f0d6]", "bg-[#eff7f2]/40", "text-[#003527]", portfolio.waste)}
 
                         {portfolio.other && portfolio.other.actions.length > 0 &&
                             renderPillar("Other", "border-gray-200", "bg-gray-50/50", "text-gray-600", portfolio.other)

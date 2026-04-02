@@ -40,7 +40,7 @@ const SchoolAutocomplete = ({
           onChange={handleInputChange}
           placeholder={isLoaded ? placeholder : (loadError ? "Search school..." : "Loading search...")}
           className={`w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 transition-all outline-none font-bold text-gray-900 placeholder:text-gray-400 text-lg ${
-            error ? "border-red-500 bg-red-50" : "border-slate-300 focus:border-[rgb(32,38,130)] focus:bg-white focus:shadow-lg focus:shadow-blue-900/5"
+            error ? "border-red-500 bg-red-50" : "border-slate-300 focus:border-[#003527] focus:bg-white focus:shadow-lg focus:shadow-blue-900/5"
           } ${className}`}
           {...props}
         />
@@ -67,7 +67,7 @@ const SchoolAutocomplete = ({
         <button
           type="button"
           onClick={() => onManualEntry?.(inputValue)}
-          className="text-xs font-bold text-[rgb(32,38,130)] hover:underline px-1"
+          className="text-xs font-bold text-[#003527] hover:underline px-1"
         >
           School not found? Enter manually
         </button>

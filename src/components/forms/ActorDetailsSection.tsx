@@ -41,7 +41,7 @@ export default function ActorDetailsSection({
                 flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer
                 transition-all duration-200
                 ${actorType === type.value
-                                    ? "border-[rgb(32,38,130)] bg-blue-50/50"
+                                    ? "border-[#003527] bg-[#eff7f2]/50"
                                     : "border-gray-100 bg-gray-50/50 hover:border-gray-200"
                                 }
               `}
@@ -52,7 +52,7 @@ export default function ActorDetailsSection({
                                 value={type.value}
                                 checked={actorType === type.value}
                                 onChange={onChange}
-                                className="accent-[rgb(32,38,130)]"
+                                className="accent-[#003527]"
                             />
                             <span className="text-sm font-medium text-gray-700">
                                 {type.label}

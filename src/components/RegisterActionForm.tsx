@@ -17,7 +17,7 @@ import CustomDropdown from "./ui/CustomDropdown";
 import MultiSelectDropdown from "./ui/MultiSelectDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS } from "@/lib/constants";
+import { PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS, ACTION_TYPES, ACTION_PHOTO_LABELS, ACTION_LABELS } from "@/lib/constants";
 import { getUserActions } from "@/lib/firestoreService";
 import { usePincodeLookup } from "@/hooks/usePincodeLookup";
 import LocationAutocomplete from "./LocationAutocomplete";
@@ -282,7 +282,7 @@ export default function RegisterActionForm() {
                         email: profile?.email || user?.email || "",
                         contact: profile?.phone || "",
                     },
-                    theme: { color: "rgb(32,38,130)" },
+                    theme: { color: "#003527" },
                     modal: {
                         ondismiss: () => {
                             setSubmitting(false);
@@ -377,14 +377,14 @@ export default function RegisterActionForm() {
                 <div className="flex justify-between items-center mb-4 overflow-x-auto pb-2 scrollbar-none">
                     {[1, 2, 3, 4].map((step) => (
                         <div key={step} className="flex flex-col items-center flex-1 min-w-[100px] px-2 text-center">
-                            <div className={`text-[10px] font-black mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[rgb(32,38,130)]" : "text-gray-300"}`}>
+                            <div className={`text-[10px] font-black mb-2 uppercase tracking-widest leading-tight h-4 flex flex-col justify-center ${currentStep >= step ? "text-[#003527]" : "text-gray-300"}`}>
                                 {step === 1 && "Baseline Usage"}
                                 {step === 2 && "Low-Carbon Action"}
                                 {step === 3 && "Impact Summary"}
                                 {step === 4 && "Payment"}
                             </div>
-                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[rgb(32,38,130)] border-blue-100 text-white scale-110" :
-                                currentStep > step ? "bg-green-500 border-green-100 text-white" :
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[#003527] border-[#eff7f2] text-white scale-110" :
+                                currentStep > step ? "bg-[#a8f928] border-green-100 text-white" :
                                     "bg-white border-gray-50 text-gray-200"
                                 }`}>
                                 {currentStep > step ? (
@@ -396,7 +396,7 @@ export default function RegisterActionForm() {
                 </div>
                 <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
                     <div
-                        className="h-full bg-gradient-to-r from-[rgb(32,38,130)] to-blue-500 rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(32,38,130,0.4)]"
+                        className="h-full bg-gradient-to-r from-[#003527] to-[#a8f928] rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(0,53,39,0.4)]"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -410,7 +410,7 @@ export default function RegisterActionForm() {
                                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
                             </svg>
                         </span>
-                        <span className="text-sm font-semibold text-yellow-700">
+                        <span className="text-sm font-semibold text-[#112000]">
                             Payment Simulation Mode — No real charges
                         </span>
                     </div>
@@ -419,7 +419,7 @@ export default function RegisterActionForm() {
                 {currentStep === 1 && (
                     <StepWrapper title="Step 1: Baseline Usage" icon={<EnergyIcon />}>
                         <div className="space-y-6">
-                            <p className="text-xs text-blue-600 bg-blue-50 p-3 rounded-xl font-medium border border-blue-100">
+                            <p className="text-xs text-[#003527] bg-[#eff7f2] p-3 rounded-xl font-medium border border-[#b0f0d6]">
                                 Note: Baseline Usage represents your EXISTING usage BEFORE the new low-carbon action.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -429,7 +429,7 @@ export default function RegisterActionForm() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
                                         Energy Usage (Yearly)
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
@@ -440,7 +440,7 @@ export default function RegisterActionForm() {
                                 </div>
 
                                 <div className="md:col-span-2 mt-4">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
                                         Water Usage (Yearly)
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
@@ -451,7 +451,7 @@ export default function RegisterActionForm() {
                                 </div>
 
                                 <div className="md:col-span-2 mt-4">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-4">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
                                         Waste Generated (Yearly)
                                     </h3>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-[2rem] border-2 border-slate-100">
@@ -474,7 +474,7 @@ export default function RegisterActionForm() {
                                     Action Types
                                 </label>
                                 <MultiSelectDropdown
-                                    options={ACTION_TYPE_OPTIONS}
+                                    options={ACTION_TYPES}
                                     selectedValues={formik.values.actionTypes}
                                     onChange={(vals) => formik.setFieldValue("actionTypes", vals)}
                                 />
@@ -484,13 +484,13 @@ export default function RegisterActionForm() {
                             </div>
 
                             {formik.values.actionTypes && formik.values.actionTypes.map((type, index) => {
-                                const actionOpt = ACTION_TYPE_OPTIONS.find(a => a.value === type);
+                                const actionOpt = ACTION_TYPES.find(a => a.value === type);
                                 const label = actionOpt ? actionOpt.label : type;
                                 const defaultUnit = ACTION_UNITS[type] || "units";
 
                                 return (
                                     <div key={type} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
-                                        <h4 className="font-semibold text-[rgb(32,38,130)]">{index + 1}. {label}</h4>
+                                        <h4 className="font-semibold text-[#003527]">{index + 1}. {label}</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
                                                 <label className="block text-sm font-semibold text-gray-700 mb-2">Quantity / Capacity</label>
@@ -505,10 +505,10 @@ export default function RegisterActionForm() {
                                                                 [type]: { ...(current[type] || {}), quantity: e.target.value, unit: defaultUnit }
                                                             });
                                                         }}
-                                                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
                                                         required
                                                     />
-                                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-widest text-[#202682]/50 pointer-events-none">
+                                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-widest text-[#003527]/50 pointer-events-none">
                                                         {defaultUnit}
                                                     </span>
                                                 </div>
@@ -525,7 +525,7 @@ export default function RegisterActionForm() {
                                                             [type]: { ...(current[type] || {}), commissioningDate: e.target.value, unit: defaultUnit }
                                                         });
                                                     }}
-                                                    className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                    className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
                                                     required
                                                 />
                                             </div>
@@ -536,10 +536,10 @@ export default function RegisterActionForm() {
 
                             <div className="pt-6 border-t border-gray-100">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#202682]">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-[#003527]">
                                         Location Details
                                     </h3>
-                                    {pinLoading && <Spinner className="w-4 h-4 text-[#202682]" />}
+                                    {pinLoading && <Spinner className="w-4 h-4 text-[#003527]" />}
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 border-2 border-slate-100 rounded-3xl">
@@ -566,38 +566,31 @@ export default function RegisterActionForm() {
                                                 if (loc.lng) formik.setFieldValue("lng", loc.lng);
                                             }}
                                             placeholder={profile?.institutionType === 'Individual' ? "Enter your full address..." : "Search for your building/street address..."}
-                                            className="!py-3 !rounded-xl !border-slate-300 focus:outline-none focus:ring-2 focus:ring-[rgb(32,38,130)]/20 focus:border-[rgb(32,38,130)] transition-all"
+                                            className="!py-3 !rounded-xl !border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all"
                                         />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="pt-6 border-t border-gray-100">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#202682] mb-6">
+                                <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-6">
                                     Verification Photos (System Photos)
                                 </h3>
                                 <PhotoUploadSection
-                                    slots={[
-                                        {
-                                            key: "energyBillCopy",
-                                            label: "Energy Bill Copy"
-                                        },
-                                        { key: "meterPhoto", label: "Meter Photo" },
-                                        { key: "moreDetailsPhoto", label: "More Details Photo" },
-                                        { key: "siteOverviewPhoto", label: "Site Overview of System" },
-                                    ]}
-                                    photos={{
-                                        energyBillCopy: formik.values.energyBillCopy,
-                                        meterPhoto: formik.values.meterPhoto,
-                                        moreDetailsPhoto: formik.values.moreDetailsPhoto,
-                                        siteOverviewPhoto: formik.values.siteOverviewPhoto,
-                                    }}
+                                    slots={formik.values.actionTypes.map(type => ({
+                                        key: type,
+                                        label: ACTION_LABELS[type] || type
+                                    }))}
+                                    photos={formik.values.actionTypes.reduce((acc, type) => ({
+                                        ...acc,
+                                        [type]: (formik.values as any)[type] || null
+                                    }), {})}
                                     userId={user?.uid || ""}
                                     onPhotoChange={(key, url) => {
                                         formik.setFieldValue(key, url);
                                         // Set photo_file flag if ANY photo is present
                                         const hasAny = url || formik.values.energyBillCopy || formik.values.meterPhoto || formik.values.moreDetailsPhoto || formik.values.siteOverviewPhoto;
-                                        formik.setFieldValue("photo_file", hasAny ? "uploaded" : null);
+                                        formik.setFieldValue("photo_file", "uploaded");
                                     }}
                                 />
                             </div>
@@ -626,7 +619,7 @@ export default function RegisterActionForm() {
                                             name="consentGiven"
                                             checked={formik.values.consentGiven}
                                             onChange={formik.handleChange}
-                                            className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                            className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[#003527] checked:bg-[#003527] transition-all cursor-pointer"
                                         />
                                         <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
@@ -642,7 +635,7 @@ export default function RegisterActionForm() {
                                             name="disclaimerAccepted"
                                             checked={formik.values.disclaimerAccepted}
                                             onChange={formik.handleChange}
-                                            className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                                            className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[#003527] checked:bg-[#003527] transition-all cursor-pointer"
                                         />
                                         <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
@@ -652,15 +645,15 @@ export default function RegisterActionForm() {
                                 </label>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-8 p-6 bg-gradient-to-br from-white to-blue-50/30 rounded-3xl border border-gray-100 shadow-xl">
+                            <div className="flex flex-col sm:flex-row items-center justify-between gap-8 p-6 bg-gradient-to-br from-white to-[#eff7f2] rounded-3xl border border-gray-100 shadow-xl">
                                 <div>
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Registration Fee</p>
-                                    <p className="text-4xl font-black text-[#202682]">{PAYMENT_AMOUNT_DISPLAY}</p>
+                                    <p className="text-4xl font-black text-[#003527]">{PAYMENT_AMOUNT_DISPLAY}</p>
                                 </div>
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full sm:w-auto px-12 py-5 bg-[rgb(32,38,130)] text-white rounded-2xl font-black shadow-2xl shadow-blue-900/30 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
+                                    className="w-full sm:w-auto px-12 py-5 bg-[#003527] text-white rounded-2xl font-black shadow-2xl shadow-emerald-900/30 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
                                 >
                                     {submitting ? "Processing..." : "Pay & Complete"}
                                 </button>
@@ -685,7 +678,7 @@ export default function RegisterActionForm() {
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full sm:w-40 py-3 px-6 rounded-xl bg-[rgb(32,38,130)] text-white font-bold text-sm shadow-lg shadow-blue-900/10 hover:shadow-blue-900/20 hover:-translate-y-0.5 transition-all active:scale-95"
+                            className="w-full sm:w-40 py-3 px-6 rounded-xl bg-[#003527] text-white font-bold text-sm shadow-lg shadow-emerald-900/10 hover:shadow-emerald-900/20 hover:-translate-y-0.5 transition-all active:scale-95"
                         >
                             Next Step
                         </button>
@@ -696,55 +689,12 @@ export default function RegisterActionForm() {
     );
 }
 
-const getAvailableActionTypes = () => [
-    { value: 'solar_rooftop', label: 'Solar Rooftop (PV)', unit: 'kW' },
-    { value: 'solar_water_heater', label: 'Solar Water Heater', unit: 'Liters' },
-    { value: 'borewell_water', label: 'Borewell Water Pumping', unit: 'HP' },
-    { value: 'rainwater_harvesting', label: 'Rainwater Harvesting', unit: 'KL' },
-    { value: 'biogas', label: 'Biogas Plant', unit: 'm3' },
-    { value: 'composting', label: 'Waste Composting', unit: 'kg/day' },
-    { value: 'plastic_recycling', label: 'Plastic Recycling', unit: 'kg' },
-    { value: 'paper_recycling', label: 'Paper Recycling', unit: 'kg' },
-    { value: 'textile_recycling', label: 'Textile Recycling', unit: 'kg' },
-    { value: 'metal_recycling', label: 'Metal Recycling', unit: 'kg' },
-    { value: 'turn_off_bulb', label: 'Lighting Efficiency', unit: 'points' },
-    { value: 'turn_off_fan', label: 'Fan Efficiency', unit: 'points' },
-];
 
-const ACTION_TYPE_OPTIONS = [
-    { value: 'solar_rooftop', label: 'Solar Rooftop (PV)' },
-    { value: 'solar_water_heater', label: 'Solar Water Heater' },
-    { value: 'borewell_water', label: 'Borewell Water Pumping' },
-    { value: 'rainwater_harvesting', label: 'Rainwater Harvesting' },
-    { value: 'biogas', label: 'Biogas Plant' },
-    { value: 'composting', label: 'Waste Composting' },
-    { value: 'plastic_recycling', label: 'Plastic Recycling' },
-    { value: 'paper_recycling', label: 'Paper Recycling' },
-    { value: 'textile_recycling', label: 'Textile Recycling' },
-    { value: 'metal_recycling', label: 'Metal Recycling' },
-    { value: 'turn_off_bulb', label: 'Lighting Efficiency' },
-    { value: 'turn_off_fan', label: 'Fan Efficiency' },
-];
-
-const ACTION_PHOTO_LABELS: Record<string, string> = {
-    solar_rooftop: "Solar Panel & Inverter Photo",
-    solar_water_heater: "Solar Tank & Collector Photo",
-    borewell_water: "Pump & Meter Photo",
-    rainwater_harvesting: "Storage Tank & Filter Photo",
-    biogas: "Digester & Stove Photo",
-    composting: "Compost Bin Photo",
-    plastic_recycling: "Recycled Plastic Batch Photo",
-    paper_recycling: "Paper Collection Point Photo",
-    textile_recycling: "Textile Waste Storage Photo",
-    metal_recycling: "Metal Scrap Storage Photo",
-    turn_off_bulb: "LED Installation Photo",
-    turn_off_fan: "Efficient Fan Photo",
-};
 
 function StepWrapper({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) {
     return (
         <div className="bg-white rounded-3xl p-6 shadow-2xl shadow-gray-200 border border-gray-100 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-lg font-black text-white bg-[rgb(32,38,130)] -mx-6 -mt-6 p-5 rounded-t-3xl flex items-center gap-3 text-left">
+            <h2 className="text-lg font-black text-white bg-[#003527] -mx-6 -mt-6 p-5 rounded-t-3xl flex items-center gap-3 text-left">
                 <span className="p-2 bg-white/20 rounded-lg">{icon}</span>
                 {title}
             </h2>
@@ -757,7 +707,7 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
     const error = formik.touched[name] && formik.errors[name];
     const isDisabled = props.disabled;
 
-    const baseInputStyles = `w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-bold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-100 focus:border-[rgb(32,38,130)] focus:bg-white"
+    const baseInputStyles = `w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-bold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-100 focus:border-[#003527] focus:bg-white"
         } ${suffix ? "pr-12" : ""} ${isDisabled ? "disabled:opacity-100 disabled:text-gray-900 cursor-not-allowed" : ""}`;
 
     // Merge base styles with custom className if provided
@@ -814,7 +764,7 @@ function DropdownField({ label, name, options, formik, placeholder = "Select opt
                 onChange={(val) => {
                     formik.setFieldValue(name, val);
                     // Auto-set unit based on action type
-                    const selected = getAvailableActionTypes().find(a => a.value === val);
+                    const selected = ACTION_TYPES.find(a => a.value === val);
                     if (selected) formik.setFieldValue("unit", selected.unit);
                 }}
                 placeholder={placeholder}

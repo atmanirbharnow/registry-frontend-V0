@@ -86,7 +86,7 @@ export default function CustomDropdown({
                 onKeyDown={handleKeyDown}
                 className={`
                     flex items-center justify-between w-full
-                    border border-slate-300 bg-white hover:border-blue-400 focus:border-blue-500
+                    border border-slate-300 bg-white hover:border-[#a8f928] focus:border-[#003527]
                     transition-all duration-200 outline-none font-medium
                     ${sizeClasses[size]}
                     ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
@@ -137,7 +137,7 @@ export default function CustomDropdown({
                                         px-4 py-2.5 flex items-center justify-between
                                         transition-colors duration-150
                                         ${option.disabled ? "opacity-50 cursor-not-allowed bg-slate-50 text-slate-400" : "cursor-pointer hover:bg-gray-50 text-gray-700"}
-                                        ${isSelected && !option.disabled ? "text-[rgb(32,38,130)] font-semibold bg-blue-50/30" : ""}
+                                        ${isSelected && !option.disabled ? "text-[#003527] font-semibold bg-[#e8f0ec]" : ""}
                                         ${size === "sm" ? "text-xs px-3 py-2" : size === "lg" ? "text-base px-5" : "text-sm"}
                                     `}
                                 >

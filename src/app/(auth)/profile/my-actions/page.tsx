@@ -68,7 +68,7 @@ export default function MyActionsPage() {
                                     {profile.displayName || "Account"}
                                 </h2>
                                 {isAdmin && (
-                                    <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] font-bold rounded">
+                                    <span className="px-2 py-0.5 bg-yellow-100 text-[#112000] text-[10px] font-bold rounded">
                                         Admin
                                     </span>
                                 )}
@@ -81,7 +81,7 @@ export default function MyActionsPage() {
                                 <button
                                     onClick={() => setActiveTab("climate")}
                                     className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "climate"
-                                        ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                        ? "bg-white text-[#003527] shadow-sm"
                                         : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
@@ -90,7 +90,7 @@ export default function MyActionsPage() {
                                 <button
                                     onClick={() => setActiveTab("school")}
                                     className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "school"
-                                        ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                        ? "bg-white text-[#003527] shadow-sm"
                                         : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
@@ -109,11 +109,11 @@ export default function MyActionsPage() {
                 {/* Performance Metrics (Only for Individual Actions for now) */}
                 {activeTab === "climate" && portfolio && portfolio.totalTCO2e > 0 && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] rounded-2xl p-5 text-white">
+                        <div className="bg-gradient-to-br from-[#003527] to-[#002219] rounded-2xl p-5 text-white">
                             <div className="text-[10px] font-bold text-blue-200 uppercase tracking-wider mb-1">Total Impact Managed</div>
                             <div className="text-3xl font-black">-{portfolio.totalTCO2e.toFixed(3)} <span className="text-xs">tCO₂e</span></div>
                         </div>
-                        <div className="bg-gradient-to-br from-[rgb(32,38,130)] to-[rgb(20,24,90)] rounded-2xl p-5 text-white">
+                        <div className="bg-gradient-to-br from-[#003527] to-[#002219] rounded-2xl p-5 text-white">
                             <div className="text-[10px] font-bold text-blue-200 uppercase tracking-wider mb-1">Portfolio Efficiency</div>
                             <div className="text-3xl font-black">{portfolio.totalAtmanirbharPercent.toFixed(1)}% <span className="text-xs">Avg. Atmanirbhar</span></div>
                         </div>
@@ -166,7 +166,7 @@ export default function MyActionsPage() {
                                             <tbody className="divide-y divide-gray-50">
                                                 {actions.map((action) => (
                                                     <tr key={action.id} className="hover:bg-gray-50/50 transition-colors">
-                                                        <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[rgb(32,38,130)]">
+                                                        <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[#003527]">
                                                             {action.registryId ? (
                                                                 <a href={`/verify/${action.registryId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                                                                     {action.registryId}
@@ -183,7 +183,7 @@ export default function MyActionsPage() {
                                                         </td>
                                                         <td className="py-3.5 px-5 text-sm">
                                                             {action.co2eKg != null ? (
-                                                                <a href={action.registryId ? `/verify/${action.registryId}` : undefined} target="_blank" rel="noopener noreferrer" className="text-[rgb(32,38,130)] font-medium hover:underline">
+                                                                <a href={action.registryId ? `/verify/${action.registryId}` : undefined} target="_blank" rel="noopener noreferrer" className="text-[#003527] font-medium hover:underline">
                                                                     {action.co2eKg.toFixed(3)}
                                                                 </a>
                                                             ) : (
@@ -198,7 +198,7 @@ export default function MyActionsPage() {
                                                         </td>
                                                         <td className="py-3.5 px-5 text-sm">
                                                             {action.sha256Hash ? (
-                                                                <span className="text-[rgb(32,38,130)] font-mono text-xs" title={action.sha256Hash}>
+                                                                <span className="text-[#003527] font-mono text-xs" title={action.sha256Hash}>
                                                                     {action.sha256Hash.substring(0, 12)}...
                                                                 </span>
                                                             ) : (
@@ -207,7 +207,7 @@ export default function MyActionsPage() {
                                                         </td>
                                                         <td className="py-3.5 px-5 text-sm">
                                                             {action.registryId ? (
-                                                                <a href={`/verify/${action.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[rgb(32,38,130)] font-medium hover:underline text-xs">
+                                                                <a href={`/verify/${action.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[#003527] font-medium hover:underline text-xs">
                                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                                         <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
                                                                         <polyline points="15 3 21 3 21 9" />

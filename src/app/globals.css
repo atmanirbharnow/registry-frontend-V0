@@ -1,33 +1,19 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --foreground-rgb: 255, 255, 255;
-      --background-start-rgb: 0, 0, 0;
-      --background-end-rgb: 0, 0, 0;
-    }
-  }
-
-  body {
-    color: rgb(var(--foreground-rgb));
-    background: white;
-    gray: #f5f5f5;
-    margin: 0;
-    font-family: "Merriweather Sans", sans-serif;
-  }
-}
-
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --color-primary: #003527;
+  --color-primary-dark: #002219;
+  --color-primary-light: #064e3b;
+  --color-accent-neon: #a8f928;
+  --color-accent-secondary: #b0f0d6;
+  --color-surface: #f9faf5;
+  --color-on-primary: #ffffff;
+  --color-on-accent: #112000;
+  --font-manrope: 'Manrope', sans-serif;
+  --font-merriweather-sans: 'Merriweather Sans', sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,11 +25,13 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: white;
-  gray: #f5f5f5;
+  color: #111827; /* Darker, higher contrast than slate-800 */
+  background: var(--color-surface);
   margin: 0;
-  font-family: "Merriweather Sans", sans-serif;
+  font-family: var(--font-manrope), var(--font-merriweather-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 /* Google Maps InfoWindow overflow fix */
 .gm-style-iw-d {

@@ -79,29 +79,41 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
         const quantity = act.quantity || 0;
         
         // Monthly impact calculation (School actionQuantity is usually monthly or annual context)
-        if (type.includes("solar") && !type.includes("water_heater")) {
-            // Assume actionQuantity is kW (rooftop). 1 kW = 125 kWh/mo
+        const type_lower = type.toLowerCase();
+        
+        if (type === "solar_rooftop") {
+            // Assume quantity is kW (rooftop). 1 kW = 125 kWh/mo
             actionLocalEnergy += quantity * 125;
             reductionKg += (quantity * 125) * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-        } else if (type.includes("renewable_ppa") || type.includes("biomass_energy") || type.includes("battery_storage")) {
-            // actionQuantity is kWh/month
-            actionLocalEnergy += quantity;
-            reductionKg += quantity * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-        } else if (type.includes("efficiency") || type.includes("led") || type.includes("turn_off")) {
-            // Efficiency saves energy from baseline
-            const savings = baselineEnergyGrid * 0.2; // Example 20% savings
+        } else if (type === "solar_water_heater") {
+            // 800kg/yr per 100 LPD -> monthly
+            reductionKg += (quantity / 100) * 800 / 12; 
+            actionLocalEnergy += (quantity / 100) * 125;
+        } else if (type === "biogas_cooking") {
+            // Biogas cooking is mapped to energy savings
+            actionLocalEnergy += quantity * 30; // approx m3 to kWh equivalent
+            reductionKg += (quantity / 2) * 1.2 * 1000 / 12;
+        } else if (type === "led_retrofit") {
+            // Efficiency / LED Retrofit saves energy
+            const savings = quantity * 5; 
             actionLocalEnergy += savings;
             reductionKg += savings * SCHOOL_EMISSION_FACTORS.ELECTRICITY;
-        } else if (type.includes("water") || type.includes("rainwater") || type.includes("borewell") || type.includes("greywater") || type.includes("recharge")) {
-            // Assume actionQuantity is Liters/month
+        } else if (type === "rainwater_harvesting") {
             actionLocalWater += quantity;
-            reductionKg += (quantity / 1000) * SCHOOL_EMISSION_FACTORS.WATER_SUPPLY;
-        } else if (type.includes("waste") || type.includes("compost") || type.includes("recycling") || type.includes("biogas") || type.includes("material_recovery")) {
-            // Assume actionQuantity is kg/month
+            reductionKg += (quantity * 47.4) / 12;
+        } else if (type === "waterless_urinals") {
+            // ~40,000 L saved/yr -> ~20kg CO2e saving
+            actionLocalWater += quantity * 3333; 
+            reductionKg += (quantity * 20) / 12;
+        } else if (type === "wastewater_recycling") {
+            actionLocalWater += quantity * 30; // m3/day to monthly
+            reductionKg += (quantity * 30) * 0.5;
+        } else if (type === "composting") {
+            // Waste processing
             actionLocalWaste += quantity;
-            reductionKg += quantity * SCHOOL_EMISSION_FACTORS.WASTE_LANDFILL;
-        } else if (type.includes("tree")) {
-            reductionKg += quantity * 20; // 20kg per tree/yr
+            reductionKg += quantity * 0.45;
+        } else if (type_lower.includes("tree")) {
+            reductionKg += quantity * 20 / 12; // 20kg per tree/yr
         }
     }
 

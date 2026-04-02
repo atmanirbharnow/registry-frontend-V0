@@ -86,7 +86,7 @@ export default function ImpactCertificate({
             {/* The Certificate Wrapper to Capture */}
             <div
                 ref={certificateRef}
-                className="bg-white text-gray-800 rounded-none sm:rounded-2xl border-2 border-[rgb(32,38,130)] p-6 sm:p-10 shadow-2xl relative overflow-hidden"
+                className="bg-white text-gray-800 rounded-none sm:rounded-2xl border-2 border-[#003527] p-6 sm:p-10 shadow-2xl relative overflow-hidden"
             >
                 {/* Background Pattern */}
                 <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
@@ -98,20 +98,22 @@ export default function ImpactCertificate({
                     </svg>
                 </div>
 
-                {/* 1. Header */}
-                <div className="border-b-2 border-gray-900 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 relative z-10">
-                    <div>
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl">🌍</span>
-                            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-gray-900">
-                                EARTH CARBON REGISTRY <span className="text-gray-400 font-light">|</span> IMPACT CERTIFICATE
-                            </h1>
-                        </div>
-                        <p className="font-mono text-sm text-gray-500 font-bold">
-                            Verified Summary | ID: {registryId}
-                        </p>
+            {/* 1. Header */}
+            <div className="border-b-2 border-gray-900 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 relative z-10">
+                <div>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[#003527]">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                        </span>
+                        <h1 className="text-xl sm:text-2xl font-black tracking-tight text-gray-900">
+                            EARTH CARBON REGISTRY <span className="text-gray-400 font-light">|</span> IMPACT CERTIFICATE
+                        </h1>
                     </div>
+                    <p className="font-mono text-sm text-gray-500 font-bold">
+                        Verified Summary | ID: {registryId}
+                    </p>
                 </div>
+            </div>
 
                 {/* 2. Client Info */}
                 <div className="border-b border-gray-200 pb-6 mb-6 relative z-10">
@@ -128,7 +130,7 @@ export default function ImpactCertificate({
                             <span className="text-gray-400 uppercase tracking-widest text-[10px] font-bold block mb-1">Verification Status</span>
                             <div className="flex items-center gap-2">
                                 {verificationStatus === "verified" ? (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-800 text-xs font-black uppercase rounded-sm border border-green-200">
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-800 text-xs font-bold uppercase rounded-sm border border-green-200">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12" /></svg>
                                         Verified
                                     </span>
@@ -176,14 +178,14 @@ export default function ImpactCertificate({
                             </div>
                         </div>
                         {/* Atmanirbhar */}
-                        <div className="bg-gradient-to-br from-blue-600 to-[rgb(32,38,130)] rounded-xl p-5 text-white shadow-md relative overflow-hidden">
+                        <div className="bg-gradient-to-br from-[#003527] to-[#004d39] rounded-xl p-5 text-white shadow-md relative overflow-hidden">
                             <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl"></div>
-                            <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">ATMANIRBHAR % SCORE</h3>
+                            <h3 className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-2">ATMANIRBHAR % SCORE</h3>
                             <div className="flex items-baseline gap-1 relative z-10">
                                 <span className="text-3xl font-black">{atmanirbhar}</span>
                                 <span className="text-xs font-bold opacity-80">%</span>
                             </div>
-                            <div className="mt-2 pt-2 border-t border-white/20 text-[10px] font-bold text-blue-100 relative z-10">
+                            <div className="mt-2 pt-2 border-t border-white/20 text-[10px] font-bold text-emerald-100 relative z-10">
                                 {verificationStatus === 'verified' ? '▲ Local Impact' : 'Self-Sustaining Rate'}
                             </div>
                         </div>
@@ -239,7 +241,7 @@ export default function ImpactCertificate({
                         </div>
                         <div className="text-xs space-y-1 text-gray-600">
                             <div className="font-bold text-gray-900 uppercase">Public Badge</div>
-                            <div>Verify Online: <span className="text-[rgb(32,38,130)] break-all">{verifyUrl}</span></div>
+                            <div>Verify Online: <span className="text-[#003527] break-all">{verifyUrl}</span></div>
                             <div>Contact: info@earthcarbonfoundation.org</div>
                         </div>
                     </div>
@@ -264,7 +266,7 @@ export default function ImpactCertificate({
                 <button
                     onClick={handleDownload}
                     disabled={isDownloading}
-                    className="flex items-center justify-center gap-2 bg-[rgb(32,38,130)] text-white font-bold text-sm px-6 py-3 rounded-xl hover:bg-blue-900 transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center gap-2 bg-[#003527] text-white font-bold text-sm px-6 py-3 rounded-xl hover:bg-[#002219] transition-colors shadow-lg shadow-emerald-900/20 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                     {isDownloading ? (
                         <>
@@ -283,7 +285,7 @@ export default function ImpactCertificate({
                 </button>
             </div>
             
-            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-start gap-3 mt-4 text-sm text-blue-800">
+            <div className="bg-[#eff7f2]/50 p-4 rounded-xl border border-[#b0f0d6] flex items-start gap-3 mt-4 text-sm text-[#003527]">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                 <p>
                     <strong>Sharing to Social Media:</strong> First, download your certificate as an image using the button above. Then, use the share buttons below to compose your post and manually attach the downloaded image for the best visual impact.

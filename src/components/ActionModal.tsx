@@ -143,7 +143,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
             <div className='flex gap-3 pt-6 justify-end items-center'>
               <button
                 type='button'
-                className='py-3 px-6 rounded-xl font-semibold text-[rgb(32,38,130)] bg-white border border-[rgb(32,38,130)] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm cursor-pointer'
+                className='py-3 px-6 rounded-xl font-semibold text-[#003527] bg-white border border-[#003527] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm cursor-pointer'
                 onClick={onClose}
               >
                 Cancel
@@ -153,7 +153,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
                 disabled={isSubmitting}
                 className={`py-3 px-6 rounded-xl font-semibold text-white shadow-sm transition-all duration-200 text-sm flex items-center justify-center gap-2 ${isSubmitting
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[rgb(32,38,130)] hover:bg-[rgb(25,30,110)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                  : "bg-[#003527] hover:bg-[rgb(25,30,110)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                   }`}
               >
                 {isSubmitting ? (

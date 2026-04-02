@@ -89,9 +89,9 @@ export default function VerifyPage() {
                     </h1>
                     <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                         <p className="text-gray-500 mb-6">
-                            No action or school found with Registry ID: <span className="font-mono font-bold text-[rgb(32,38,130)]">{registryId}</span>
+                            No action or school found with Registry ID: <span className="font-mono font-bold text-[#003527]">{registryId}</span>
                         </p>
-                        <Link href="/" className="inline-flex items-center gap-2 text-[rgb(32,38,130)] font-bold hover:underline">
+                        <Link href="/" className="inline-flex items-center gap-2 text-[#003527] font-bold hover:underline">
                             Return to Homepage
                         </Link>
                     </div>
