@@ -14,7 +14,7 @@ const STEPS = [
   {
     number: "02",
     title: "Enter Baseline Usage",
-    description: "Tell us your current energy (kWh), water (L), and waste (kg) consumption per month.",
+    description: "Tell us your current energy (kWh), water (L), and waste (kg) consumption per year.",
     icon: <BarChart3 className="w-6 h-6" />,
     accent: "bg-[#f1f5f9]",
   },
@@ -59,7 +59,7 @@ export default function HowItWorksSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative z-10">
             {STEPS.map((step, idx) => (
-              <div 
+              <div
                 key={idx}
                 className={`flex flex-col items-center text-center group transition-all duration-700 relative`}
               >
@@ -70,7 +70,7 @@ export default function HowItWorksSection() {
                   </div>
                   <span className="relative z-10">{step.icon}</span>
                 </div>
-                
+
                 <div className="relative px-4 text-center">
                   <h3 className="text-sm font-black text-[#003527] mb-2">{step.title}</h3>
                   <p className="text-xs md:text-sm text-[#414942] font-bold leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">
@@ -84,7 +84,7 @@ export default function HowItWorksSection() {
 
         <div className="mt-16 text-center flex flex-col items-center gap-4">
           <p className="text-[10px] md:text-xs text-[#414942] font-black tracking-widest uppercase opacity-40">
-             Standardized via CEA India 2024 Emission Factors
+            Standardized via CEA India 2024 Emission Factors
           </p>
         </div>
       </div>

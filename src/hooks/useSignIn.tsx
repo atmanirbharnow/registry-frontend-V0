@@ -9,6 +9,7 @@ export const useSignIn = () => {
   const router = useRouter();
 
   useEffect(() => {
+    // Only redirect if we have a user AND the auth loading state is false (cookie-set complete)
     if (user && !loading) {
       router.replace("/profile");
     }
@@ -17,8 +18,7 @@ export const useSignIn = () => {
   const handleSignIn = async () => {
     try {
       await loginWithGoogle();
-      router.push("/profile");
-      // Redirect is handled by the handleSignIn and the useEffect above as fallback
+      // Manual redirect removed here to prevent race condition with middleware
     } catch (error) {
       console.error("Sign in failed:", error);
     }

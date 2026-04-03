@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface ActionHubSectionProps {
   onStartStructuring: () => void;
@@ -13,11 +14,14 @@ export default function ActionHubSection({ onStartStructuring }: ActionHubSectio
 
         {/* Card 1: Low Carbon Action Hub */}
         <div className="group relative bg-white border border-slate-200 p-8 md:p-10 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:border-emerald-600/30">
-          {/* Subtle Background Illustration Overlay */}
-          <div className="absolute right-0 bottom-0 w-3/4 h-3/4 opacity-[0.02] pointer-events-none group-hover:scale-110 transition-transform duration-700">
-            <svg viewBox="0 0 400 400" className="w-full h-full text-emerald-900">
-              <path fill="currentColor" d="M120 40c0-11 9-20 20-20s20 9 20 20v40h40c11 0 20 9 20 20s-9 20-20 20h-40v80c0 11-9 20-20 20s-20-9-20-20v-80H80c-11 0-20-9-20-20s9-20 20-20h40V40zM320 200c0 44-36 80-80 80s-80-36-80-80 36-80 80-80 80 36 80 80zm20 100c0 11-9 20-20 20s-20-9-20-20v-40H200c-11 0-20-9-20-20s9-20 20-20h100v80z" />
-            </svg>
+          {/* Branded Background Watermark */}
+          <div className="absolute right-0 bottom-0 w-3/4 h-3/4 opacity-[0.12] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
+             <Image 
+               src="/plant-carbon-bg.png" 
+               alt="Plant Carbon Background" 
+               fill 
+               className="object-cover grayscale" 
+             />
           </div>
 
           <div className="relative z-10">
@@ -69,9 +73,14 @@ export default function ActionHubSection({ onStartStructuring }: ActionHubSectio
 
           {/* Card 2: Carbon Asset Structuring */}
           <div className="group relative bg-[#003527] p-8 md:p-10 flex flex-col justify-between overflow-hidden border border-[#003527]">
-            {/* Technical Pattern Overlay (Solar Panel style) */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none group-hover:scale-105 transition-transform duration-1000">
-              <div className="w-full h-full bg-[radial-gradient(#a8f928_1px,transparent_1px)] [background-size:24px_24px]" />
+            {/* Technical Solar Blueprint Background */}
+            <div className="absolute inset-0 z-0 opacity-10 pointer-events-none group-hover:scale-105 transition-transform duration-1000">
+               <Image 
+                 src="/solar-plant-bg.png" 
+                 alt="Solar Asset Blueprint" 
+                 fill 
+                 className="object-cover mix-blend-overlay" 
+               />
             </div>
 
             <div className="relative z-10">

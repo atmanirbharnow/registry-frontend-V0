@@ -77,7 +77,7 @@ export default function ContactSection() {
 
           <div className="space-y-2">
             {QUICK_ACTIONS.map((action) => (
-              <Link 
+              <Link
                 key={action.label}
                 href={action.href}
                 className="group bg-white rounded-none p-5 flex justify-between items-center text-[#003527] hover:bg-[#003527] hover:text-white transition-all border border-[#f1f5f9]"
@@ -99,7 +99,7 @@ export default function ContactSection() {
         </div>
 
       </div>
-      
+
       <div className="mt-20 flex flex-col items-center text-center gap-4 border-t border-[#f1f5f9] pt-12">
         <p className="text-xs text-[#414942] font-semibold tracking-wide">
           Earth Carbon Foundation is a climate tech initiative under validation with MoEF&CC and Verra.

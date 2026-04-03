@@ -65,22 +65,27 @@ export default function KPIGrid() {
       {/* Stats Grid — 4 columns on desktop with high-trust gaps */}
       <div
         ref={ref}
-        className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
+        className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
       >
         {stats.map((stat, idx) => (
           <div
             key={idx}
-            className="bg-[#003527] p-8 flex flex-col justify-between min-h-[160px] border border-white/5 rounded-none shadow-xl hover:shadow-[#003527]/10 transition-all duration-300"
+            className="bg-[#003527] p-8 flex flex-col justify-between min-h-[180px] border border-white/5 rounded-none shadow-xl hover:shadow-[#003527]/10 transition-all duration-300"
             style={{ transitionDelay: `${idx * 100}ms` }}
           >
             <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6 leading-tight">
               {stat.label}
             </p>
-            <div className="overflow-hidden">
-              <span className="text-3xl sm:text-4xl md:text-5xl font-black text-white block leading-none truncate lg:overflow-visible">
-                {loading ? "—" : `${stat.value}${stat.suffix}`}
-              </span>
-              <p className="text-[10px] text-white/30 mt-4 font-bold uppercase tracking-widest">{stat.sub}</p>
+            <div className="flex flex-col flex-grow justify-end">
+              <div className="flex items-baseline gap-1 flex-wrap">
+                <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white leading-none tracking-tight">
+                  {loading ? "—" : stat.value}
+                </span>
+                <span className="text-lg md:text-xl font-black text-[#a8f928] leading-none">
+                  {loading ? "" : stat.suffix}
+                </span>
+              </div>
+              <p className="text-[10px] text-white/30 mt-4 font-bold uppercase tracking-widest leading-tight">{stat.sub}</p>
             </div>
           </div>
         ))}

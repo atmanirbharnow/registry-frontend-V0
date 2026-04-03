@@ -12,12 +12,8 @@ export default function SignInPage() {
   const { user: authUser, loading: authLoading } = useAuth();
   const { loading, handleSignIn } = useSignIn();
 
-  // Redirect to profile if already authenticated
-  useEffect(() => {
-    if (!authLoading && authUser) {
-      router.replace("/profile");
-    }
-  }, [authUser, authLoading, router]);
+  // Note: Redirection is now handled centrally by the useSignIn hook
+  // which ensures the session cookie is correctly set before moving to /profile
 
   if (loading || authLoading) {
     return (
@@ -34,81 +30,73 @@ export default function SignInPage() {
 
   return (
     <PublicShell>
-      <div className='min-h-[calc(100vh-80px)] flex flex-col lg:flex-row bg-[#f9faf5]'>
+      <div className='min-h-[calc(100vh-120px)] flex items-center justify-center bg-transparent py-4'>
         
-        {/* Left Side: Credibility / Technical Context (Hidden on mobile) */}
-        <div className="hidden lg:flex flex-1 bg-[#003527] relative overflow-hidden items-center justify-center p-16">
-          <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-             <div className="absolute inset-0 bg-[radial-gradient(#a8f928_1px,transparent_1px)] [background-size:32px_32px]" />
-          </div>
+        <div className="flex flex-col lg:flex-row max-w-5xl w-full gap-8 lg:gap-12 items-center lg:items-stretch justify-center">
           
-          <div className="relative z-10 max-w-md space-y-12">
-            <div className="space-y-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#a8f928]/60">
-                Institutional Access
-              </p>
-              <h1 className="text-4xl font-black text-white leading-tight">
-                Indias Verified <br />Carbon Registry.
-              </h1>
-              <p className="text-base text-white/50 font-bold leading-relaxed">
-                Log in to manage your low-carbon assets, verify digital signatures, 
-                and scale your environmental audit data.
-              </p>
+          {/* Left Card: Credibility / Technical Context */}
+          <div className="w-full lg:flex-1 bg-[#003527] relative overflow-hidden flex flex-col justify-center p-8 md:p-14 rounded-none shadow-2xl min-h-[280px] lg:min-h-[480px] lg:aspect-square">
+            <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
+              <div className="absolute inset-0 bg-[radial-gradient(#a8f928_1px,transparent_1px)] [background-size:24px_24px]" />
             </div>
-
-            <div className="grid grid-cols-1 gap-6 pt-8 border-t border-white/10">
-              <div className="flex items-start gap-4">
-                 <div className="w-10 h-10 border border-[#a8f928]/30 flex items-center justify-center text-[#a8f928] bg-[#a8f928]/5">
-                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect width="18" height="11" x="3" y="11" rx="0" ry="0"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                 </div>
-                 <div>
-                   <span className="text-sm font-black text-white block">SHA-256 Integrity</span>
-                   <p className="text-xs font-bold text-white/30">Immutable data logs for every action.</p>
-                 </div>
+            
+            <div className="relative z-10 space-y-6 md:space-y-8">
+              <div className="space-y-3 md:space-y-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-[#a8f928]/60">
+                  Institutional Access
+                </p>
+                <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1]">
+                  Indias Verified <br />Carbon Registry.
+                </h1>
+                <p className="text-xs md:text-lg text-white/50 font-bold leading-relaxed max-w-md">
+                  Secure access to manage your low-carbon assets, verify digital signatures, 
+                  and scale your environmental audit data.
+                </p>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Side: Authentication Box */}
-        <div className="flex-1 flex items-center justify-center p-6 md:p-16">
-          <div className='w-full max-w-sm bg-white p-8 md:p-12 border border-[#003527]/5 rounded-none shadow-2xl relative overflow-hidden'>
-            {/* Subtle Brand Watermark */}
-            <div className="absolute -right-16 -top-16 w-48 h-48 opacity-[0.03] scale-150 rotate-12">
-               <img src="/earth carbon logo bw.jpg" alt="Watermark" className="w-full h-full object-contain" />
-            </div>
+          {/* Right Card: Authentication Box */}
+          <div className="w-full lg:flex-1 flex items-center justify-center p-0">
+            <div className='w-full bg-white p-8 md:p-14 border border-[#003527]/5 rounded-none shadow-2xl relative overflow-hidden flex flex-col justify-center min-h-[360px] md:min-h-[480px]'>
+              {/* Subtle Brand Watermark */}
+              <div className="absolute -right-20 -top-20 w-56 h-56 opacity-[0.03] scale-150 rotate-12">
+                <img src="/earth carbon logo bw.jpg" alt="Watermark" className="w-full h-full object-contain" />
+              </div>
 
-            <div className='relative z-10 text-center mb-10'>
-              <h2 className='text-xl font-black text-[#003527] tracking-tight mb-2 uppercase'>
-                Access Registry
-              </h2>
-              <p className='text-[#414942]/60 text-xs font-bold leading-relaxed px-2 uppercase tracking-widest'>
-                Sign in to manage your profile
-              </p>
-            </div>
+              <div className='relative z-10 text-center mb-8 md:mb-12'>
+                <h2 className='text-xl md:text-2xl font-black text-[#003527] tracking-tight mb-3 uppercase font-[Manrope]'>
+                  Carbon Registry
+                </h2>
+                <p className='text-[#414942]/60 text-[10px] font-black leading-relaxed px-2 uppercase tracking-[0.3em]'>
+                  Sign in to manage your profile
+                </p>
+              </div>
 
-            <button
-              onClick={handleSignIn}
-              className='flex items-center justify-center gap-4 w-full py-4 px-6 bg-[#003527] text-white font-black text-xs uppercase tracking-widest rounded-none hover:bg-[#004d39] transition-all cursor-pointer border border-[#003527] group'
-            >
-              <img
-                src='https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg'
-                alt='Google icon'
-                className='w-5 h-5 grayscale group-hover:grayscale-0 transition-all'
-              />
-              <span>Sign in with Google</span>
-            </button>
+              <button
+                onClick={handleSignIn}
+                className='flex items-center justify-center gap-4 w-full py-4 md:py-5 px-8 bg-[#003527] text-white font-black text-xs md:text-sm uppercase tracking-widest rounded-none hover:bg-[#004d39] transition-all cursor-pointer border border-[#003527] group shadow-lg shadow-[#003527]/20 hover:shadow-none'
+              >
+                <img
+                  src='https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg'
+                  alt='Google icon'
+                  className='w-5 h-5 md:w-6 md:h-6 transition-all group-hover:scale-110'
+                />
+                <span>Sign in with Google</span>
+              </button>
 
-            <div className='mt-12 pt-8 border-t border-[#003527]/5 text-center'>
-              <p className='text-[10px] font-bold text-[#414942]/30 max-w-[240px] mx-auto leading-relaxed uppercase tracking-widest'>
-                By accessing this portal, you agree to the{" "}
-                <a href='#' className='text-[#003527] hover:underline'>Terms</a> 
-                {" "} & {" "}
-                <a href='#' className='text-[#003527] hover:underline'>Privacy Policy</a>
-                .
-              </p>
+              <div className='mt-10 md:mt-16 pt-8 md:pt-10 border-t border-[#003527]/5 text-center'>
+                <p className='text-[10px] font-bold text-[#414942]/30 max-w-[280px] mx-auto leading-relaxed uppercase tracking-[0.2em]'>
+                  By accessing this portal, you agree to the{" "}
+                  <a href='#' className='text-[#003527] hover:underline font-black'>Terms</a> 
+                  {" "} & {" "}
+                  <a href='#' className='text-[#003527] hover:underline font-black'>Privacy Policy</a>
+                  .
+                </p>
+              </div>
             </div>
           </div>
+
         </div>
 
       </div>

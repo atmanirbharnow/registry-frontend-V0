@@ -1,6 +1,6 @@
-"use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CTABannerSection() {
   const [email, setEmail] = useState("");
@@ -13,14 +13,19 @@ export default function CTABannerSection() {
   };
 
   return (
-    <section className="w-full bg-[#f9faf5] px-4 md:px-16 lg:px-32 py-16 md:py-24">
-      <div className="relative w-full border border-[#003527]/10 rounded-none overflow-hidden shadow-2xl">
+    <section className="w-full bg-[#f9faf5] px-4 md:px-8 lg:px-16 py-16 md:py-24">
+      <div className="max-w-7xl mx-auto relative w-full border border-white/5 rounded-none overflow-hidden shadow-2xl bg-zinc-900">
         {/* Background Image with Overlay */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center grayscale opacity-10"
-          style={{ backgroundImage: "url('/earth carbon logo bw.jpg')" }}
-        />
-        <div className="absolute inset-0 z-10 bg-gradient-to-br from-[#003527] via-[#003527] to-[#004d39]" />
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="/earth carbon logo bw.jpg" 
+            alt="Registry Logo Background" 
+            fill 
+            priority={true}
+            className="object-cover opacity-60" 
+          />
+        </div>
+        <div className="absolute inset-0 z-10 bg-gradient-to-br from-black/90 via-black/40 to-transparent" />
 
         <div className="relative z-20 px-8 py-16 md:py-24 text-center">
           <h2

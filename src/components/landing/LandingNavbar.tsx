@@ -6,8 +6,8 @@ import { useScrollSpy } from "@/hooks/useScrollSpy";
 
 const NAV_LINKS = [
   { name: "Home", href: "#home" },
-  { name: "How It Works", href: "#how-it-works" },
   { name: "Scope", href: "#scope" },
+  { name: "How It Works", href: "#how-it-works" },
   { name: "Why Register", href: "#why-register" },
   { name: "Contact", href: "#contact" },
 ];
