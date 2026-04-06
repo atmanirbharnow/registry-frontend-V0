@@ -24,7 +24,7 @@ export default function ActionsPage() {
           <h2 className='text-lg font-bold text-gray-800'>Actions</h2>
           <button
             onClick={handleOpenModal}
-            className='flex items-center justify-center gap-2 px-6 py-3 bg-[#003527] border border-[#003527] text-white font-semibold rounded-xl hover:bg-[rgb(25,30,110)] transition-all duration-200 active:scale-[0.98] shadow-sm hover:-translate-y-0.5 cursor-pointer'
+            className='flex items-center justify-center gap-2 px-6 py-3 bg-[#003527] border border-[#003527] text-white font-semibold rounded-lg hover:bg-[rgb(25,30,110)] transition-all duration-200 active:scale-[0.98] shadow-sm hover:-translate-y-0.5 cursor-pointer'
           >
             <AddIcon />
             Add New Action

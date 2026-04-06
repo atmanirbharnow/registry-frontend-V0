@@ -63,9 +63,9 @@ export default function HowItWorksSection() {
                 key={idx}
                 className={`flex flex-col items-center text-center group transition-all duration-700 relative`}
               >
-                <div className={`relative w-16 h-16 ${idx < 2 ? 'bg-[#f0f3ee]' : 'bg-[#b0f0d6]'} rounded-none flex items-center justify-center text-[#003527] mb-6 shadow-sm group-hover:scale-105 transition-transform z-10`}>
+                <div className={`relative w-16 h-16 ${idx < 2 ? 'bg-[#f0f3ee]' : 'bg-[#b0f0d6]'} rounded-lg flex items-center justify-center text-[#003527] mb-6 shadow-sm group-hover:scale-105 transition-transform z-10`}>
                   {/* Step Number Badge */}
-                  <div className="absolute -top-1.5 -left-1.5 bg-[#003527] text-white text-[8px] font-black w-6 h-6 rounded-none flex items-center justify-center z-20">
+                  <div className="absolute -top-1.5 -left-1.5 bg-[#003527] text-white text-[8px] font-black w-6 h-6 rounded-lg flex items-center justify-center z-20">
                     {step.number}
                   </div>
                   <span className="relative z-10">{step.icon}</span>

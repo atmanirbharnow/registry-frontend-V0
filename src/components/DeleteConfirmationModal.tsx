@@ -26,7 +26,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
       onClick={onClose}
     >
       <div
-        className='bg-white rounded-[2rem] w-full max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden transform transition-all duration-300 scale-100 relative'
+        className='bg-white rounded-lg[2rem] w-full max-w-sm shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 overflow-hidden transform transition-all duration-300 scale-100 relative'
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with Delete Title and Close Button */}
@@ -37,7 +37,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
           <button
             onClick={onClose}
             disabled={isDeleting}
-            className={`p-2 rounded-xl hover:bg-gray-50 transition-colors text-gray-300 hover:text-gray-500 ${
+            className={`p-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-300 hover:text-gray-500 ${
               isDeleting ? "cursor-not-allowed" : "cursor-pointer"
             }`}
           >
@@ -55,7 +55,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             <button
               onClick={onClose}
               disabled={isDeleting}
-              className={`py-3 px-6 rounded-xl font-semibold text-[#003527] bg-white border border-[#003527] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm ${
+              className={`py-3 px-6 rounded-lg font-semibold text-[#003527] bg-white border border-[#003527] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm ${
                 isDeleting ? "cursor-not-allowed" : "cursor-pointer"
               }`}
             >
@@ -64,13 +64,13 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
             <button
               onClick={onConfirm}
               disabled={isDeleting}
-              className={`py-3 px-6 rounded-xl font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-red-200 shadow-lg flex items-center justify-center gap-2 text-sm ${
+              className={`py-3 px-6 rounded-lg font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors shadow-red-200 shadow-lg flex items-center justify-center gap-2 text-sm ${
                 isDeleting ? "cursor-not-allowed" : "cursor-pointer"
               }`}
             >
               {isDeleting ? (
                 <>
-                  <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
+                  <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-lg animate-spin' />
                   Deleting...
                 </>
               ) : (

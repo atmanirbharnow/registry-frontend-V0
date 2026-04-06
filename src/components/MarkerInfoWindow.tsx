@@ -64,7 +64,7 @@ export const MarkerInfoWindow: React.FC<MarkerInfoWindowProps> = ({
         {onClose && (
           <button
             onClick={onClose}
-            className='shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-200 hover:bg-green-300 text-green-700 hover:text-green-800 transition-colors'
+            className='shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-lg bg-green-200 hover:bg-green-300 text-green-700 hover:text-green-800 transition-colors'
             aria-label='Close'
           >
             <svg

@@ -70,7 +70,7 @@ export default function VerificationBadge({ status }: VerificationBadgeProps) {
         <div
             className={`
         inline-flex items-center gap-3 px-6 py-4
-        rounded-2xl border-2
+        rounded-lg border-2
         ${config.bg} ${config.border}
       `}
         >

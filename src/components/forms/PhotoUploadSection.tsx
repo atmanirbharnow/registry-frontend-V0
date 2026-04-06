@@ -77,7 +77,7 @@ export default function PhotoUploadSection({
                             <span className="text-xs text-gray-500 font-medium ml-1">
                                 {slot.label}
                             </span>
-                            <div className="relative h-32 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 overflow-hidden">
+                            <div className="relative h-32 rounded-lg border-2 border-dashed border-gray-200 bg-gray-50/50 overflow-hidden">
                                 {uploading[slot.key] ? (
                                     <div className="flex items-center justify-center h-full">
                                         <Spinner size="sm" />
@@ -96,7 +96,7 @@ export default function PhotoUploadSection({
                                                 e.stopPropagation();
                                                 clearPhoto(slot.key);
                                             }}
-                                            className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                                            className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/60 hover:bg-black/80 text-white rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                                             aria-label="Remove photo"
                                         >
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
@@ -139,7 +139,7 @@ export default function PhotoUploadSection({
                     <button
                         type="button"
                         onClick={() => setPreviewUrl(null)}
-                        className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 text-white rounded-full flex items-center justify-center transition-colors cursor-pointer z-10"
+                        className="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 text-white rounded-lg flex items-center justify-center transition-colors cursor-pointer z-10"
                         aria-label="Close preview"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -150,7 +150,7 @@ export default function PhotoUploadSection({
                     <img
                         src={previewUrl}
                         alt="Preview"
-                        className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+                        className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     />
                 </div>

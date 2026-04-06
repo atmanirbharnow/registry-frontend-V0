@@ -20,7 +20,7 @@ export default function Spinner({ size = "md", light = false, className = "" }: 
             className={`
         ${sizeClasses[size]}
         ${light ? "border-white" : "border-[#003527]"} border-t-transparent
-        rounded-full animate-spin
+        rounded-lg animate-spin
         ${className}
       `}
         />

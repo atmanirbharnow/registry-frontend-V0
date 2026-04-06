@@ -70,7 +70,7 @@ export default function KPIGrid() {
         {stats.map((stat, idx) => (
           <div
             key={idx}
-            className="bg-[#003527] p-8 flex flex-col justify-between min-h-[180px] border border-white/5 rounded-none shadow-xl hover:shadow-[#003527]/10 transition-all duration-300"
+            className="bg-[#003527] p-8 flex flex-col justify-between min-h-[180px] border border-white/5 rounded-lg shadow-xl hover:shadow-[#003527]/10 transition-all duration-300"
             style={{ transitionDelay: `${idx * 100}ms` }}
           >
             <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6 leading-tight">

@@ -499,23 +499,23 @@ export default function AdminActionTable() {
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Actions</p>
                     <p className="text-3xl font-black text-gray-800 mt-1">{stats.total}</p>
                 </div>
-                <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Verified</p>
                     <p className="text-3xl font-black text-[#003527] mt-1">{stats.verified}</p>
                 </div>
-                <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total CO₂e</p>
                     <p className="text-3xl font-black text-[#003527] mt-1">{(stats.totalCo2e / 1000).toLocaleString("en-IN", { maximumFractionDigits: 3 })} <span className="text-sm font-bold text-gray-400">tCO₂e</span></p>
                 </div>
-                <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Organizations</p>
                     <p className="text-3xl font-black text-[#003527] mt-1">{stats.orgCount}</p>
                 </div>
-                <div className="bg-white rounded-2xl border border-gray-100 px-6 py-5 shadow-sm">
+                <div className="bg-white rounded-lg border border-gray-100 px-6 py-5 shadow-sm">
                     <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Revenue</p>
                     <p className="text-3xl font-black text-gray-800 mt-1">₹{stats.totalRevenue.toLocaleString("en-IN")}</p>
                 </div>
@@ -599,7 +599,7 @@ export default function AdminActionTable() {
             </div>
 
             {unifiedItems.length === 0 ? (
-                <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
+                <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center text-center">
                     <h3 className="text-gray-500 font-semibold text-lg">No entries found</h3>
                     <p className="text-gray-400 text-sm mt-1">
                         {statusFilter !== "all" || typeFilter !== "all" || entityFilter !== "all"
@@ -608,7 +608,7 @@ export default function AdminActionTable() {
                     </p>
                 </div>
             ) : (
-                <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col">
+                <div className="bg-white rounded-lg[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col">
                     <div className="w-full overflow-x-auto rounded-lg">
                         <table className="min-w-[1000px] w-full">
                             <colgroup>
@@ -653,7 +653,7 @@ export default function AdminActionTable() {
                                             )}
                                         </td>
                                         <td className="py-4 px-6">
-                                            <span className={`px-2 py-1 rounded text-[10px] font-black uppercase ${item.entityType === 'school' ? 'bg-orange-100 text-orange-600' : 'bg-[#b0f0d6] text-[#003527]'}`}>
+                                            <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${item.entityType === 'school' ? 'bg-orange-100 text-orange-600' : 'bg-[#b0f0d6] text-[#003527]'}`}>
                                                 {item.entityType}
                                             </span>
                                         </td>
@@ -714,13 +714,13 @@ export default function AdminActionTable() {
             {/* Individual Verification Modal - Overhauled */}
             {verifyModalOpen && selectedAction && (
                 <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 px-4 py-6 overflow-y-auto">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-5xl max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
-                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-3xl">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-5xl max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-lg-3xl">
                             <div>
                                 <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight italic">Verify Action (Individual)</h2>
                                 <p className="text-sm font-medium text-gray-500 mt-0.5">{selectedAction.actorName} — {selectedAction.registryId}</p>
                             </div>
-                            <button onClick={() => setVerifyModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600">
+                            <button onClick={() => setVerifyModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-lg transition-colors text-gray-400 hover:text-gray-600">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                             </button>
                         </div>
@@ -730,7 +730,7 @@ export default function AdminActionTable() {
                                 {/* Left Side: User Inputs (Step 1 & 2) */}
                                 <div className="space-y-6">
                                     {/* Baseline Section (Step 1) */}
-                                    <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100 space-y-4">
+                                    <div className="bg-slate-50/50 rounded-lg p-5 border border-slate-100 space-y-4">
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="bg-[#003527] p-2 rounded-lg text-white">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
@@ -757,7 +757,7 @@ export default function AdminActionTable() {
                                                         value={verifyForm[field.key as keyof typeof verifyForm]}
                                                         readOnly={!isEditMode}
                                                         onChange={(e) => setVerifyForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                             ))}
@@ -765,7 +765,7 @@ export default function AdminActionTable() {
                                     </div>
 
                                     {/* Action Section (Step 2) */}
-                                    <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100 space-y-4">
+                                    <div className="bg-blue-50/50 rounded-lg p-5 border border-blue-100 space-y-4">
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="bg-[#003527] p-2 rounded-lg text-white">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -780,7 +780,7 @@ export default function AdminActionTable() {
                                                     disabled={!isEditMode}
                                                     value={verifyForm.actionType}
                                                     onChange={(e) => setVerifyForm(f => ({ ...f, actionType: e.target.value }))}
-                                                    className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent cursor-default'}`}
+                                                    className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent cursor-default'}`}
                                                 >
                                                     {ACTION_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                                                 </select>
@@ -793,7 +793,7 @@ export default function AdminActionTable() {
                                                         value={verifyForm.quantity}
                                                         readOnly={!isEditMode}
                                                         onChange={(e) => setVerifyForm(f => ({ ...f, quantity: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
@@ -803,7 +803,7 @@ export default function AdminActionTable() {
                                                         value={verifyForm.unit}
                                                         readOnly={!isEditMode}
                                                         onChange={(e) => setVerifyForm(f => ({ ...f, unit: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isEditMode ? 'border-[#b0f0d6] bg-white focus:border-blue-600 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                             </div>
@@ -814,7 +814,7 @@ export default function AdminActionTable() {
                                         <button
                                             type="button"
                                             onClick={() => setIsEditMode(!isEditMode)}
-                                            className={`flex-1 px-4 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${isEditMode ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                                            className={`flex-1 px-4 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${isEditMode ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                                         >
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                             {isEditMode ? "Lock Values" : "Edit Inputs"}
@@ -824,11 +824,11 @@ export default function AdminActionTable() {
 
                                 {/* Right Side: Results Header & Calculations */}
                                 <div className="space-y-6">
-                                    <div className="bg-[#003527] rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+                                    <div className="bg-[#003527] rounded-lg[2rem] p-6 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
                                         <div className="relative z-10 space-y-6">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="font-black uppercase tracking-widest text-xs opacity-80">Impact Performance</h3>
-                                                <div className="bg-white/20 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest">Live Audit Mode</div>
+                                                <div className="bg-white/20 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">Live Audit Mode</div>
                                             </div>
 
                                             {(() => {
@@ -869,7 +869,7 @@ export default function AdminActionTable() {
                                                 );
                                             })()}
                                         </div>
-                                        <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/5 rounded-full blur-3xl"></div>
+                                        <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/5 rounded-lg blur-3xl"></div>
                                     </div>
 
                                     <div className="border-t border-gray-100 pt-6 space-y-4">
@@ -879,7 +879,7 @@ export default function AdminActionTable() {
                                                 <select
                                                     value={verifyForm.status}
                                                     onChange={(e) => setVerifyForm(f => ({ ...f, status: e.target.value as ActionStatus }))}
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] transition-all outline-none"
+                                                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] transition-all outline-none"
                                                 >
                                                     <option value="verified">Verified</option>
                                                     <option value="pending">Pending</option>
@@ -893,7 +893,7 @@ export default function AdminActionTable() {
                                                     value={verifyForm.adminNotes}
                                                     onChange={(e) => setVerifyForm(f => ({ ...f, adminNotes: e.target.value }))}
                                                     placeholder="Reason for rejection or verification notes..."
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] outline-none"
+                                                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -902,14 +902,14 @@ export default function AdminActionTable() {
                                             <button
                                                 type="button"
                                                 onClick={() => setVerifyModalOpen(false)}
-                                                className="flex-1 px-6 py-4 rounded-2xl border-2 border-gray-100 bg-white text-sm font-black text-gray-400 hover:bg-gray-50 transition-all uppercase tracking-widest"
+                                                className="flex-1 px-6 py-4 rounded-lg border-2 border-gray-100 bg-white text-sm font-black text-gray-400 hover:bg-gray-50 transition-all uppercase tracking-widest"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 type="submit"
                                                 disabled={verifySubmitting}
-                                                className="flex-[2] px-6 py-4 rounded-2xl bg-[#003527] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
+                                                className="flex-[2] px-6 py-4 rounded-lg bg-[#003527] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
                                             >
                                                 {verifySubmitting ? "Syncing..." : "Submit Verification"}
                                             </button>
@@ -925,13 +925,13 @@ export default function AdminActionTable() {
             {/* School Verification Modal - Overhauled */}
             {verifySchoolModalOpen && selectedSchool && (
                 <div className="fixed inset-0 z-[1100] flex items-center justify-center bg-black/60 px-4 py-6 overflow-y-auto">
-                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
-                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-orange-50/50 rounded-t-3xl">
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-orange-50/50 rounded-lg-3xl">
                             <div>
                                 <h2 className="text-xl font-black text-gray-800 uppercase tracking-tight italic">Verify School Action</h2>
                                 <p className="text-sm font-medium text-gray-500 mt-0.5">{selectedSchool.schoolName} — {selectedSchool.registryId}</p>
                             </div>
-                            <button onClick={() => setVerifySchoolModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-400 hover:text-gray-600">
+                            <button onClick={() => setVerifySchoolModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-lg transition-colors text-gray-400 hover:text-gray-600">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                             </button>
                         </div>
@@ -940,7 +940,7 @@ export default function AdminActionTable() {
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                 {/* Left Side: Step 1 Baselines */}
                                 <div className="space-y-6">
-                                    <div className="bg-orange-50/30 rounded-2xl p-5 border border-orange-100 space-y-4">
+                                    <div className="bg-orange-50/30 rounded-lg p-5 border border-orange-100 space-y-4">
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="bg-orange-500 p-2 rounded-lg text-white">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
@@ -967,7 +967,7 @@ export default function AdminActionTable() {
                                                         value={verifySchoolForm[field.key as keyof typeof verifySchoolForm]}
                                                         readOnly={!isSchoolEditMode}
                                                         onChange={(e) => setVerifySchoolForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-orange-200 bg-white focus:border-orange-600 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-orange-200 bg-white focus:border-orange-600 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                             ))}
@@ -975,7 +975,7 @@ export default function AdminActionTable() {
                                     </div>
 
                                     {/* School Context & Action */}
-                                    <div className="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-100 space-y-4">
+                                    <div className="bg-indigo-50/50 rounded-lg p-5 border border-indigo-100 space-y-4">
                                         <div className="flex items-center gap-3 mb-2">
                                             <div className="bg-[#003527] p-2 rounded-lg text-white">
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg>
@@ -991,7 +991,7 @@ export default function AdminActionTable() {
                                                     value={verifySchoolForm.schoolName}
                                                     readOnly={!isSchoolEditMode}
                                                     onChange={(e) => setVerifySchoolForm(f => ({ ...f, schoolName: e.target.value }))}
-                                                    className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-indigo-200 bg-white focus:border-indigo-500 outline-none' : 'border-transparent bg-transparent'}`}
+                                                    className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-indigo-200 bg-white focus:border-indigo-500 outline-none' : 'border-transparent bg-transparent'}`}
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
@@ -1002,7 +1002,7 @@ export default function AdminActionTable() {
                                                         value={verifySchoolForm.actionQuantity}
                                                         readOnly={!isSchoolEditMode}
                                                         onChange={(e) => setVerifySchoolForm(f => ({ ...f, actionQuantity: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-indigo-200 bg-white focus:border-indigo-500 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-indigo-200 bg-white focus:border-indigo-500 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                                 <div className="space-y-1">
@@ -1012,7 +1012,7 @@ export default function AdminActionTable() {
                                                         value={verifySchoolForm.students_count}
                                                         readOnly={!isSchoolEditMode}
                                                         onChange={(e) => setVerifySchoolForm(f => ({ ...f, students_count: e.target.value }))}
-                                                        className={`w-full px-3 py-2 rounded-xl text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-indigo-200 bg-white focus:border-indigo-500 outline-none' : 'border-transparent bg-transparent'}`}
+                                                        className={`w-full px-3 py-2 rounded-lg text-sm font-bold border-2 transition-all text-slate-900 ${isSchoolEditMode ? 'border-indigo-200 bg-white focus:border-indigo-500 outline-none' : 'border-transparent bg-transparent'}`}
                                                     />
                                                 </div>
                                             </div>
@@ -1022,7 +1022,7 @@ export default function AdminActionTable() {
                                     <button
                                         type="button"
                                         onClick={() => setIsSchoolEditMode(!isSchoolEditMode)}
-                                        className={`w-full px-4 py-3 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${isSchoolEditMode ? 'bg-green-600 text-white shadow-lg shadow-green-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                                        className={`w-full px-4 py-3 rounded-lg font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 ${isSchoolEditMode ? 'bg-green-600 text-white shadow-lg shadow-green-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                                     >
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                                         {isSchoolEditMode ? "Lock Values" : "Edit Detailed Inputs"}
@@ -1031,11 +1031,11 @@ export default function AdminActionTable() {
 
                                 {/* Right Side: Results & Final Decision */}
                                 <div className="space-y-6">
-                                    <div className="bg-[#003527] rounded-[2rem] p-6 text-white shadow-xl shadow-blue-100 relative overflow-hidden">
+                                    <div className="bg-[#003527] rounded-lg[2rem] p-6 text-white shadow-xl shadow-blue-100 relative overflow-hidden">
                                         <div className="relative z-10 space-y-6">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="font-black uppercase tracking-widest text-xs opacity-80">Calculated School Impact</h3>
-                                                <div className="bg-white/20 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest">Live Audit Mode</div>
+                                                <div className="bg-white/20 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">Live Audit Mode</div>
                                             </div>
 
                                             {(() => {
@@ -1082,7 +1082,7 @@ export default function AdminActionTable() {
                                                 <select
                                                     value={verifySchoolForm.status}
                                                     onChange={(e) => setVerifySchoolForm(f => ({ ...f, status: e.target.value as SchoolStatus }))}
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] transition-all outline-none"
+                                                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] transition-all outline-none"
                                                 >
                                                     <option value="verified">Verified</option>
                                                     <option value="rejected">Rejected</option>
@@ -1096,7 +1096,7 @@ export default function AdminActionTable() {
                                                     value={verifySchoolForm.adminNotes}
                                                     onChange={(e) => setVerifySchoolForm(f => ({ ...f, adminNotes: e.target.value }))}
                                                     placeholder="Reason for decision..."
-                                                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] outline-none"
+                                                    className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-white text-sm font-bold focus:border-[#003527] outline-none"
                                                 />
                                             </div>
                                         </div>
@@ -1105,14 +1105,14 @@ export default function AdminActionTable() {
                                             <button
                                                 type="button"
                                                 onClick={() => setVerifySchoolModalOpen(false)}
-                                                className="flex-1 px-6 py-4 rounded-2xl border-2 border-gray-100 bg-white text-sm font-black text-gray-400 hover:bg-gray-50 transition-all uppercase tracking-widest"
+                                                className="flex-1 px-6 py-4 rounded-lg border-2 border-gray-100 bg-white text-sm font-black text-gray-400 hover:bg-gray-50 transition-all uppercase tracking-widest"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 type="submit"
                                                 disabled={verifySubmitting}
-                                                className="flex-[2] px-6 py-4 rounded-2xl bg-[#003527] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
+                                                className="flex-[2] px-6 py-4 rounded-lg bg-[#003527] text-white text-sm font-black shadow-xl shadow-blue-100 hover:scale-[1.02] active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-50"
                                             >
                                                 {verifySubmitting ? "Syncing..." : "Submit Verification"}
                                             </button>

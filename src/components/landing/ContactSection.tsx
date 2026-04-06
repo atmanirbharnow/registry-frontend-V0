@@ -52,9 +52,9 @@ export default function ContactSection() {
                 href={info.href}
                 target={info.href.startsWith("http") ? "_blank" : undefined}
                 rel="noopener noreferrer"
-                className="group bg-white rounded-none p-6 flex gap-6 items-center hover:bg-emerald-50/50 transition-all border border-[#f1f5f9] text-left"
+                className="group bg-white rounded-lg p-6 flex gap-6 items-center hover:bg-emerald-50/50 transition-all border border-[#f1f5f9] text-left"
               >
-                <div className="w-10 h-10 bg-[#b0f0d6] text-[#003527] rounded-none flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 bg-[#b0f0d6] text-[#003527] rounded-lg flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-105 transition-transform">
                   {info.icon}
                 </div>
                 <div className="flex flex-col gap-1">
@@ -68,7 +68,7 @@ export default function ContactSection() {
 
         {/* Right Side: Quick Action Cards */}
         <div className="flex flex-col gap-8">
-          <div className="bg-[#003527] rounded-none p-8 md:p-10 text-white flex flex-col gap-4">
+          <div className="bg-[#003527] rounded-lg p-8 md:p-10 text-white flex flex-col gap-4">
              <h3 className="text-lg font-black text-white" style={{ fontFamily: "Manrope, sans-serif" }}>Join the Community</h3>
              <p className="text-xs font-medium leading-relaxed opacity-60">
                Climate Asset Foundation is a climate tech initiative under validation with MoEF&CC and Verra. Build Indias most comprehensive climate action database.
@@ -80,7 +80,7 @@ export default function ContactSection() {
               <Link
                 key={action.label}
                 href={action.href}
-                className="group bg-white rounded-none p-5 flex justify-between items-center text-[#003527] hover:bg-[#003527] hover:text-white transition-all border border-[#f1f5f9]"
+                className="group bg-white rounded-lg p-5 flex justify-between items-center text-[#003527] hover:bg-[#003527] hover:text-white transition-all border border-[#f1f5f9]"
               >
                 <div className="flex flex-col gap-1">
                   <h4 className="text-sm font-black leading-tight text-inherit">{action.label}</h4>
@@ -88,7 +88,7 @@ export default function ContactSection() {
                     {action.sub}
                   </p>
                 </div>
-                <div className="w-8 h-8 rounded-none border border-[#f1f5f9] flex items-center justify-center group-hover:border-[#b0f0d6] transition-colors">
+                <div className="w-8 h-8 rounded-lg border border-[#f1f5f9] flex items-center justify-center group-hover:border-[#b0f0d6] transition-colors">
                   <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>

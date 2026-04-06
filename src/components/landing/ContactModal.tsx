@@ -15,7 +15,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-none w-full max-w-lg shadow-2xl overflow-hidden"
+        className="bg-white rounded-lg w-full max-w-lg shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -33,7 +33,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-none bg-white/10 hover:bg-white/20 transition-colors text-white"
+            className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors text-white"
           >
             <X className="w-5 h-5" strokeWidth={2.5} />
           </button>
@@ -62,7 +62,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
             },
           ].map((item) => (
             <div key={item.label} className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-[#b0f0d6] text-[#003527] rounded-none flex items-center justify-center flex-shrink-0 mt-1">
+              <div className="w-10 h-10 bg-[#b0f0d6] text-[#003527] rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
                 {item.icon}
               </div>
               <div className="pt-1">
@@ -88,7 +88,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
         <div className="px-8 pb-8">
           <button
             onClick={onClose}
-            className="w-full py-4 bg-[#003527] text-white font-black rounded-none hover:bg-[#002219] transition-all uppercase tracking-widest text-xs"
+            className="w-full py-4 bg-[#003527] text-white font-black rounded-lg hover:bg-[#002219] transition-all uppercase tracking-widest text-xs"
           >
             Close
           </button>

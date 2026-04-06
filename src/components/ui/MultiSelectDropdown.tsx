@@ -19,9 +19,9 @@ export interface MultiSelectDropdownProps {
 }
 
 const sizeClasses = {
-    sm: "px-3 py-2 text-xs rounded-lg",
-    md: "px-4 py-2.5 text-sm rounded-xl",
-    lg: "px-5 py-4 text-base rounded-xl",
+    sm: "px-2 py-1.5 text-xs rounded-lg",
+    md: "px-3 py-2 text-sm rounded-lg",
+    lg: "px-4 py-2 text-sm rounded-lg",
 };
 
 export default function MultiSelectDropdown({
@@ -111,7 +111,7 @@ export default function MultiSelectDropdown({
             {isOpen && (
                 <div
                     role="listbox"
-                    className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 shadow-lg rounded-xl max-h-60 overflow-y-auto"
+                    className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 shadow-lg rounded-lg max-h-60 overflow-y-auto"
                 >
                     <div className="py-1">
                         {options.map((option) => {
@@ -138,7 +138,7 @@ export default function MultiSelectDropdown({
                                         ${size === "sm" ? "text-xs px-3 py-2" : size === "lg" ? "text-base px-5" : "text-sm"}
                                     `}
                                 >
-                                    <div className={`w-5 h-5 flex-shrink-0 rounded border flex items-center justify-center transition-colors ${isSelected ? 'bg-[#003527] border-[#003527]' : 'border-gray-300 bg-white'}`}>
+                                    <div className={`w-5 h-5 flex-shrink-0 rounded-md border flex items-center justify-center transition-colors ${isSelected ? 'bg-[#003527] border-[#003527]' : 'border-gray-300 bg-white'}`}>
                                         {isSelected && (
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                                 <polyline points="20 6 9 17 4 12" />

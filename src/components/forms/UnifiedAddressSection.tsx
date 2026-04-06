@@ -91,7 +91,7 @@ export default function UnifiedAddressSection({
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                     {label}
                 </label>
-                <div className="flex p-1 bg-slate-100 rounded-xl w-fit self-end sm:self-auto">
+                <div className="flex p-1 bg-slate-100 rounded-lg w-fit self-end sm:self-auto">
                     <button
                         type="button"
                         onClick={() => setMode("search")}
@@ -127,13 +127,13 @@ export default function UnifiedAddressSection({
                                 onPlaceSelect={onLocationSelect}
                                 placeholder={placeholder}
                                 disableValidation={isIndividual}
-                                className="!py-4 !rounded-2xl !border-slate-200 focus:!border-[#003527] shadow-sm"
+                                className="!py-2 !rounded-lg !border-slate-200 focus:!border-[#003527] shadow-sm"
                             />
                             <button
                                 type="button"
                                 onClick={handleUseGPS}
                                 disabled={loadingGPS}
-                                className="flex items-center gap-2 px-5 py-2.5 bg-[#eff7f2] hover:bg-[#b0f0d6] text-[#003527] text-xs font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 disabled:opacity-50"
+                                className="flex items-center gap-2 px-5 py-2.5 bg-[#eff7f2] hover:bg-[#b0f0d6] text-[#003527] text-xs font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 disabled:opacity-50"
                             >
                             {loadingGPS ? (
                                 <Spinner size="sm" className="text-[#003527]" />
@@ -151,7 +151,7 @@ export default function UnifiedAddressSection({
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Type your full address manually..."
-                        className={`w-full min-h-[120px] px-5 py-4 bg-white border-2 border-slate-200 rounded-2xl outline-none font-semibold text-slate-800 placeholder-slate-300 focus:border-[#003527] transition-all shadow-sm ${
+                        className={`w-full min-h-[120px] px-5 py-2 bg-white border-2 border-slate-200 rounded-lg outline-none font-semibold text-slate-800 placeholder-slate-300 focus:border-[#003527] transition-all shadow-sm ${
                             touched && error ? "border-red-500 bg-red-50" : ""
                         }`}
                     />
@@ -165,7 +165,7 @@ export default function UnifiedAddressSection({
             </div>
 
             {mode === "manual" && (
-                <div className="flex items-center gap-2 p-3 bg-[#eff7f2]/50 border border-[#b0f0d6] rounded-xl text-[10px] text-[#003527] font-bold uppercase tracking-widest leading-tight">
+                <div className="flex items-center gap-2 p-3 bg-[#eff7f2]/50 border border-[#b0f0d6] rounded-lg text-[10px] text-[#003527] font-bold uppercase tracking-widest leading-tight">
                     <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>

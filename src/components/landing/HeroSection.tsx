@@ -18,7 +18,7 @@ export default function HeroSection({ onStartStructuring }: HeroSectionProps) {
 
       {/* Badge container centered */}
       <div className="mb-6 flex justify-center animate-in fade-in slide-in-from-top-4 duration-700">
-        <span className="inline-flex items-center gap-2 bg-[#003527]/5 border border-[#003527]/10 text-[#003527] text-[9px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-none">
+        <span className="inline-flex items-center gap-2 bg-[#003527]/5 border border-[#003527]/10 text-[#003527] text-[9px] font-black uppercase tracking-[0.3em] px-4 py-2 rounded-lg">
           <span className="w-1 h-1 bg-[#a8f928]" />
           Global Carbon Standard V2.4
         </span>
@@ -40,7 +40,7 @@ export default function HeroSection({ onStartStructuring }: HeroSectionProps) {
       {/* CTA Buttons centered */}
       <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
         <Link href="/signin" className="w-full sm:w-auto">
-          <button className="w-full flex items-center justify-center gap-3 px-8 py-3.5 bg-[#a8f928] text-[#112000] font-black text-sm rounded-none hover:bg-[#96e020] transition-all border border-[#112000]/5 shadow-sm group">
+          <button className="w-full flex items-center justify-center gap-3 px-8 py-3.5 bg-[#a8f928] text-[#112000] font-black text-sm rounded-lg hover:bg-[#96e020] transition-all border border-[#112000]/5 shadow-sm group">
             Start Small Climate Action
             <span className="group-hover:translate-x-1 transition-transform">→</span>
           </button>
@@ -48,7 +48,7 @@ export default function HeroSection({ onStartStructuring }: HeroSectionProps) {
 
         <button 
           onClick={onStartStructuring}
-          className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-3.5 bg-[#003527] text-white font-black text-sm rounded-none hover:bg-[#002219] transition-all border border-transparent shadow-sm cursor-pointer group"
+          className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-3.5 bg-[#003527] text-white font-black text-sm rounded-lg hover:bg-[#002219] transition-all border border-transparent shadow-sm cursor-pointer group"
         >
           Structure Your Carbon Assets
           <span className="opacity-60 group-hover:scale-110 transition-transform">

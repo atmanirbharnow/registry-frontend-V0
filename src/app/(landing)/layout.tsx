@@ -5,7 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Climate Asset Registry | Verified Low-Carbon Action Registry",
-  description: "Register and verify low-carbon actions across India. Track CO₂e reduction and sustainability. India's transparent climate action registry.",
+  description: "Register and verify low-carbon actions across India. Track CO₂e reduction and sustainability. Global transparent climate action registry.",
   openGraph: {
     title: "Climate Asset Registry | Verified Low-Carbon Action Registry",
     description: "Register and verify low-carbon actions across India. Track CO₂e reduction and impact.",
@@ -37,7 +37,8 @@ export default function LandingLayout({
         </main>
         <LandingFooter />
 
-        <style dangerouslySetInnerHTML={{ __html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           html {
             scroll-behavior: smooth;
           }

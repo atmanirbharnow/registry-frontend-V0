@@ -39,7 +39,7 @@ const SchoolAutocomplete = ({
           value={inputValue}
           onChange={handleInputChange}
           placeholder={isLoaded ? placeholder : (loadError ? "Search school..." : "Loading search...")}
-          className={`w-full px-5 py-4 bg-gray-50 rounded-2xl border-2 transition-all outline-none font-bold text-gray-900 placeholder:text-gray-400 text-lg ${
+          className={`w-full px-3 py-2 bg-gray-50 rounded-lg border-2 transition-all outline-none font-bold text-gray-900 placeholder:text-gray-400 text-lg ${
             error ? "border-red-500 bg-red-50" : "border-slate-300 focus:border-[#003527] focus:bg-white focus:shadow-lg focus:shadow-blue-900/5"
           } ${className}`}
           {...props}
@@ -47,13 +47,13 @@ const SchoolAutocomplete = ({
         
         {/* Fallback Suggestions Dropdown */}
         {loadError && suggestions.length > 0 && (
-          <div className="absolute top-full left-0 right-0 z-[1001] mt-1 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+          <div className="absolute top-full left-0 right-0 z-[1001] mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden max-h-60 overflow-y-auto">
             {suggestions.map((s, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => handleSuggestionSelect(s)}
-                className="w-full text-left px-5 py-4 text-sm hover:bg-blue-50 transition-colors border-b border-slate-50 last:border-0"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 transition-colors border-b border-slate-50 last:border-0"
               >
                 <div className="font-bold text-slate-800">{s.structured_formatting?.main_text || s.description}</div>
                 <div className="text-[10px] text-slate-500 truncate">{s.description}</div>

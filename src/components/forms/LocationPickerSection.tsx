@@ -94,7 +94,7 @@ export default function LocationPickerSection({
             {typeof lat === 'number' && typeof lng === 'number' && (
                 <div className="flex items-center gap-2 text-xs text-gray-400 ml-1">
                     <span className="font-medium">Coordinates:</span>
-                    <span className="px-2 py-1 bg-gray-50 rounded text-gray-600 font-mono">
+                    <span className="px-2 py-1 bg-gray-50 rounded-lg text-gray-600 font-mono">
                         {lat.toFixed(6)}, {lng.toFixed(6)}
                     </span>
                 </div>

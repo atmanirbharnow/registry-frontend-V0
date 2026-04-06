@@ -15,7 +15,7 @@ export default function PublicShell({
 
       <main className='flex-1 w-full'>
         <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16'>
-          <div className='bg-white/50 backdrop-blur-sm rounded-none p-6 sm:p-10 md:p-14 text-gray-900 shadow-sm border border-[#003527]/5'>{children}</div>
+          <div className='bg-white/50 backdrop-blur-sm rounded-lg p-6 sm:p-10 md:p-14 text-gray-900 shadow-sm border border-[#003527]/5'>{children}</div>
         </div>
       </main>
 

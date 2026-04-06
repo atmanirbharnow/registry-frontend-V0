@@ -24,7 +24,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-    sm: "py-1.5 px-3 text-xs rounded-md",
+    sm: "py-1.5 px-3 text-xs rounded-lg",
     md: "py-2 px-4 text-xs rounded-lg",
     lg: "py-2.5 px-5 text-sm rounded-lg",
 };
@@ -53,7 +53,7 @@ export default function Button({
             {...props}
         >
             {loading && (
-                <div className="w-4 h-4 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-current/30 border-t-current rounded-lg animate-spin" />
             )}
             {children}
         </button>

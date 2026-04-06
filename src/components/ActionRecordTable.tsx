@@ -62,14 +62,14 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
   if (loading) {
     return (
       <div className='flex justify-center items-center p-8'>
-        <div className='w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin'></div>
+        <div className='w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-lg animate-spin'></div>
       </div>
     );
   }
 
   if (actions.length === 0) {
     return (
-      <div className='bg-white/50 border-2 border-dashed border-gray-300 rounded-3xl p-16 flex flex-col items-center justify-center text-center mt-6'>
+      <div className='bg-white/50 border-2 border-dashed border-gray-300 rounded-lg p-16 flex flex-col items-center justify-center text-center mt-6'>
         <h3 className='text-gray-500 font-semibold text-base'>No actions yet</h3>
         <p className='text-gray-400 text-sm max-w-[500px] mt-1'>
           Start by adding your first action today.
@@ -82,7 +82,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
     <>
       <div className='space-y-6 mt-6'>
         {/* Desktop Grid View */}
-        <div className='hidden md:block bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden'>
+        <div className='hidden md:block bg-white rounded-lg border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden'>
           <div className='min-w-full'>
             {/* Header */}
             <div className='grid grid-cols-[1.5fr_1fr_2.5fr_1fr_1fr] bg-gray-50/50 border-b border-gray-100/50'>
@@ -154,7 +154,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
           {currentItems.map((action) => (
             <div
               key={action.id}
-              className='bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4'
+              className='bg-white rounded-lg border border-gray-100 p-5 shadow-sm space-y-4'
             >
               <div className='flex justify-between items-start'>
                 <div>
@@ -170,7 +170,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
                 </span>
               </div>
 
-              <div className='flex items-start gap-2 text-sm text-gray-500 bg-gray-50 p-3 rounded-xl'>
+              <div className='flex items-start gap-2 text-sm text-gray-500 bg-gray-50 p-3 rounded-lg'>
                 <span className='truncate'>{action.address}</span>
               </div>
 
@@ -199,7 +199,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`p-3 rounded-xl border-2 flex items-center justify-center  ${currentPage === 1
+            className={`p-3 rounded-lg border-2 flex items-center justify-center  ${currentPage === 1
               ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
               : "bg-white text-[#003527] hover:bg-blue-50 border-[#003527] cursor-pointer"
               }`}
@@ -212,7 +212,7 @@ export default function ActionRecordTable({ onEdit }: ActionRecordTableProps) {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`p-3 rounded-xl border-2 flex items-center justify-center ${currentPage === totalPages
+            className={`p-3 rounded-lg border-2 flex items-center justify-center ${currentPage === totalPages
               ? "bg-gray-50 text-gray-300 cursor-not-allowed border-gray-200"
               : "bg-white text-[#003527] hover:bg-blue-50 border-[#003527] cursor-pointer"
               }`}

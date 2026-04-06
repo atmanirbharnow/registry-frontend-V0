@@ -8,7 +8,7 @@ export default function UnifiedRegistrySection() {
       <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-6">
         {/* Icon */}
         <div className="flex-shrink-0">
-          <div className="w-20 h-20 bg-[#a8f928] rounded-2xl flex items-center justify-center">
+          <div className="w-20 h-20 bg-[#a8f928] rounded-lg flex items-center justify-center">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#112000" strokeWidth="2.5">
               <circle cx="12" cy="12" r="3" />
               <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />

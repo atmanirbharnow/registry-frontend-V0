@@ -32,20 +32,20 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
     };
 
     return (
-        <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-[#003527] shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-[360px] sm:max-w-md mx-auto">
+        <div className="bg-white rounded-lg sm:rounded-lg border-2 border-[#003527] shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-[360px] sm:max-w-md mx-auto">
             <div className="text-center mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 border-gray-100">
                 <h2 className="text-base sm:text-lg font-black text-gray-800 uppercase tracking-tight mb-2 sm:mb-3">
                     Climate Asset Registry
                 </h2>
                 {action.status === "verified" ? (
-                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#b0f0d6] rounded-full">
+                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#b0f0d6] rounded-lg">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-[#003527]">
                             <polyline points="20 6 9 17 4 12" />
                         </svg>
                         <span className="text-xs sm:text-sm font-bold text-[#003527]">VERIFIED</span>
                     </div>
                 ) : (
-                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-yellow-100 rounded-full">
+                    <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-yellow-100 rounded-lg">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#112000]">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
@@ -65,7 +65,7 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                 </h3>
 
                 <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                    <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
+                    <div className="bg-blue-50 rounded-lg sm:rounded-lg p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Carbon Reduced</div>
                         {action.status === "verified" ? (
                             <>
@@ -76,7 +76,7 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                             <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
                         )}
                     </div>
-                    <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
+                    <div className="bg-blue-50 rounded-lg sm:rounded-lg p-3 sm:p-4 text-center flex flex-col justify-center min-h-[80px]">
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Atmanirbhar</div>
                         {action.status === "verified" ? (
                             <>
@@ -87,7 +87,7 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                             <div className="text-sm sm:text-base font-bold text-gray-400">Pending</div>
                         )}
                     </div>
-                    <div className="col-span-2 bg-emerald-50 rounded-lg sm:rounded-xl p-3 sm:p-4 text-center flex flex-col justify-center min-h-[70px]">
+                    <div className="col-span-2 bg-emerald-50 rounded-lg sm:rounded-lg p-3 sm:p-4 text-center flex flex-col justify-center min-h-[70px]">
                         <div className="text-[10px] sm:text-xs text-gray-500 mb-1">Circularity Score</div>
                         {action.status === "verified" ? (
                             <>

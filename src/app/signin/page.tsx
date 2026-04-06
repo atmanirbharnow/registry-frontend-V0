@@ -46,7 +46,7 @@ export default function SignInPage() {
                   Institutional Access
                 </p>
                 <h1 className="text-3xl md:text-5xl font-black text-white leading-[1.1]">
-                  India's Verified <br />Carbon Registry.
+                  Global Verified <br />Carbon Registry.
                 </h1>
                 <p className="text-xs md:text-lg text-white/50 font-bold leading-relaxed max-w-md">
                   Secure access to manage your low-carbon assets, verify digital signatures,

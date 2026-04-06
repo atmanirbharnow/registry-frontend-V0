@@ -32,7 +32,7 @@ export default function LandingNavbar() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 w-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 group no-underline">
-          <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-none shadow-sm">
+          <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-lg shadow-sm">
             <Image
               src="/climate asset logo bw.jpg"
               alt="Logo"

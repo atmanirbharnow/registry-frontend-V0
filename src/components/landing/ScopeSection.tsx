@@ -55,7 +55,7 @@ export default function TrustAndScopeSection() {
               {/* Animated Technical Icon */}
               <div className="w-12 h-12 bg-[#eff7f2] flex items-center justify-center text-[#003527] relative">
                 <ShieldCheck className="w-6 h-6 relative z-10" strokeWidth={2.5} />
-                <div className="absolute inset-0 bg-[#003527]/5 animate-ping rounded-none" />
+                <div className="absolute inset-0 bg-[#003527]/5 animate-ping rounded-lg" />
               </div>
 
               <div className="space-y-6">

@@ -38,7 +38,7 @@ export default function ActorDetailsSection({
                         <label
                             key={type.value}
                             className={`
-                flex items-center gap-3 px-4 py-3 rounded-xl border cursor-pointer
+                flex items-center gap-3 px-3 py-2 rounded-lg border cursor-pointer
                 transition-all duration-200
                 ${actorType === type.value
                                     ? "border-[#003527] bg-[#eff7f2]/50"

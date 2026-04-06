@@ -63,7 +63,7 @@ export default function ActionHubSection({ onStartStructuring }: ActionHubSectio
 
           <div className="relative z-10 flex">
             <Link href="/signin" className="w-full sm:w-auto">
-              <button className="w-full flex items-center justify-center gap-2 px-8 py-3.5 bg-[#b0f0d6] text-[#003527] font-black text-sm rounded-none hover:bg-[#9debc8] transition-all border border-[#003527]/5">
+              <button className="w-full flex items-center justify-center gap-2 px-8 py-3.5 bg-[#b0f0d6] text-[#003527] font-black text-sm rounded-lg hover:bg-[#9debc8] transition-all border border-[#003527]/5">
                 Register Action
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10M7 17L17 7" /></svg>
               </button>
@@ -122,7 +122,7 @@ export default function ActionHubSection({ onStartStructuring }: ActionHubSectio
             <div className="relative z-10 flex">
               <button
                 onClick={onStartStructuring}
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-[#a8f928] text-[#112000] font-black text-sm rounded-none hover:bg-[#96e020] transition-all border border-transparent group"
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-[#a8f928] text-[#112000] font-black text-sm rounded-lg hover:bg-[#96e020] transition-all border border-transparent group"
               >
                 Contact Us
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-y-[-1px] transition-transform"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>

@@ -416,7 +416,7 @@ export default function SchoolRegistrationForm() {
                                 {step === 3 && "Impact Summary"}
                                 {step === 4 && "Payment"}
                             </div>
-                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[#003527] border-[#eff7f2] text-white scale-110" :
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center border-4 transition-all duration-300 shadow-sm ${currentStep === step ? "bg-[#003527] border-[#eff7f2] text-white scale-110" :
                                 currentStep > step ? "bg-[#a8f928] border-green-100 text-white" :
                                     "bg-white border-gray-100 text-gray-300"
                                 }`}>
@@ -427,9 +427,9 @@ export default function SchoolRegistrationForm() {
                         </div>
                     ))}
                 </div>
-                <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
+                <div className="h-3 w-full bg-gray-100 rounded-lg overflow-hidden p-1 shadow-inner">
                     <div
-                        className="h-full bg-gradient-to-r from-[#003527] to-[#a8f928] rounded-full transition-all duration-700 ease-out shadow-[0_0_15px_rgba(0,53,39,0.4)]"
+                        className="h-full bg-gradient-to-r from-[#003527] to-[#a8f928] rounded-lg transition-all duration-700 ease-out shadow-[0_0_15px_rgba(0,53,39,0.4)]"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
@@ -437,7 +437,7 @@ export default function SchoolRegistrationForm() {
 
             <form onSubmit={(e) => { e.preventDefault(); formik.handleSubmit(); }} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {isSimulationMode && (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-5 py-3 flex items-center gap-2">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-5 py-3 flex items-center gap-2">
                         <span className="text-xl flex items-center justify-center">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-600">
                                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
@@ -450,7 +450,7 @@ export default function SchoolRegistrationForm() {
                 )}
                 {currentStep === 1 && (
                     <StepWrapper title="Baseline Usage (Monthly Average)" icon={<EnergyIcon />}>
-                        <p className="text-xs text-[#003527] bg-[#eff7f2] p-3 rounded-xl font-medium border border-[#b0f0d6] mb-6">
+                        <p className="text-[10px] text-[#003527] bg-[#eff7f2] p-3 rounded-lg font-medium border border-[#b0f0d6] mb-6">
                             Note: Baseline Usage represents your EXISTING usage BEFORE the new low-carbon action.
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -459,10 +459,10 @@ export default function SchoolRegistrationForm() {
                             <DropdownField label="Data Source" name="baseline_source" options={BASELINE_SOURCE_OPTIONS} formik={formik} />
 
                             <div className="md:col-span-2 mt-6">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-[#003527] mb-4">
                                     Energy Usage (Yearly)
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border-2 border-slate-100">
                                     <InputField label="Electricity (kWh)" name="baselineEnergyGrid" type="number" formik={formik} />
                                     <InputField label="Diesel/Fuel (Liters)" name="baselineEnergyDiesel" type="number" formik={formik} />
                                     <InputField label="LPG(KG)" name="baselineEnergySolar" type="number" formik={formik} />
@@ -470,10 +470,10 @@ export default function SchoolRegistrationForm() {
                             </div>
 
                             <div className="md:col-span-2 mt-4">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-[#003527] mb-4">
                                     Water Usage (Yearly)
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border-2 border-slate-100">
                                     <InputField label="Municipal Intake (AMC) (Liters)" name="baselineWaterMunicipal" type="number" formik={formik} />
                                     <InputField label="Borewell (Liters)" name="baselineWaterRain" type="number" formik={formik} />
                                     <InputField label="Community Source (Liters)" name="baselineWaterWaste" type="number" formik={formik} />
@@ -481,10 +481,10 @@ export default function SchoolRegistrationForm() {
                             </div>
 
                             <div className="md:col-span-2 mt-4">
-                                <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-[#003527] mb-4">
                                     Waste Generated (Yearly)
                                 </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-2xl border-2 border-slate-100">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50 rounded-lg border-2 border-slate-100">
                                     <InputField label="Organic Waste (kg)" name="baselineWasteOrganic" type="number" formik={formik} />
                                     <InputField label="Plastic(Kg)" name="baselineWasteInorganic" type="number" formik={formik} />
                                     <InputField label="Packaging and paper waste(Kg)" name="baselineWasteHazardous" type="number" formik={formik} />
@@ -500,7 +500,7 @@ export default function SchoolRegistrationForm() {
                         <StepWrapper title="Low-Carbon Action Details" icon={<RegistryIcon />}>
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label className="block text-xs font-semibold text-gray-700 mb-2 uppercase tracking-widest">
                                         Select Action Types
                                     </label>
                                     <MultiSelectDropdown
@@ -509,7 +509,7 @@ export default function SchoolRegistrationForm() {
                                         onChange={(vals) => formik.setFieldValue("actionTypes", vals)}
                                     />
                                     {formik.touched.actionTypes && formik.errors.actionTypes && typeof formik.errors.actionTypes === 'string' && (
-                                        <p className="mt-1 text-sm text-red-500">{formik.errors.actionTypes}</p>
+                                        <p className="mt-1 text-xs text-red-500">{formik.errors.actionTypes}</p>
                                     )}
                                 </div>
 
@@ -519,7 +519,7 @@ export default function SchoolRegistrationForm() {
                                     const defaultUnit = ACTION_UNITS[type] || "units";
 
                                     return (
-                                        <div key={type} className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4">
+                                        <div key={type} className="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-4">
                                             <h4 className="font-semibold text-[#003527]">{index + 1}. {label}</h4>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div>
@@ -535,7 +535,7 @@ export default function SchoolRegistrationForm() {
                                                                     [type]: { ...(current[type] || {}), quantity: e.target.value, unit: defaultUnit }
                                                                 });
                                                             }}
-                                                            className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                            className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
                                                             required
                                                         />
                                                         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-black uppercase tracking-widest text-[#003527]/50 pointer-events-none">
@@ -555,7 +555,7 @@ export default function SchoolRegistrationForm() {
                                                                 [type]: { ...(current[type] || {}), commissioningDate: e.target.value, unit: defaultUnit }
                                                             });
                                                         }}
-                                                        className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
+                                                        className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all text-sm font-medium text-slate-900 placeholder-slate-400"
                                                         required
                                                     />
                                                 </div>
@@ -588,13 +588,13 @@ export default function SchoolRegistrationForm() {
 
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-sm font-black uppercase tracking-widest text-[#003527]">
+                                        <h3 className="text-[10px] font-black uppercase tracking-widest text-[#003527]">
                                             Location Details
                                         </h3>
                                         {pinLoading && <Spinner className="w-4 h-4 text-[#003527]" />}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 border-2 border-slate-100 rounded-3xl">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 border-2 border-slate-100 rounded-lg">
                                         <div className="md:col-span-2">
                                             <InputField label="Pincode" name="pincode" type="text" formik={formik} placeholder="Enter 6-digit Pincode" maxLength={6} />
                                             {pinError && <p className="text-xs text-red-500 mt-1 font-bold px-1">{pinError}</p>}
@@ -652,7 +652,7 @@ export default function SchoolRegistrationForm() {
                 {currentStep === 4 && (
                     <StepWrapper title="Finalization & Payment" icon={<RegistryIcon />}>
                         <div className="space-y-8">
-                            <div className="bg-slate-50 p-6 rounded-2xl border-2 border-slate-100 space-y-4">
+                            <div className="bg-slate-50 p-6 rounded-lg border-2 border-slate-100 space-y-4">
                                 <label className="flex items-start gap-4 cursor-pointer group">
                                     <div className="mt-1 relative">
                                         <input
@@ -670,7 +670,7 @@ export default function SchoolRegistrationForm() {
                                 </label>
                             </div>
 
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-gradient-to-br from-white to-[#eff7f2]/50 rounded-3xl border-2 border-[#b0f0d6] shadow-xl">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-gradient-to-br from-white to-[#eff7f2]/50 rounded-lg border-2 border-[#b0f0d6] shadow-xl">
                                 <div>
                                     <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Registration Fee</p>
                                     <p className="text-4xl font-black text-[#003527]">₹1</p>
@@ -678,7 +678,7 @@ export default function SchoolRegistrationForm() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full md:w-auto px-12 py-5 bg-[#003527] text-white rounded-2xl font-black shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
+                                    className="w-full md:w-auto px-12 py-5 bg-[#003527] text-white rounded-lg font-black shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
                                 >
                                     {submitting ? "Processing..." : "Pay & Register School"}
                                 </button>
@@ -693,7 +693,7 @@ export default function SchoolRegistrationForm() {
                         <button
                             type="button"
                             onClick={handlePrev}
-                            className="w-full sm:w-40 px-6 py-3 rounded-xl bg-white border-2 border-gray-100 text-gray-500 font-bold text-sm hover:bg-gray-50 transition-all active:scale-[0.98]"
+                            className="w-full sm:w-40 px-6 py-3 rounded-lg bg-white border-2 border-gray-100 text-gray-500 font-bold text-sm hover:bg-gray-50 transition-all active:scale-[0.98]"
                         >
                             Back
                         </button>
@@ -703,7 +703,7 @@ export default function SchoolRegistrationForm() {
                         <button
                             type="button"
                             onClick={handleNext}
-                            className="w-full sm:w-40 px-6 py-3 rounded-xl bg-[#003527] text-white font-bold text-sm shadow-xl shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                            className="w-full sm:w-40 px-6 py-3 rounded-lg bg-[#003527] text-white font-bold text-sm shadow-xl shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
                         >
                             Next Step
                         </button>
@@ -716,8 +716,8 @@ export default function SchoolRegistrationForm() {
 
 function StepWrapper({ title, icon, children }: { title: string, icon: React.ReactNode, children: React.ReactNode }) {
     return (
-        <div className="bg-white rounded-3xl p-6 shadow-2xl shadow-gray-200 border border-gray-100 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h2 className="text-lg font-black text-white bg-[#003527] -mx-6 -mt-6 p-5 rounded-t-3xl flex items-center gap-3">
+        <div className="bg-white rounded-lg p-6 shadow-2xl shadow-gray-200 border border-gray-100 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-base font-black text-white bg-[#003527] -mx-6 -mt-6 p-5 rounded-lg flex items-center gap-3">
                 <span className="p-2 bg-white/20 rounded-lg">{icon}</span>
                 {title}
             </h2>
@@ -730,7 +730,7 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
     const error = formik.touched[name] && formik.errors[name];
     const isDisabled = props.disabled;
 
-    const baseInputStyles = `w-full px-4 py-3 bg-gray-50 rounded-xl border-2 transition-all outline-none font-semibold text-gray-900 text-base ${error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[#003527] focus:bg-white"
+    const baseInputStyles = `w-full px-3 py-2 bg-gray-50 rounded-lg border-2 transition-all outline-none font-semibold text-gray-900 text-sm ${error ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[#003527] focus:bg-white"
         } ${suffix ? "pr-12" : ""} ${isDisabled ? "disabled:opacity-100 disabled:text-gray-900 cursor-not-allowed" : ""}`;
 
     // Merge base styles with custom className if provided
@@ -738,7 +738,7 @@ function InputField({ label, name, type = "text", formik, textarea = false, plac
 
     return (
         <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-bold text-gray-600 px-1">
+            <label className="flex items-center gap-2 text-[10px] font-bold text-gray-600 px-1 uppercase tracking-widest leading-none mb-1">
                 {icon && <span className="opacity-50">{icon}</span>}
                 {label}
             </label>
@@ -780,14 +780,14 @@ function DropdownField({ label, name, options, formik, placeholder = "Select opt
     const error = formik.touched[name] && formik.errors[name];
     return (
         <div className="space-y-2">
-            <label className="block text-sm font-bold text-gray-500 px-1">{label}</label>
+            <label className="block text-[10px] font-bold text-gray-500 px-1 uppercase tracking-widest leading-none mb-1">{label}</label>
             <CustomDropdown
                 options={options}
                 value={formik.values[name]}
                 onChange={(val) => formik.setFieldValue(name, val)}
                 placeholder={placeholder}
                 size="lg"
-                className={error ? "border-red-500 rounded-xl" : ""}
+                className={error ? "border-red-500 rounded-lg" : "rounded-lg"}
             />
             {error && <p className="text-xs font-bold text-red-500 px-1">{error}</p>}
         </div>

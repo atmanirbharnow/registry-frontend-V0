@@ -82,14 +82,14 @@ export default function AdminUserTable() {
 
     if (users.length === 0) {
         return (
-            <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
+            <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center text-center">
                 <h3 className="text-gray-500 font-semibold text-lg">No users found</h3>
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        <div className="bg-white rounded-lg[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full min-w-[700px]">
                     <thead>
@@ -114,7 +114,7 @@ export default function AdminUserTable() {
                                     </td>
                                     <td className="py-4 px-6 text-sm">
                                         <span
-                                            className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${u.role === "admin"
+                                            className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${u.role === "admin"
                                                 ? "bg-yellow-100 text-yellow-800"
                                                 : "bg-gray-100 text-gray-600"
                                                 }`}
@@ -141,7 +141,7 @@ export default function AdminUserTable() {
                                                 >
                                                     {updatingUid === u.uid ? (
                                                         <span className="flex items-center gap-1">
-                                                            <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                                            <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-lg animate-spin" />
                                                             Updating
                                                         </span>
                                                     ) : isPrimary ? (

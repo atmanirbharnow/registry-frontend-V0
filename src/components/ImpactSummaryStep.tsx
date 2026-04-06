@@ -102,14 +102,14 @@ export default function ImpactSummaryStep({
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
-            <div className="bg-[#003527] text-white p-5 rounded-xl">
+            <div className="bg-[#003527] text-white p-5 rounded-lg">
                 <div className="flex items-center gap-3 mb-2">
                     <span className="p-2 bg-white/15 rounded-lg">
                         <SummaryIcon />
                     </span>
-                    <h2 className="text-lg font-bold">{heading}</h2>
+                    <h2 className="text-base font-bold uppercase tracking-widest">{heading}</h2>
                 </div>
-                <p className="text-sm text-[#a8f928]/80 leading-relaxed">{subheading}</p>
+                <p className="text-[10px] text-[#a8f928]/80 leading-relaxed uppercase tracking-tight">{subheading}</p>
             </div>
 
 
@@ -117,9 +117,9 @@ export default function ImpactSummaryStep({
             {/* Sections Grid - Stacked Vertically */}
             <div className="flex flex-col gap-6">
                 {/* Personal Details */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                     <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Personal Details</h3>
+                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Personal Details</h3>
                     </div>
                     <div className="p-5">
                         <PersonalDetailsGrid userProfile={userProfile} />
@@ -127,9 +127,9 @@ export default function ImpactSummaryStep({
                 </div>
 
                 {/* Submitted Details */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                     <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                             {isSchool ? "School Details" : "Action Details"}
                         </h3>
                     </div>
@@ -140,7 +140,7 @@ export default function ImpactSummaryStep({
             </div>
 
             {/* What You Will Receive */}
-            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm">
                 <div className="px-5 py-3 bg-gray-50/50 border-b border-gray-100">
                     <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Benefits of Registration</h3>
                 </div>
@@ -193,8 +193,8 @@ export default function ImpactSummaryStep({
             </div>
 
             {/* Impact Message */}
-            <div className="bg-[#eff7f2]/50 rounded-2xl p-5 border border-[#b0f0d6]">
-                <p className="text-sm text-[#003527] font-medium leading-relaxed">
+            <div className="bg-[#eff7f2]/50 rounded-lg p-5 border border-[#b0f0d6]">
+                <p className="text-[10px] text-[#003527] font-bold uppercase tracking-tight leading-relaxed">
                     By registering, you join a transparent record of climate-positive activities in India. 
                     Your {isSchool ? "school's" : "individual"} action helps build a national baseline for grassroots environmental impact, 
                     verified using standardized methodologies.
@@ -202,7 +202,7 @@ export default function ImpactSummaryStep({
             </div>
 
             {/* Agreement Checkbox */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+            <div className="bg-white border border-gray-100 rounded-lg p-5 shadow-sm">
                 <label className="flex items-start gap-4 cursor-pointer group">
                     <div className="mt-0.5 relative flex-shrink-0">
                         <input
@@ -277,13 +277,13 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
                             const unit = details?.unit || values.unit || "";
                             
                             return (
-                                <div key={idx} className="flex flex-col p-3 bg-slate-50 rounded-xl border border-slate-100 transition-all hover:border-[#003527]/30 group">
+                                <div key={idx} className="flex flex-col p-3 bg-slate-50 rounded-lg border border-slate-100 transition-all hover:border-[#003527]/30 group">
                                     <div className="flex justify-between items-start mb-1">
                                         <span className="text-xs font-black text-slate-800 uppercase tracking-tight group-hover:text-[#003527] transition-colors">
                                             {label}
                                         </span>
                                         {quantity && (
-                                            <span className="text-[10px] font-bold text-[#003527] bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                                            <span className="text-[10px] font-bold text-[#003527] bg-white px-2 py-0.5 rounded-lg border border-slate-200">
                                                 {quantity} {unit}
                                             </span>
                                         )}
@@ -308,7 +308,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex flex-col py-1 border-b border-gray-50 last:border-0 sm:last:border-b">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">{label}</span>
-            <span className="text-sm font-semibold text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
+            <span className="text-xs font-semibold text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
         </div>
     );
 }
@@ -319,7 +319,7 @@ function DetailTable({ rows }: { rows: [string, string][] }) {
             {rows.map(([label, value], i) => (
                 <div key={i} className="flex flex-col py-1 border-b border-gray-50 last:border-0 sm:last:border-b">
                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">{label}</span>
-                    <span className="text-sm font-semibold text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
+                    <span className="text-xs font-semibold text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
                 </div>
             ))}
         </div>
@@ -328,8 +328,8 @@ function DetailTable({ rows }: { rows: [string, string][] }) {
 
 function BenefitCard({ icon, title, description, bgColor, iconColor }: { icon: React.ReactNode; title: string; description: string; bgColor: string; iconColor: string }) {
     return (
-        <div className={`flex flex-col gap-2 p-4 rounded-2xl ${bgColor} transition-transform hover:scale-[1.02] border border-white shadow-sm`}>
-            <div className={`w-10 h-10 rounded-xl bg-white flex items-center justify-center ${iconColor} shadow-sm`}>
+        <div className={`flex flex-col gap-2 p-4 rounded-lg ${bgColor} transition-transform hover:scale-[1.02] border border-white shadow-sm`}>
+            <div className={`w-10 h-10 rounded-lg bg-white flex items-center justify-center ${iconColor} shadow-sm`}>
                 {icon}
             </div>
             <div>

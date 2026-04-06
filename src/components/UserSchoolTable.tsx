@@ -32,7 +32,7 @@ export default function UserSchoolTable() {
 
     if (loading) {
         return (
-            <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+            <div className="bg-white rounded-lg[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                 <div className="p-6 space-y-3">
                     <SkeletonRow />
                     <SkeletonRow />
@@ -44,7 +44,7 @@ export default function UserSchoolTable() {
 
     if (schools.length === 0) {
         return (
-            <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
+            <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center text-center">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 mb-4">
                     <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
                     <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
@@ -66,7 +66,7 @@ export default function UserSchoolTable() {
     };
 
     return (
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        <div className="bg-white rounded-lg[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px]">
                     <thead>
