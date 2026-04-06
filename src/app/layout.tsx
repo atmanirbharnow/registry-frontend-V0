@@ -4,26 +4,26 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://registryearthcarbon.org"),
+  metadataBase: new URL("https://climateassetregistry.org"),
   title: {
-    default: "Earth Carbon Registry | Verified Carbon Actions",
-    template: "%s | Earth Carbon Registry",
+    default: "Climate Asset Registry | Verified Carbon Actions",
+    template: "%s | Climate Asset Registry",
   },
-  description: "Register and verify carbon-reducing actions. Track CO₂e reduction and Atmanirbhar impact with verified digital certificates.",
-  keywords: ["carbon registry", "climate action", "atmanirbhar", "carbon credits", "India", "sustainability", "CO2e", "low carbon"],
-  authors: [{ name: "Earth Carbon Foundation" }],
+  description: "Register and verify carbon-reducing actions. Track CO₂e reduction and sustainability impact with verified digital certificates.",
+  keywords: ["carbon registry", "climate action", "sustainability", "carbon credits", "India", "CO2e", "low carbon"],
+  authors: [{ name: "Climate Asset Foundation" }],
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://registryearthcarbon.org",
-    siteName: "Earth Carbon Registry",
-    title: "Earth Carbon Registry | Verified Carbon Actions",
-    description: "Register and verify carbon-reducing actions. Track CO₂e reduction and Atmanirbhar impact.",
+    url: "https://climateassetregistry.org",
+    siteName: "Climate Asset Registry",
+    title: "Climate Asset Registry | Verified Carbon Actions",
+    description: "Register and verify carbon-reducing actions. Track CO₂e reduction and impact.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Earth Carbon Registry | Verified Carbon Actions",
-    description: "Register and verify carbon-reducing actions. Track CO₂e reduction and Atmanirbhar impact.",
+    title: "Climate Asset Registry | Verified Carbon Actions",
+    description: "Register and verify carbon-reducing actions. Track CO₂e reduction and impact.",
   },
   robots: {
     index: true,

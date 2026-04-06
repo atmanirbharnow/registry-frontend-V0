@@ -11,7 +11,7 @@ import Spinner from "@/components/ui/Spinner";
 import QRCode from "@/components/QRCode";
 import Link from "next/link";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://climateassetregistry.org";
 
 export default function RegisterSuccessPage() {
     const searchParams = useSearchParams();
@@ -67,8 +67,8 @@ export default function RegisterSuccessPage() {
     const year = new Date().getFullYear();
 
     const shareText = tco2e && atmanirbhar
-        ? `Registered a low-carbon action on Earth Carbon Registry!\nEstimated Impact: ${tco2e} tCO2e | ${atmanirbhar}% Atmanirbhar (pending verification)\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`
-        : `Registered a low-carbon action on Earth Carbon Registry!\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`;
+        ? `Registered a low-carbon action on Climate Asset Registry!\nEstimated Impact: ${tco2e} tCO2e | ${atmanirbhar}% Atmanirbhar (pending verification)\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`
+        : `Registered a low-carbon action on Climate Asset Registry!\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`;
 
     return (
         <div className="min-h-[calc(100vh-82px)] bg-gray-50 px-4 md:px-8 py-12">
@@ -103,7 +103,7 @@ export default function RegisterSuccessPage() {
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 text-left">
                     <p className="text-xs text-gray-500">
                         Estimated impact based on user-submitted data.
-                        Earth Carbon Foundation verifies all registered actions in good faith.
+                        Climate Asset Foundation verifies all registered actions in good faith.
                     </p>
                 </div>
 

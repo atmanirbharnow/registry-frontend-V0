@@ -40,7 +40,7 @@ export default function SchoolPublicCard({ school }: SchoolPublicCardProps) {
                 </div>
             </div>
             <div className="bg-[#003527] px-8 py-4 flex justify-between items-center">
-                <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Earth Carbon Registry • {new Date().getFullYear()}</span>
+                <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Climate Asset Registry • {new Date().getFullYear()}</span>
                 <span className="text-[10px] font-black text-white uppercase tracking-widest italic flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                     Verified School Action

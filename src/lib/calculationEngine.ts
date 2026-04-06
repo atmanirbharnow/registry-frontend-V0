@@ -1,10 +1,10 @@
 /**
  * Calculation Engine - Phase 2 Production Version
  * 
- * Uses client-approved emission factors from Earth Carbon Foundation.
+ * Uses client-approved emission factors from Climate Asset Foundation.
  * Structured for easy Phase 3 upgrade without UI changes.
  * 
- * © 2024 Earth Carbon Foundation. Proprietary calculation methodologies.
+ * © 2024 Climate Asset Foundation. Proprietary calculation methodologies.
  */
 
 import { EMISSION_FACTORS_PHASE2 } from './constants/emissionFactors';
@@ -73,7 +73,7 @@ export function calculateImpactPhase2(input: CalculationInput): CalculationResul
         circularityScore,
         carbonIntensity: Math.round(carbonIntensity * 100) / 100,
         calculationVersion: 'v1.2-phase2-audit-fixed',
-        methodology: 'ECF Combined Resource Ratio',
+        methodology: 'CAF Combined Resource Ratio',
         emissionFactorUsed: getEmissionFactorDescription(input.actionType),
     };
 }

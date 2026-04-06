@@ -76,7 +76,7 @@ export default function SchoolRegisterSuccessPage() {
                         Registration Success!
                     </h1>
                     <p className="text-slate-500 font-bold max-w-lg mx-auto">
-                        {school.schoolName} has been successfully added to the Earth Carbon Registry.
+                        {school.schoolName} has been successfully added to the Climate Asset Registry.
                     </p>
                 </div>
 

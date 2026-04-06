@@ -388,7 +388,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                             <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                         </div>
                                         <span className="text-sm font-bold text-slate-600 group-hover:text-slate-900 transition-colors leading-relaxed">
-                                            I authorize Earth Carbon Foundation to process my data for the purpose of carbon verification and registry maintenance.
+                                            I authorize Climate Asset Foundation to process my data for the purpose of carbon verification and registry maintenance.
                                         </span>
                                     </label>
                                 </div>
@@ -467,7 +467,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                 {/* Footer Component */}
                 <div className="text-center space-y-2 pt-8">
                     <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">
-                        Earth Carbon Foundation Registry System
+                        Climate Asset Foundation Registry System
                     </p>
                     <p className="text-xs text-slate-300 font-medium">
                         Secure and verified carbon action tracking infrastructure.

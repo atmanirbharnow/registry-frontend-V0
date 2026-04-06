@@ -236,7 +236,7 @@ export default function SchoolRegistrationForm() {
                     key: orderData.key,
                     amount: PAYMENT_AMOUNT_PAISE, // Rs. 199 in paise
                     currency: "INR",
-                    name: "Earth Carbon Registry",
+                    name: "Climate Asset Registry",
                     description: "School Onboarding - Rs.1",
                     order_id: orderData.orderId,
                     handler: async (response: any) => {
@@ -665,7 +665,7 @@ export default function SchoolRegistrationForm() {
                                         <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
                                     <span className="text-sm font-bold text-slate-500 group-hover:text-slate-800 transition-colors leading-relaxed">
-                                        I verify that the data provided above is correct. I authorize Earth Carbon to process this information for registry verification.
+                                        I verify that the data provided above is correct. I authorize Climate Asset to process this information for registry verification.
                                     </span>
                                 </label>
                             </div>

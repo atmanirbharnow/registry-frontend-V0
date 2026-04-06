@@ -34,7 +34,7 @@ export default function LandingNavbar() {
         <Link href="/" className="flex items-center gap-3 group no-underline">
           <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-none shadow-sm">
             <Image
-              src="/earth carbon logo bw.jpg"
+              src="/climate asset logo bw.jpg"
               alt="Logo"
               fill
               className="object-cover"
@@ -42,7 +42,7 @@ export default function LandingNavbar() {
             />
           </div>
           <span className="text-xl font-black text-white tracking-tighter group-hover:opacity-80 transition-opacity">
-            Earth Carbon Registry
+            Climate Asset Registry
           </span>
         </Link>
 

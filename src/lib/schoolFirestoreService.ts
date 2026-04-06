@@ -115,7 +115,7 @@ export async function getProjects() {
         if (snap.empty) {
             return [
                 { id: "proj-general", name: "General Carbon Registry Project" },
-                { id: "proj-earthcarbon", name: "Earth Carbon Foundation - School Decarbonization" }
+                { id: "proj-climateasset", name: "Climate Asset Foundation - School Decarbonization" }
             ];
         }
         return snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -123,7 +123,7 @@ export async function getProjects() {
         console.error("Error fetching projects:", error);
         return [
             { id: "proj-general", name: "General Carbon Registry Project" },
-            { id: "proj-earthcarbon", name: "Earth Carbon Foundation - School Decarbonization" }
+            { id: "proj-climateasset", name: "Climate Asset Foundation - School Decarbonization" }
         ];
     }
 }

@@ -14,14 +14,14 @@ export default function LandingFooter() {
             <Link href="/" className="flex items-center gap-2 group">
               <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-sm">
                 <Image
-                  src="/earth carbon logo bw.jpg"
-                  alt="Earth Carbon Registry Logo"
+                  src="/climate asset logo bw.jpg"
+                  alt="Climate Asset Registry Logo"
                   fill
                   className="object-cover"
                 />
               </div>
               <span className="text-xl font-black text-white tracking-tight group-hover:opacity-80 transition-opacity">
-                 Earth Carbon Registry
+                 Climate Asset Registry
               </span>
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">
@@ -29,7 +29,7 @@ export default function LandingFooter() {
             </p>
             <div className="text-xs text-slate-400 space-y-1">
               <p>358 Saraswatinagar, Ahmedabad 380015</p>
-              <p>Email: support@earthcarbonfoundation.org</p>
+              <p>Email: support@climateassetregistry.org</p>
             </div>
           </div>
 
@@ -52,7 +52,7 @@ export default function LandingFooter() {
               Connect
             </h4>
             <div className="flex flex-col gap-3 text-sm font-medium text-[#f1f5f9] opacity-80 mb-4">
-              <Link href="/about" className="hover:text-[#a8f928] transition-colors">About Earth Carbon Foundation</Link>
+              <Link href="/about" className="hover:text-[#a8f928] transition-colors">About Climate Asset Foundation</Link>
               <Link href="/contact" className="hover:text-[#a8f928] transition-colors">Contact Us</Link>
               <a href="https://moef.gov.in" target="_blank" rel="noopener noreferrer" className="hover:text-[#a8f928] transition-colors">MoEF&CC</a>
               <a href="https://verra.org" target="_blank" rel="noopener noreferrer" className="hover:text-[#a8f928] transition-colors">Verra Standards</a>
@@ -73,7 +73,7 @@ export default function LandingFooter() {
         {/* Divider */}
         <div className="border-[#002219] border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-500 text-xs font-semibold">
-            © 2026 Earth Carbon Foundation. All rights reserved.
+            © 2026 Climate Asset Foundation. All rights reserved.
           </p>
           <p className="text-slate-500 text-xs font-bold tracking-widest uppercase">
             climateassetregistry.org

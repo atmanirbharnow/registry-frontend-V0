@@ -33,7 +33,7 @@ export default function HeroSection({ onStartStructuring }: HeroSectionProps) {
           We convert climate actions into structured assets.
         </h1>
         <p className="mt-6 text-sm md:text-lg text-slate-500 font-semibold max-w-xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300 opacity-90">
-          Earth Carbon Registry bridges the gap between grassroots environmentalism and institutional finance. Unlock the intrinsic value of every carbon-saving effort.
+          Climate Asset Registry bridges the gap between grassroots environmentalism and institutional finance. Unlock the intrinsic value of every carbon-saving effort.
         </p>
       </div>
 

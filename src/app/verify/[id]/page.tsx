@@ -117,7 +117,7 @@ export default function VerifyPage() {
         circularity: action.circularityPercent != null ? action.circularityPercent.toFixed(1) : "N/A",
         sha256Hash: action.sha256Hash,
         qrCodeType: "action" as any,
-        methodology: "Earth Carbon Verified Registry Protocol",
+        methodology: "Climate Asset Verified Registry Protocol",
         highlights: (() => {
             const h: Highlight[] = [];
             if (action.actionType) h.push({ icon: "", text: `Action Type: ${ACTION_LABELS[action.actionType] || action.actionType}` });
@@ -141,7 +141,7 @@ export default function VerifyPage() {
         circularity: school!.circularity_pct != null ? school!.circularity_pct.toFixed(1) : "N/A",
         sha256Hash: school!.sha256Hash,
         qrCodeType: "school" as any,
-        methodology: "Earth Carbon Verified Registry Protocol (School Module)",
+        methodology: "Climate Asset Verified Registry Protocol (School Module)",
         highlights: (() => {
             const h: Highlight[] = [];
             h.push({ icon: "", text: `Educational Institution: ${school!.students_count || 0} Students` });
@@ -206,9 +206,9 @@ export default function VerifyPage() {
                 <ShareButtons
                     shareText={action
                         ? (displayData.tco2e !== "N/A" && displayData.atmanirbhar !== "N/A"
-                            ? `Verified low-carbon action on Earth Carbon Registry!\nReduced: ${displayData.tco2e} tCO2e\n${displayData.atmanirbhar}% Atmanirbhar | ${year}\nVerify: ${verifyUrl}`
-                            : `Verified carbon action on Earth Carbon Registry!\nRegistry ID: ${displayData.registryId}\nVerify: ${verifyUrl}`)
-                        : `Check out ${displayData.name}'s climate action on the Earth Carbon Registry: ${verifyUrl}`
+                            ? `Verified low-carbon action on Climate Asset Registry!\nReduced: ${displayData.tco2e} tCO2e\n${displayData.atmanirbhar}% Atmanirbhar | ${year}\nVerify: ${verifyUrl}`
+                            : `Verified carbon action on Climate Asset Registry!\nRegistry ID: ${displayData.registryId}\nVerify: ${verifyUrl}`)
+                        : `Check out ${displayData.name}'s climate action on the Climate Asset Registry: ${verifyUrl}`
                     }
                     verifyUrl={verifyUrl}
                 />

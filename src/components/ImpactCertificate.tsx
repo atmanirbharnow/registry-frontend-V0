@@ -51,7 +51,7 @@ export default function ImpactCertificate({
     verifyUrl,
     sha256Hash,
     qrCodeType = "action",
-    shareText = "Check out my climate action on the Earth Carbon Registry!"
+    shareText = "Check out my climate action on the Climate Asset Registry!"
 }: ImpactCertificateProps) {
     const certificateRef = useRef<HTMLDivElement>(null);
     const [isDownloading, setIsDownloading] = useState(false);
@@ -106,7 +106,7 @@ export default function ImpactCertificate({
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
                         </span>
                         <h1 className="text-xl sm:text-2xl font-black tracking-tight text-gray-900">
-                            EARTH CARBON REGISTRY <span className="text-gray-400 font-light">|</span> IMPACT CERTIFICATE
+                            CLIMATE ASSET REGISTRY <span className="text-gray-400 font-light">|</span> IMPACT CERTIFICATE
                         </h1>
                     </div>
                     <p className="font-mono text-sm text-gray-500 font-bold">
@@ -242,7 +242,7 @@ export default function ImpactCertificate({
                         <div className="text-xs space-y-1 text-gray-600">
                             <div className="font-bold text-gray-900 uppercase">Public Badge</div>
                             <div>Verify Online: <span className="text-[#003527] break-all">{verifyUrl}</span></div>
-                            <div>Contact: info@earthcarbonfoundation.org</div>
+                            <div>Contact: info@climateassetregistry.org</div>
                         </div>
                     </div>
                     
@@ -256,7 +256,7 @@ export default function ImpactCertificate({
                                 </div>
                             </div>
                         )}
-                        <div className="text-[10px] text-gray-400 font-bold uppercase">© {new Date().getFullYear()} Earth Carbon Foundation | Non-Transferable</div>
+                        <div className="text-[10px] text-gray-400 font-bold uppercase">© {new Date().getFullYear()} Climate Asset Foundation | Non-Transferable</div>
                     </div>
                 </div>
             </div>

@@ -49,15 +49,15 @@ export default function Navbar() {
         >
           <div className="relative h-10 w-[60px] bg-white overflow-hidden rounded-sm">
             <Image
-              src="/earth carbon logo bw.jpg"
-              alt="Earth Carbon Registry Logo"
+              src="/climate asset logo bw.jpg"
+              alt="Climate Asset Registry Logo"
               fill
               className="object-cover"
               priority
             />
           </div>
           <div className="font-black text-xl tracking-tighter text-white flex flex-col leading-none group-hover:opacity-80 transition-opacity">
-            <span>Earth Carbon Registry</span>
+            <span>Climate Asset Registry</span>
           </div>
         </Link>
 

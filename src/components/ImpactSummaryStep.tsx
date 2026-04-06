@@ -25,8 +25,8 @@ export default function ImpactSummaryStep({
         : "Individual Action — Impact Summary";
 
     const subheading = isSchool
-        ? "Review your school's submitted data and understand the benefits of registering on the Earth Carbon Registry."
-        : "Review your submitted data and understand the benefits of registering on the Earth Carbon Registry.";
+        ? "Review your school's submitted data and understand the benefits of registering on the Climate Asset Registry."
+        : "Review your submitted data and understand the benefits of registering on the Climate Asset Registry.";
 
     // Calculate Impact
     let impactData = { tCO2e: 0, atmanirbhar: 0, circularity: 0, carbonIntensity: 0, actionSavings: 0 };

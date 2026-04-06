@@ -208,7 +208,7 @@ export default function PublicPortfolioPage() {
 
                 <div className="text-center pb-12">
                     <p className="text-gray-400 text-xs font-medium max-w-lg mx-auto">
-                        This document serves as a public ledger record of verified impact. Earth Carbon Foundation guarantees the authenticity of these registered metrics.
+                        This document serves as a public ledger record of verified impact. Climate Asset Foundation guarantees the authenticity of these registered metrics.
                     </p>
                 </div>
             </div>

@@ -18,8 +18,8 @@ const CONTACT_INFO = [
   {
     title: "Email",
     icon: <Mail className="w-5 h-5" />,
-    content: "support@earthcarbonfoundation.org",
-    href: "mailto:support@earthcarbonfoundation.org",
+    content: "support@climateassetregistry.org",
+    href: "mailto:support@climateassetregistry.org",
   },
 ];
 
@@ -71,7 +71,7 @@ export default function ContactSection() {
           <div className="bg-[#003527] rounded-none p-8 md:p-10 text-white flex flex-col gap-4">
              <h3 className="text-lg font-black text-white" style={{ fontFamily: "Manrope, sans-serif" }}>Join the Community</h3>
              <p className="text-xs font-medium leading-relaxed opacity-60">
-               Earth Carbon Foundation is a climate tech initiative under validation with MoEF&CC and Verra. Build Indias most comprehensive climate action database.
+               Climate Asset Foundation is a climate tech initiative under validation with MoEF&CC and Verra. Build Indias most comprehensive climate action database.
              </p>
           </div>
 
@@ -102,7 +102,7 @@ export default function ContactSection() {
 
       <div className="mt-20 flex flex-col items-center text-center gap-4 border-t border-[#f1f5f9] pt-12">
         <p className="text-xs text-[#414942] font-semibold tracking-wide">
-          Earth Carbon Foundation is a climate tech initiative under validation with MoEF&CC and Verra.
+          Climate Asset Foundation is a climate tech initiative under validation with MoEF&CC and Verra.
         </p>
       </div>
     </section>

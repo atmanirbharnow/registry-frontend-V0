@@ -35,7 +35,7 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
         <div className="bg-white rounded-2xl sm:rounded-3xl border-2 border-[#003527] shadow-2xl p-4 sm:p-6 md:p-8 w-full max-w-[360px] sm:max-w-md mx-auto">
             <div className="text-center mb-4 sm:mb-6 pb-4 sm:pb-6 border-b-2 border-gray-100">
                 <h2 className="text-base sm:text-lg font-black text-gray-800 uppercase tracking-tight mb-2 sm:mb-3">
-                    Earth Carbon Registry
+                    Climate Asset Registry
                 </h2>
                 {action.status === "verified" ? (
                     <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#b0f0d6] rounded-full">
@@ -141,14 +141,14 @@ export default function DigitalCertificateCard({ action }: DigitalCertificateCar
                     href={verifyPath}
                     className="text-[10px] sm:text-xs font-mono text-[#003527] break-all cursor-pointer hover:underline"
                 >
-                    registryearthcarbon.org/verify/{action.registryId}
+                    climateassetregistry.org/verify/{action.registryId}
                 </Link>
             </div>
 
             <div className="mt-4 pt-3 border-t border-gray-100">
                 <p className="text-[10px] sm:text-xs text-gray-400 text-center">
                     Estimated impact based on user-submitted data.
-                    Earth Carbon Foundation verifies all actions in good faith.
+                    Climate Asset Foundation verifies all actions in good faith.
                 </p>
             </div>
         </div>

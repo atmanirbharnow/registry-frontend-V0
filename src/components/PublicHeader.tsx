@@ -19,7 +19,7 @@ export default function PublicHeader() {
         <Link href="/" className="flex items-center gap-3 group no-underline">
           <div className="relative h-9 w-[54px] bg-white overflow-hidden rounded-none shadow-sm group-hover:scale-105 transition-transform">
             <Image
-              src="/earth carbon logo bw.jpg"
+              src="/climate asset logo bw.jpg"
               alt="Logo"
               fill
               className="object-cover"
@@ -27,7 +27,7 @@ export default function PublicHeader() {
             />
           </div>
           <span className="text-xl font-black tracking-tighter text-white group-hover:opacity-80 transition-opacity">
-            Earth Carbon Registry
+            Climate Asset Registry
           </span>
         </Link>
 

@@ -18,7 +18,7 @@ export default function CTABannerSection() {
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="/earth carbon logo bw.jpg" 
+            src="/climate asset logo bw.jpg" 
             alt="Registry Logo Background" 
             fill 
             priority={true}

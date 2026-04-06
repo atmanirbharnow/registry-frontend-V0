@@ -1,6 +1,6 @@
-# Earth Carbon Registry — Frontend
+# Climate Asset Registry — Frontend
 
-A Next.js 14 web application for the Earth Carbon Registry. Users register carbon-reducing actions (solar panels, biogas plants, tree planting, etc.), pay a ₹199 registration fee via Razorpay, and receive a unique registry ID with a QR code and SHA-256 digital signature. Admins verify actions and manage the registry.
+A Next.js 14 web application for the Climate Asset Registry. Users register carbon-reducing actions (solar panels, biogas plants, tree planting, etc.), pay a ₹199 registration fee via Razorpay, and receive a unique registry ID with a QR code and SHA-256 digital signature. Admins verify actions and manage the registry.
 
 ## Tech Stack
 
@@ -43,7 +43,7 @@ Create a `meta/registryCounter` document in Firestore with:
 ```json
 { "count": 0 }
 ```
-This is used for sequential registry ID generation (`ECF-0001`, `ECF-0002`, ...).
+This is used for sequential registry ID generation (`CAF-0001`, `CAF-0002`, ...).
 
 ### Making a User Admin
 

@@ -267,7 +267,7 @@ export default function RegisterActionForm() {
                     key: orderData.key,
                     amount: orderData.amount,
                     currency: orderData.currency,
-                    name: "Earth Carbon Registry",
+                    name: "Climate Asset Registry",
                     description: "Action Registration Fee",
                     order_id: orderData.orderId,
                     handler: async (response: {
