@@ -19,9 +19,9 @@ export interface MultiSelectDropdownProps {
 }
 
 const sizeClasses = {
-    sm: "px-3 py-2 text-xs rounded-lg",
-    md: "px-4 py-2.5 text-sm rounded-xl",
-    lg: "px-5 py-4 text-base rounded-xl",
+    sm: "px-2 py-1.5 text-xs rounded-lg",
+    md: "px-3 py-2 text-sm rounded-lg",
+    lg: "px-4 py-2 text-sm rounded-lg",
 };
 
 export default function MultiSelectDropdown({
@@ -84,13 +84,13 @@ export default function MultiSelectDropdown({
                 onKeyDown={handleKeyDown}
                 className={`
                     flex items-center justify-between w-full
-                    border border-slate-300 bg-white hover:border-blue-400 focus:border-blue-500
+                    border border-slate-300 bg-white hover:border-[#a8f928] focus:border-[#003527]
                     transition-all duration-200 outline-none font-medium
                     ${sizeClasses[size]}
                     ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                 `}
             >
-                <span className={`truncate mr-2 ${selectedValues.length > 0 ? "text-[rgb(32,38,130)] font-bold" : "text-gray-400"}`}>
+                <span className={`truncate mr-2 ${selectedValues.length > 0 ? "text-[#003527] font-bold" : "text-gray-400"}`}>
                     {displayText}
                 </span>
                 <svg
@@ -111,7 +111,7 @@ export default function MultiSelectDropdown({
             {isOpen && (
                 <div
                     role="listbox"
-                    className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 shadow-lg rounded-xl max-h-60 overflow-y-auto"
+                    className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 shadow-lg rounded-lg max-h-60 overflow-y-auto"
                 >
                     <div className="py-1">
                         {options.map((option) => {
@@ -134,18 +134,18 @@ export default function MultiSelectDropdown({
                                         px-4 py-2.5 flex items-center gap-3
                                         transition-colors duration-150
                                         ${option.disabled ? "opacity-50 cursor-not-allowed bg-slate-50 text-slate-400" : "cursor-pointer hover:bg-gray-50 text-gray-700"}
-                                        ${isSelected && !option.disabled ? "bg-blue-50/10" : ""}
+                                        ${isSelected && !option.disabled ? "bg-[#e8f0ec]" : ""}
                                         ${size === "sm" ? "text-xs px-3 py-2" : size === "lg" ? "text-base px-5" : "text-sm"}
                                     `}
                                 >
-                                    <div className={`w-5 h-5 flex-shrink-0 rounded border flex items-center justify-center transition-colors ${isSelected ? 'bg-[rgb(32,38,130)] border-[rgb(32,38,130)]' : 'border-gray-300 bg-white'}`}>
+                                    <div className={`w-5 h-5 flex-shrink-0 rounded-md border flex items-center justify-center transition-colors ${isSelected ? 'bg-[#003527] border-[#003527]' : 'border-gray-300 bg-white'}`}>
                                         {isSelected && (
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                                 <polyline points="20 6 9 17 4 12" />
                                             </svg>
                                         )}
                                     </div>
-                                    <span className={`truncate flex items-center gap-2 ${isSelected ? 'font-semibold text-[rgb(32,38,130)]' : ''}`}>
+                                    <span className={`truncate flex items-center gap-2 ${isSelected ? 'font-semibold text-[#003527]' : ''}`}>
                                         {option.label}
                                         {option.disabled && <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded-md bg-white">Registered</span>}
                                     </span>

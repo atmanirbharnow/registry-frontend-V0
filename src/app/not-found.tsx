@@ -35,7 +35,7 @@ export default function NotFound() {
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <a
                         href="/"
-                        className="px-6 py-3 bg-[rgb(32,38,130)] text-white font-bold text-sm rounded-xl hover:bg-[rgb(25,30,110)] transition-colors no-underline"
+                        className="px-6 py-3 bg-[#003527] text-white font-bold text-sm rounded-xl hover:bg-[rgb(25,30,110)] transition-colors no-underline"
                     >
                         Go Home
                     </a>

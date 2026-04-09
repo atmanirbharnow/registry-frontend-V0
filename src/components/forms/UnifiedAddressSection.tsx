@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { Pencil } from "lucide-react";
 import LocationAutocomplete from "../LocationAutocomplete";
 import Spinner from "../ui/Spinner";
 
@@ -90,13 +91,13 @@ export default function UnifiedAddressSection({
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
                     {label}
                 </label>
-                <div className="flex p-1 bg-slate-100 rounded-xl w-fit self-end sm:self-auto">
+                <div className="flex p-1 bg-slate-100 rounded-lg w-fit self-end sm:self-auto">
                     <button
                         type="button"
                         onClick={() => setMode("search")}
                         className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
                             mode === "search" 
-                            ? "bg-white text-[rgb(32,38,130)] shadow-sm" 
+                            ? "bg-white text-[#003527] shadow-sm" 
                             : "text-slate-400 hover:text-slate-600"
                         }`}
                     >
@@ -107,11 +108,12 @@ export default function UnifiedAddressSection({
                         onClick={() => setMode("manual")}
                         className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
                             mode === "manual" 
-                            ? "bg-white text-[rgb(32,38,130)] shadow-sm" 
+                            ? "bg-white text-[#003527] shadow-sm" 
                             : "text-slate-400 hover:text-slate-600"
                         }`}
                     >
-                        🖊️ Manual Entry
+                        <Pencil className="w-3 h-3" />
+                        Manual Entry
                     </button>
                 </div>
             </div>
@@ -119,22 +121,22 @@ export default function UnifiedAddressSection({
             <div className="relative group">
                 {mode === "search" ? (
                     <div className="space-y-3">
-                        <LocationAutocomplete
-                            value={value}
-                            onChange={(e) => onChange(e.target.value)}
-                            onPlaceSelect={onLocationSelect}
-                            placeholder={placeholder}
-                            disableValidation={isIndividual}
-                            className="!py-4 !rounded-2xl !border-slate-200 focus:!border-blue-500 shadow-sm"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleUseGPS}
-                            disabled={loadingGPS}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-blue-50 hover:bg-blue-100 text-[rgb(32,38,130)] text-xs font-black uppercase tracking-widest rounded-xl transition-all active:scale-95 disabled:opacity-50"
-                        >
+                            <LocationAutocomplete
+                                value={value}
+                                onChange={(e) => onChange(e.target.value)}
+                                onPlaceSelect={onLocationSelect}
+                                placeholder={placeholder}
+                                disableValidation={isIndividual}
+                                className="!py-2 !rounded-lg !border-slate-200 focus:!border-[#003527] shadow-sm"
+                            />
+                            <button
+                                type="button"
+                                onClick={handleUseGPS}
+                                disabled={loadingGPS}
+                                className="flex items-center gap-2 px-5 py-2.5 bg-[#eff7f2] hover:bg-[#b0f0d6] text-[#003527] text-xs font-black uppercase tracking-widest rounded-lg transition-all active:scale-95 disabled:opacity-50"
+                            >
                             {loadingGPS ? (
-                                <Spinner size="sm" className="text-blue-600" />
+                                <Spinner size="sm" className="text-[#003527]" />
                             ) : (
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -149,7 +151,7 @@ export default function UnifiedAddressSection({
                         value={value}
                         onChange={(e) => onChange(e.target.value)}
                         placeholder="Type your full address manually..."
-                        className={`w-full min-h-[120px] px-5 py-4 bg-white border-2 border-slate-200 rounded-2xl outline-none font-semibold text-slate-800 placeholder-slate-300 focus:border-blue-500 transition-all shadow-sm ${
+                        className={`w-full min-h-[120px] px-5 py-2 bg-white border-2 border-slate-200 rounded-lg outline-none font-semibold text-slate-800 placeholder-slate-300 focus:border-[#003527] transition-all shadow-sm ${
                             touched && error ? "border-red-500 bg-red-50" : ""
                         }`}
                     />
@@ -163,7 +165,7 @@ export default function UnifiedAddressSection({
             </div>
 
             {mode === "manual" && (
-                <div className="flex items-center gap-2 p-3 bg-blue-50/50 border border-blue-100 rounded-xl text-[10px] text-blue-600 font-bold uppercase tracking-widest leading-tight">
+                <div className="flex items-center gap-2 p-3 bg-[#eff7f2]/50 border border-[#b0f0d6] rounded-lg text-[10px] text-[#003527] font-bold uppercase tracking-widest leading-tight">
                     <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>

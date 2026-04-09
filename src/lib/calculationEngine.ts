@@ -1,10 +1,10 @@
 /**
  * Calculation Engine - Phase 2 Production Version
  * 
- * Uses client-approved emission factors from Earth Carbon Foundation.
+ * Uses client-approved emission factors from Climate Asset Foundation.
  * Structured for easy Phase 3 upgrade without UI changes.
  * 
- * © 2024 Earth Carbon Foundation. Proprietary calculation methodologies.
+ * © 2024 Climate Asset Foundation. Proprietary calculation methodologies.
  */
 
 import { EMISSION_FACTORS_PHASE2 } from './constants/emissionFactors';
@@ -73,7 +73,7 @@ export function calculateImpactPhase2(input: CalculationInput): CalculationResul
         circularityScore,
         carbonIntensity: Math.round(carbonIntensity * 100) / 100,
         calculationVersion: 'v1.2-phase2-audit-fixed',
-        methodology: 'ECF Combined Resource Ratio',
+        methodology: 'CAF Combined Resource Ratio',
         emissionFactorUsed: getEmissionFactorDescription(input.actionType),
     };
 }
@@ -180,57 +180,31 @@ function calculateCO2ePhase2(input: CalculationInput): number {
                 co2eKg = (qty / 100) * 800;
                 break;
             }
-            case 'borewell_water': {
-                co2eKg = qty * 0.67;
-                break;
-            }
             case 'rainwater_harvesting': {
                 co2eKg = qty * 47.4; 
                 break;
             }
-            case 'biogas_plant':
-            case 'biogas': {
-                co2eKg = qty * 1.2 * 1000;
+            case 'biogas_cooking': {
+                // qty is m3/day. 1 m3/day is approx 1.2 tCO2e/yr
+                co2eKg = (qty / 2) * 1.2 * 1000;
                 break;
             }
             case 'composting': {
                 co2eKg = qty * 0.45;
                 break;
             }
-            case 'plastic_recycling': {
-                co2eKg = qty * 1.5;
-                break;
-            }
-            case 'paper_recycling': {
-                co2eKg = qty * 0.9;
-                break;
-            }
-            case 'textile_recycling': {
-                co2eKg = qty * 2.2;
-                break;
-            }
-            case 'metal_recycling': {
-                co2eKg = qty * 3.0;
-                break;
-            }
-            case 'turn_off_bulb': {
-                co2eKg = qty * 17.96;
-                break;
-            }
-            case 'turn_off_fan': {
-                co2eKg = qty * 7.68;
-                break;
-            }
             case 'wastewater_recycling': {
                 co2eKg = (qty * 365) * 0.5;
                 break;
             }
-            case 'tree_plantation': {
-                co2eKg = qty * 22;
+            case 'led_retrofit': {
+                // qty is fixtures. ~0.05 tCO2e/yr per fixture
+                co2eKg = qty * 50;
                 break;
             }
-            case 'battery_storage': {
-                co2eKg = qty * 0.82 * 0.1 * 1000;
+            case 'waterless_urinals': {
+                // ~40,000 L saved/yr -> ~20kg CO2e saving
+                co2eKg = qty * 20;
                 break;
             }
         }
@@ -318,16 +292,12 @@ function getEmissionFactorDescription(actionType: string): string {
     const descriptions: Record<string, string> = {
         solar_rooftop: '1.23 tCO2e/yr per kW',
         solar_water_heater: '800 kg/yr per 100 LPD',
-        borewell_water: '0.67 kg per kL (pumping 150m)',
         rainwater_harvesting: '26.8-68 kg/yr per 1000L/day',
-        biogas: '1.2 tCO2e/yr (2m³ Plant)',
+        biogas_cooking: '1.2 tCO2e/yr per 2m3/day',
         composting: '0.45 kg per kg food waste',
-        plastic_recycling: '1.5 kg per kg plastic',
-        paper_recycling: '0.9 kg per kg paper',
-        textile_recycling: '2.2 kg per kg textile',
-        metal_recycling: '3.0 kg per kg metal',
-        turn_off_bulb: '17.96 kg/yr per bulb (1 hr/day)',
-        turn_off_fan: '7.68 kg/yr per fan (1 hr/day)',
+        wastewater_recycling: '0.5 kg per m3 recycled',
+        led_retrofit: '50 kg/yr per fixture',
+        waterless_urinals: '20 kg/yr per urinal',
     };
 
     return descriptions[actionType] || 'Standard emission factor';
@@ -377,17 +347,13 @@ export function validateCalculationInput(input: CalculationInput): {
  */
 export function getAvailableActionTypes(): Array<{ value: string; label: string; unit: string }> {
     return [
-        { value: 'solar_rooftop', label: 'Solar Rooftop (1 kW)', unit: 'kW' },
-        { value: 'solar_water_heater', label: 'Solar Water Heater (100 LPD)', unit: 'units' },
-        { value: 'borewell_water', label: 'Water Borewell (1 kL)', unit: 'kL' },
-        { value: 'rainwater_harvesting', label: 'Water Rainwater (1000 L/day)', unit: 'units' },
-        { value: 'biogas', label: 'Biogas (2m³ Plant)', unit: 'plants' },
-        { value: 'composting', label: 'Waste Composting (1 kg food)', unit: 'kg' },
-        { value: 'plastic_recycling', label: 'Waste Plastic Recycling (1 kg)', unit: 'kg' },
-        { value: 'paper_recycling', label: 'Waste Paper Recycling (1 kg)', unit: 'kg' },
-        { value: 'textile_recycling', label: 'Waste Textile Recycling (1 kg)', unit: 'kg' },
-        { value: 'metal_recycling', label: 'Waste Metal Recycling (1 kg)', unit: 'kg' },
-        { value: 'turn_off_bulb', label: 'Lighting Turn Off Bulb (1 hr/day)', unit: 'bulbs' },
-        { value: 'turn_off_fan', label: 'Lighting Turn Off Fan (1 hr/day)', unit: 'fans' },
+        { value: 'solar_rooftop', label: 'Rooftop Solar', unit: 'kW' },
+        { value: 'solar_water_heater', label: 'Solar Water Heating', unit: 'liters' },
+        { value: 'rainwater_harvesting', label: 'Rain Water Harvesting', unit: 'liters' },
+        { value: 'biogas_cooking', label: 'Biogas (cooking)', unit: 'm3/day' },
+        { value: 'waterless_urinals', label: 'Waterless Urinals', unit: 'units' },
+        { value: 'composting', label: 'Waste Composting', unit: 'Kg' },
+        { value: 'wastewater_recycling', label: 'Waste Water Recycled', unit: 'm3' },
+        { value: 'led_retrofit', label: 'LED Retrofit', unit: 'fixtures' },
     ];
 }

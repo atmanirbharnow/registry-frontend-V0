@@ -2,8 +2,8 @@
 
 /**
  * AUTHORITATIVE EMISSION FACTORS - Phase 2
- * Source: Earth Carbon Foundation Proprietary Calculation Methodologies
- * © 2024 Earth Carbon Foundation. All rights reserved.
+ * Source: Climate Asset Foundation Proprietary Calculation Methodologies
+ * © 2024 Climate Asset Foundation. All rights reserved.
  * 
  * DO NOT MODIFY WITHOUT CLIENT APPROVAL
  */

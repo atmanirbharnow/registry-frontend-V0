@@ -82,7 +82,7 @@ export default function LocationPickerSection({
             <button
                 type="button"
                 onClick={handleUseGPS}
-                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[rgb(32,38,130)] bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#003527] bg-[#eff7f2] rounded-lg hover:bg-[#b0f0d6] transition-colors cursor-pointer"
             >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -94,7 +94,7 @@ export default function LocationPickerSection({
             {typeof lat === 'number' && typeof lng === 'number' && (
                 <div className="flex items-center gap-2 text-xs text-gray-400 ml-1">
                     <span className="font-medium">Coordinates:</span>
-                    <span className="px-2 py-1 bg-gray-50 rounded text-gray-600 font-mono">
+                    <span className="px-2 py-1 bg-gray-50 rounded-lg text-gray-600 font-mono">
                         {lat.toFixed(6)}, {lng.toFixed(6)}
                     </span>
                 </div>

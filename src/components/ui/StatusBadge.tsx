@@ -16,8 +16,8 @@ const statusConfig: Record<
 > = {
     pending: {
         label: "Pending",
-        bg: "bg-yellow-100",
-        text: "text-yellow-700",
+        bg: "bg-[#fef9c3]",
+        text: "text-[#713f12]",
         icon: (
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
@@ -26,8 +26,8 @@ const statusConfig: Record<
     },
     verified: {
         label: "Verified",
-        bg: "bg-blue-100",
-        text: "text-blue-700",
+        bg: "bg-[#b0f0d6]",
+        text: "text-[#003527]",
         icon: (
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -46,8 +46,8 @@ const statusConfig: Record<
     },
     pledged: {
         label: "Pledged",
-        bg: "bg-yellow-100",
-        text: "text-yellow-700",
+        bg: "bg-[#fef9c3]",
+        text: "text-[#713f12]",
         icon: (
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />

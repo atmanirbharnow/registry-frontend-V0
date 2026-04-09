@@ -19,8 +19,8 @@ export default function Spinner({ size = "md", light = false, className = "" }: 
         <div
             className={`
         ${sizeClasses[size]}
-        ${light ? "border-white" : "border-[rgb(32,38,130)]"} border-t-transparent
-        rounded-full animate-spin
+        ${light ? "border-white" : "border-[#003527]"} border-t-transparent
+        rounded-lg animate-spin
         ${className}
       `}
         />

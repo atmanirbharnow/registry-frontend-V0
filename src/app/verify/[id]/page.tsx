@@ -89,9 +89,9 @@ export default function VerifyPage() {
                     </h1>
                     <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
                         <p className="text-gray-500 mb-6">
-                            No action or school found with Registry ID: <span className="font-mono font-bold text-[rgb(32,38,130)]">{registryId}</span>
+                            No action or school found with Registry ID: <span className="font-mono font-bold text-[#003527]">{registryId}</span>
                         </p>
-                        <Link href="/" className="inline-flex items-center gap-2 text-[rgb(32,38,130)] font-bold hover:underline">
+                        <Link href="/" className="inline-flex items-center gap-2 text-[#003527] font-bold hover:underline">
                             Return to Homepage
                         </Link>
                     </div>
@@ -117,7 +117,7 @@ export default function VerifyPage() {
         circularity: action.circularityPercent != null ? action.circularityPercent.toFixed(1) : "N/A",
         sha256Hash: action.sha256Hash,
         qrCodeType: "action" as any,
-        methodology: "Earth Carbon Verified Registry Protocol",
+        methodology: "Climate Asset Verified Registry Protocol",
         highlights: (() => {
             const h: Highlight[] = [];
             if (action.actionType) h.push({ icon: "", text: `Action Type: ${ACTION_LABELS[action.actionType] || action.actionType}` });
@@ -141,7 +141,7 @@ export default function VerifyPage() {
         circularity: school!.circularity_pct != null ? school!.circularity_pct.toFixed(1) : "N/A",
         sha256Hash: school!.sha256Hash,
         qrCodeType: "school" as any,
-        methodology: "Earth Carbon Verified Registry Protocol (School Module)",
+        methodology: "Climate Asset Verified Registry Protocol (School Module)",
         highlights: (() => {
             const h: Highlight[] = [];
             h.push({ icon: "", text: `Educational Institution: ${school!.students_count || 0} Students` });
@@ -206,9 +206,9 @@ export default function VerifyPage() {
                 <ShareButtons
                     shareText={action
                         ? (displayData.tco2e !== "N/A" && displayData.atmanirbhar !== "N/A"
-                            ? `Verified low-carbon action on Earth Carbon Registry!\nReduced: ${displayData.tco2e} tCO2e\n${displayData.atmanirbhar}% Atmanirbhar | ${year}\nVerify: ${verifyUrl}`
-                            : `Verified carbon action on Earth Carbon Registry!\nRegistry ID: ${displayData.registryId}\nVerify: ${verifyUrl}`)
-                        : `Check out ${displayData.name}'s climate action on the Earth Carbon Registry: ${verifyUrl}`
+                            ? `Verified low-carbon action on Climate Asset Registry!\nReduced: ${displayData.tco2e} tCO2e\n${displayData.atmanirbhar}% Atmanirbhar | ${year}\nVerify: ${verifyUrl}`
+                            : `Verified carbon action on Climate Asset Registry!\nRegistry ID: ${displayData.registryId}\nVerify: ${verifyUrl}`)
+                        : `Check out ${displayData.name}'s climate action on the Climate Asset Registry: ${verifyUrl}`
                     }
                     verifyUrl={verifyUrl}
                 />

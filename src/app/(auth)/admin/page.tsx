@@ -54,7 +54,7 @@ export default function AdminPage() {
                             <button
                                 onClick={() => setActiveTab("actions")}
                                 className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "actions"
-                                    ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                    ? "bg-white text-[#003527] shadow-sm"
                                     : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
                                     }`}
                             >
@@ -63,7 +63,7 @@ export default function AdminPage() {
                             <button
                                 onClick={() => setActiveTab("users")}
                                 className={`flex-1 sm:flex-none px-6 py-3 min-h-[44px] rounded-lg text-sm font-bold transition-all ${activeTab === "users"
-                                    ? "bg-white text-[rgb(32,38,130)] shadow-sm"
+                                    ? "bg-white text-[#003527] shadow-sm"
                                     : "text-gray-500 hover:text-gray-700 hover:bg-white/50"
                                     }`}
                             >

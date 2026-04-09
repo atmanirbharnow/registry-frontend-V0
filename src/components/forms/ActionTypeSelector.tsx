@@ -43,7 +43,7 @@ export default function ActionTypeSelector({
                 onChange={handleDropdownChange}
                 options={ACTION_TYPES.map((type) => ({ value: type.value, label: type.label }))}
                 placeholder="Select an action"
-                className={touched && error ? "ring-1 ring-red-400 rounded-xl" : ""}
+                className={touched && error ? "ring-1 ring-red-400 rounded-lg" : ""}
             />
             {touched && error && (
                 <p className="text-red-500 text-xs ml-1">{error}</p>

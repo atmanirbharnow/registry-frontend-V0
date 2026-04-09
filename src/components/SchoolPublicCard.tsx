@@ -13,16 +13,16 @@ export default function SchoolPublicCard({ school }: SchoolPublicCardProps) {
     const tco2e = school.tco2e_annual != null ? school.tco2e_annual.toFixed(3) : "N/A";
 
     return (
-        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden">
+        <div className="bg-white rounded-lg[2.5rem] border border-gray-100 shadow-xl overflow-hidden">
             <div className="p-8 space-y-8">
                 <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                     <div className="space-y-2">
                         <VerificationBadge status={school.status} />
                         <h2 className="text-3xl font-black text-gray-800 tracking-tight">{school.schoolName}</h2>
-                        <p className="text-sm font-mono font-bold text-[rgb(32,38,130)]">{school.registryId}</p>
+                        <p className="text-sm font-mono font-bold text-[#003527]">{school.registryId}</p>
                     </div>
-                    <div className="bg-green-50 px-6 py-4 rounded-3xl border border-green-100 text-center">
-                        <p className="text-[10px] font-black text-green-600 uppercase tracking-widest mb-1">Impact Reduction</p>
+                    <div className="bg-green-50 px-6 py-4 rounded-lg border border-green-100 text-center">
+                        <p className="text-[10px] font-black text-[#003527] uppercase tracking-widest mb-1">Impact Reduction</p>
                         <p className="text-3xl font-black text-green-700">-{tco2e} <span className="text-sm">tCO₂e</span></p>
                     </div>
                 </div>
@@ -33,16 +33,16 @@ export default function SchoolPublicCard({ school }: SchoolPublicCardProps) {
                         <DetailItem label="Pincode" value={school.pincode} />
                         <DetailItem label="Contact Person" value={school.contactPerson} />
                     </div>
-                    <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-[2rem]">
+                    <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg[2rem]">
                         <QRCode registryId={school.registryId} size={120} type="school" />
                         <p className="text-[10px] font-bold text-gray-400 mt-4 uppercase">Scan to Verify</p>
                     </div>
                 </div>
             </div>
-            <div className="bg-[rgb(32,38,130)] px-8 py-4 flex justify-between items-center">
-                <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Earth Carbon Registry • {new Date().getFullYear()}</span>
+            <div className="bg-[#003527] px-8 py-4 flex justify-between items-center">
+                <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Climate Asset Registry • {new Date().getFullYear()}</span>
                 <span className="text-[10px] font-black text-white uppercase tracking-widest italic flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-lg bg-green-400 animate-pulse" />
                     Verified School Action
                 </span>
             </div>

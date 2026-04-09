@@ -48,7 +48,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
       onClick={onClose}
     >
       <div
-        className='bg-white rounded-[2rem] w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 duration-300 scale-100 relative max-h-[90vh] '
+        className='bg-white rounded-lg[2rem] w-full max-w-lg shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 duration-300 scale-100 relative max-h-[90vh] '
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with Title and Close Button */}
@@ -58,7 +58,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
           </h2>
           <button
             onClick={onClose}
-            className='p-2 rounded-xl hover:bg-gray-50 transition-colors text-gray-300 hover:text-gray-500 cursor-pointer'
+            className='p-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-300 hover:text-gray-500 cursor-pointer'
           >
             <CloseButtonIcon />
           </button>
@@ -79,7 +79,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
                 onChange={(val) => formik.setFieldValue("actionType", val)}
                 options={ACTION_TYPES.map((type) => ({ value: type.value, label: type.label }))}
                 placeholder="Select an action"
-                className={formik.touched.actionType && formik.errors.actionType ? "ring-1 ring-red-400 rounded-xl" : ""}
+                className={formik.touched.actionType && formik.errors.actionType ? "ring-1 ring-red-400 rounded-lg" : ""}
               />
               {formik.touched.actionType && formik.errors.actionType && (
                 <div className='text-red-500 text-xs ml-1'>
@@ -100,7 +100,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
                   id='quantity'
                   name='quantity'
                   type='number'
-                  className={`w-full px-5 py-4 pr-32 rounded-xl border bg-gray-50/50 focus:bg-white transition-all duration-200 outline-none font-medium text-gray-700 placeholder:text-gray-300 ${formik.touched.quantity && formik.errors.quantity
+                  className={`w-full px-5 py-4 pr-32 rounded-lg border bg-gray-50/50 focus:bg-white transition-all duration-200 outline-none font-medium text-gray-700 placeholder:text-gray-300 ${formik.touched.quantity && formik.errors.quantity
                     ? "border-red-400 focus:border-red-400"
                     : "border-gray-100 focus:border-blue-400"
                     }`}
@@ -143,7 +143,7 @@ const ActionModal: React.FC<ActionModalProps> = ({
             <div className='flex gap-3 pt-6 justify-end items-center'>
               <button
                 type='button'
-                className='py-3 px-6 rounded-xl font-semibold text-[rgb(32,38,130)] bg-white border border-[rgb(32,38,130)] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm cursor-pointer'
+                className='py-3 px-6 rounded-lg font-semibold text-[#003527] bg-white border border-[#003527] hover:bg-blue-50 transition-all duration-200 active:scale-[0.98] text-sm cursor-pointer'
                 onClick={onClose}
               >
                 Cancel
@@ -151,14 +151,14 @@ const ActionModal: React.FC<ActionModalProps> = ({
               <button
                 type='submit'
                 disabled={isSubmitting}
-                className={`py-3 px-6 rounded-xl font-semibold text-white shadow-sm transition-all duration-200 text-sm flex items-center justify-center gap-2 ${isSubmitting
+                className={`py-3 px-6 rounded-lg font-semibold text-white shadow-sm transition-all duration-200 text-sm flex items-center justify-center gap-2 ${isSubmitting
                   ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-[rgb(32,38,130)] hover:bg-[rgb(25,30,110)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
+                  : "bg-[#003527] hover:bg-[rgb(25,30,110)] hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer"
                   }`}
               >
                 {isSubmitting ? (
                   <>
-                    <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
+                    <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-lg animate-spin' />
                     {isEditMode ? "Updating..." : "Submitting..."}
                   </>
                 ) : isEditMode ? (

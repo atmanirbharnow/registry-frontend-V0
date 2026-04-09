@@ -40,7 +40,7 @@ export default function PerformanceBreakdownModal({
         }
 
         return (
-            <div className={`rounded-xl p-4 sm:p-5 border ${colorClass} ${bgClass} mb-4`}>
+            <div className={`rounded-lg p-4 sm:p-5 border ${colorClass} ${bgClass} mb-4`}>
                 <div className="flex justify-between items-start mb-3">
                     <h3 className={`font-black uppercase tracking-wider text-sm ${textClass} mt-1`}>
                         {title} Performance
@@ -51,7 +51,7 @@ export default function PerformanceBreakdownModal({
                         {savingsData && (
                             <div
                                 data-testid={testId}
-                                className="mt-1 cursor-default group relative inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 bg-indigo-50/80 px-2 py-0.5 rounded-full border border-indigo-100"
+                                className="mt-1 cursor-default group relative inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 bg-indigo-50/80 px-2 py-0.5 rounded-lg border border-indigo-100"
                             >
                                 ₹ {Number(savingsData.amount).toLocaleString("en-IN")} INR Saved
 
@@ -70,7 +70,7 @@ export default function PerformanceBreakdownModal({
                 ) : (
                     <div className="space-y-2">
                         {pillar.actions.map((action: Action, idx: number) => (
-                            <div key={idx} className="flex justify-between items-center bg-white/60 rounded px-3 py-2 text-xs">
+                            <div key={idx} className="flex justify-between items-center bg-white/60 rounded-lg px-3 py-2 text-xs">
                                 <span className="font-medium text-gray-700 w-1/2 truncate pr-2" title={ACTION_LABELS[action.actionType] || action.actionType}>
                                     {ACTION_LABELS[action.actionType] || action.actionType}
                                 </span>
@@ -86,17 +86,17 @@ export default function PerformanceBreakdownModal({
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6">
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="bg-white rounded-3xl sm:rounded-[2rem] shadow-2xl w-full max-w-lg relative z-10 flex flex-col max-h-[90vh] sm:max-h-[85vh] overflow-hidden border border-gray-100 mt-4 sm:mt-0">
+            <div className="bg-white rounded-lg sm:rounded-lg[2rem] shadow-2xl w-full max-w-lg relative z-10 flex flex-col max-h-[90vh] sm:max-h-[85vh] overflow-hidden border border-gray-100 mt-4 sm:mt-0">
 
                 {/* Header */}
                 <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center shrink-0">
                     <div>
-                        <h2 className="text-xl sm:text-2xl font-black text-[rgb(32,38,130)] tracking-tight">Digital Climate Signature</h2>
+                        <h2 className="text-xl sm:text-2xl font-black text-[#003527] tracking-tight">Digital Climate Signature</h2>
                         <p className="text-sm font-semibold text-gray-500 mt-1">Holistic Resource Independence</p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-700 bg-white hover:bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center transition-colors shadow-sm"
+                        className="text-gray-400 hover:text-gray-700 bg-white hover:bg-gray-100 rounded-lg w-10 h-10 flex items-center justify-center transition-colors shadow-sm"
                     >
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18" />
@@ -109,14 +109,14 @@ export default function PerformanceBreakdownModal({
                 <div className="p-6 overflow-y-auto space-y-2">
                     {/* Summary Boxes */}
                     <div className="grid grid-cols-2 gap-3 mb-6">
-                        <div className="bg-green-50/50 border border-green-100 rounded-xl p-4 text-center">
+                        <div className="bg-green-50/50 border border-green-100 rounded-lg p-4 text-center">
                             <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Total Impact</div>
-                            <div className="text-2xl font-black text-green-600">-{portfolio.totalTCO2e.toFixed(3)}</div>
+                            <div className="text-2xl font-black text-[#003527]">-{portfolio.totalTCO2e.toFixed(3)}</div>
                             <div className="text-[10px] font-bold text-green-500">tCO₂e Reduced</div>
                         </div>
-                        <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 text-center">
+                        <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-4 text-center">
                             <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Atmanirbhar</div>
-                            <div className="text-2xl font-black text-blue-600">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
+                            <div className="text-2xl font-black text-[#003527]">{portfolio.totalAtmanirbharPercent.toFixed(1)}%</div>
                             <div className="text-[10px] font-bold text-blue-500">Resource Independence</div>
                         </div>
                     </div>

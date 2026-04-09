@@ -94,7 +94,7 @@ function GoogleMapView({ locations }: GoogleMapViewProps) {
 
   if (loadError) {
     return (
-      <div className='w-full h-[400px] bg-red-50 rounded-[1.5rem] mt-6 flex items-center justify-center text-red-400 border border-red-100'>
+      <div className='w-full h-[400px] bg-red-50 rounded-lg[1.5rem] mt-6 flex items-center justify-center text-red-400 border border-red-100'>
         Error loading Google Maps API
       </div>
     );
@@ -102,7 +102,7 @@ function GoogleMapView({ locations }: GoogleMapViewProps) {
 
   if (!isLoaded) {
     return (
-      <div className='w-full h-[400px] bg-gray-100 rounded-[1.5rem] mt-6 flex items-center justify-center text-gray-400'>
+      <div className='w-full h-[400px] bg-gray-100 rounded-lg[1.5rem] mt-6 flex items-center justify-center text-gray-400'>
         Loading map...
       </div>
     );
@@ -110,7 +110,7 @@ function GoogleMapView({ locations }: GoogleMapViewProps) {
 
   if (!center && markers.length === 0) {
     return (
-      <div className='w-full h-[400px] bg-gray-50 rounded-[1.5rem] mt-6 flex flex-col items-center justify-center text-gray-400 gap-2 border-2 border-dashed border-gray-200'>
+      <div className='w-full h-[400px] bg-gray-50 rounded-lg[1.5rem] mt-6 flex flex-col items-center justify-center text-gray-400 gap-2 border-2 border-dashed border-gray-200'>
         <NoLocationIcon />
         <span>No location data found</span>
       </div>
@@ -118,7 +118,7 @@ function GoogleMapView({ locations }: GoogleMapViewProps) {
   }
 
   return (
-    <div className='w-full mt-6 bg-white p-2 rounded-[1.5rem] border border-gray-100 shadow-sm'>
+    <div className='w-full mt-6 bg-white p-2 rounded-lg[1.5rem] border border-gray-100 shadow-sm'>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center || { lat: 0, lng: 0 }}

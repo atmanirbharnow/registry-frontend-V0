@@ -43,7 +43,7 @@ export const MarkerInfoWindow: React.FC<MarkerInfoWindowProps> = ({
       {/* Header with Close Button and Action Type */}
       <div className='flex items-center gap-2 p-2 border-b border-green-200'>
         <div className='flex items-center gap-2 flex-1'>
-          <div className='text-green-600 shrink-0'>
+          <div className='text-[#003527] shrink-0'>
             <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
               <path
                 fillRule='evenodd'
@@ -53,7 +53,7 @@ export const MarkerInfoWindow: React.FC<MarkerInfoWindowProps> = ({
             </svg>
           </div>
           <div className='flex-1 min-w-0'>
-            <p className='text-xs font-semibold text-green-600 uppercase tracking-wide'>
+            <p className='text-xs font-semibold text-[#003527] uppercase tracking-wide'>
               Action
             </p>
             <h3 className='text-sm font-bold text-gray-800 truncate'>
@@ -64,7 +64,7 @@ export const MarkerInfoWindow: React.FC<MarkerInfoWindowProps> = ({
         {onClose && (
           <button
             onClick={onClose}
-            className='shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-200 hover:bg-green-300 text-green-700 hover:text-green-800 transition-colors'
+            className='shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-lg bg-green-200 hover:bg-green-300 text-green-700 hover:text-green-800 transition-colors'
             aria-label='Close'
           >
             <svg
@@ -90,7 +90,7 @@ export const MarkerInfoWindow: React.FC<MarkerInfoWindowProps> = ({
           <div>
             <p className='text-xs text-gray-600 font-semibold mb-0.5'>SAVED</p>
             <div className='flex items-baseline gap-0.5'>
-              <span className='text-lg font-bold text-green-600'>
+              <span className='text-lg font-bold text-[#003527]'>
                 {data.quantity || 0}
               </span>
               <span className='text-xs font-semibold text-gray-700'>

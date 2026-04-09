@@ -19,9 +19,9 @@ export interface CustomDropdownProps {
 }
 
 const sizeClasses = {
-    sm: "px-3 py-2 text-xs rounded-lg",
-    md: "px-4 py-2.5 text-sm rounded-xl",
-    lg: "px-5 py-4 text-base rounded-xl",
+    sm: "px-2 py-1.5 text-xs rounded-lg",
+    md: "px-3 py-2 text-sm rounded-lg",
+    lg: "px-4 py-2 text-sm rounded-lg",
 };
 
 export default function CustomDropdown({
@@ -86,7 +86,7 @@ export default function CustomDropdown({
                 onKeyDown={handleKeyDown}
                 className={`
                     flex items-center justify-between w-full
-                    border border-slate-300 bg-white hover:border-blue-400 focus:border-blue-500
+                    border border-slate-300 bg-white hover:border-[#a8f928] focus:border-[#003527]
                     transition-all duration-200 outline-none font-medium
                     ${sizeClasses[size]}
                     ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
@@ -113,7 +113,7 @@ export default function CustomDropdown({
             {isOpen && (
                 <div
                     role="listbox"
-                    className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 shadow-lg rounded-xl max-h-60 overflow-y-auto"
+                    className="absolute left-0 right-0 top-full mt-1 z-50 bg-white border border-gray-200 shadow-lg rounded-lg max-h-60 overflow-y-auto"
                 >
                     <div className="py-1">
                         {options.map((option) => {
@@ -137,13 +137,13 @@ export default function CustomDropdown({
                                         px-4 py-2.5 flex items-center justify-between
                                         transition-colors duration-150
                                         ${option.disabled ? "opacity-50 cursor-not-allowed bg-slate-50 text-slate-400" : "cursor-pointer hover:bg-gray-50 text-gray-700"}
-                                        ${isSelected && !option.disabled ? "text-[rgb(32,38,130)] font-semibold bg-blue-50/30" : ""}
+                                        ${isSelected && !option.disabled ? "text-[#003527] font-semibold bg-[#e8f0ec]" : ""}
                                         ${size === "sm" ? "text-xs px-3 py-2" : size === "lg" ? "text-base px-5" : "text-sm"}
                                     `}
                                 >
                                     <span className="truncate pr-4 flex items-center gap-2">
                                         {option.label}
-                                        {option.disabled && <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded-md bg-white">Registered</span>}
+                                        {option.disabled && <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded-lg bg-white">Registered</span>}
                                     </span>
                                     {isSelected && !option.disabled && (
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="flex-shrink-0">

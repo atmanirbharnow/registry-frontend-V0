@@ -11,7 +11,7 @@ import Spinner from "@/components/ui/Spinner";
 import QRCode from "@/components/QRCode";
 import Link from "next/link";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://registryearthcarbon.org";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://climateassetregistry.org";
 
 export default function RegisterSuccessPage() {
     const searchParams = useSearchParams();
@@ -67,15 +67,15 @@ export default function RegisterSuccessPage() {
     const year = new Date().getFullYear();
 
     const shareText = tco2e && atmanirbhar
-        ? `Registered a low-carbon action on Earth Carbon Registry!\nEstimated Impact: ${tco2e} tCO2e | ${atmanirbhar}% Atmanirbhar (pending verification)\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`
-        : `Registered a low-carbon action on Earth Carbon Registry!\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`;
+        ? `Registered a low-carbon action on Climate Asset Registry!\nEstimated Impact: ${tco2e} tCO2e | ${atmanirbhar}% Atmanirbhar (pending verification)\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`
+        : `Registered a low-carbon action on Climate Asset Registry!\nRegistry ID: ${action.registryId}\nVerify: ${verifyUrl}`;
 
     return (
         <div className="min-h-[calc(100vh-82px)] bg-gray-50 px-4 md:px-8 py-12">
             <div className="max-w-xl mx-auto text-center space-y-8">
                 <div className="space-y-4">
-                    <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600">
+                    <div className="w-20 h-20 bg-[#b0f0d6] rounded-full flex items-center justify-center mx-auto">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#003527]">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <polyline points="22 4 12 14.01 9 11.01" />
                         </svg>
@@ -103,7 +103,7 @@ export default function RegisterSuccessPage() {
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 text-left">
                     <p className="text-xs text-gray-500">
                         Estimated impact based on user-submitted data.
-                        Earth Carbon Foundation verifies all registered actions in good faith.
+                        Climate Asset Foundation verifies all registered actions in good faith.
                     </p>
                 </div>
 

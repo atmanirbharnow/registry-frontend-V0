@@ -32,7 +32,7 @@ export default function UserSchoolTable() {
 
     if (loading) {
         return (
-            <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+            <div className="bg-white rounded-lg[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                 <div className="p-6 space-y-3">
                     <SkeletonRow />
                     <SkeletonRow />
@@ -44,7 +44,7 @@ export default function UserSchoolTable() {
 
     if (schools.length === 0) {
         return (
-            <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
+            <div className="bg-white/50 border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center text-center">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300 mb-4">
                     <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
                     <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
@@ -66,7 +66,7 @@ export default function UserSchoolTable() {
     };
 
     return (
-        <div className="bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        <div className="bg-white rounded-lg[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px]">
                     <thead>
@@ -83,7 +83,7 @@ export default function UserSchoolTable() {
                     <tbody className="divide-y divide-gray-50">
                         {schools.map((school) => (
                             <tr key={school.id} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[rgb(32,38,130)]">
+                                <td className="py-3.5 px-5 text-sm font-mono font-semibold text-[#003527]">
                                     {school.registryId ? (
                                         <a href={`/verify/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
                                             {school.registryId}
@@ -109,7 +109,7 @@ export default function UserSchoolTable() {
                                 </td>
                                 <td className="py-3.5 px-5 text-sm">
                                     {school.registryId ? (
-                                        <a href={`/verify/school/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[rgb(32,38,130)] font-medium hover:underline text-xs">
+                                        <a href={`/verify/school/${school.registryId}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-[#003527] font-medium hover:underline text-xs">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
                                                 <polyline points="15 3 21 3 21 9" />

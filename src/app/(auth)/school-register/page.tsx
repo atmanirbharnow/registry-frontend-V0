@@ -23,7 +23,7 @@ export default function SchoolRegisterPage() {
                 <div className="flex flex-col items-center text-center space-y-8 relative">
                     <button 
                         onClick={() => router.back()}
-                        className="self-start md:absolute md:left-0 md:top-2 flex items-center gap-1.5 text-slate-400 hover:text-[rgb(32,38,130)] transition-all group font-bold px-2 py-1"
+                        className="self-start md:absolute md:left-0 md:top-2 flex items-center gap-1.5 text-slate-400 hover:text-[#003527] transition-all group font-bold px-2 py-1"
                     >
                         <span className="text-xl group-hover:-translate-x-1 transition-transform">←</span>
                         <span className="text-xs">Back</span>

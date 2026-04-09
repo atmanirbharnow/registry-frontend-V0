@@ -195,7 +195,7 @@ export async function POST(request: NextRequest) {
         }
 
         const counterNext = await incrementCounter(userIdToken);
-        const registryId = `ECF-${String(counterNext).padStart(4, "0")}`;
+        const registryId = `CAF-${String(counterNext).padStart(4, "0")}`;
         const now = new Date().toISOString();
         const bOrganic = Number(formData.baselineWasteOrganic) || 0;
         const bInorganic = Number(formData.baselineWasteInorganic) || 0;

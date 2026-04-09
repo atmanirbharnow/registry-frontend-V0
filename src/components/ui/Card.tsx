@@ -20,7 +20,7 @@ export default function Card({
     return (
         <div
             className={`
-        bg-white rounded-3xl border border-gray-100
+        bg-white rounded-lg border border-gray-100
         shadow-[0_8px_30px_rgb(0,0,0,0.04)]
         ${className}
       `}
@@ -32,7 +32,7 @@ export default function Card({
             )}
             <div className={noPadding ? "" : "px-6 py-6"}>{children}</div>
             {footer && (
-                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-3xl">
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 rounded-lg">
                     {footer}
                 </div>
             )}

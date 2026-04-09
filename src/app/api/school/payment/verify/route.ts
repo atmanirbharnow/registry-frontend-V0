@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
                 const next = current + 1;
                 tx.set(counterRef, { 
                     count: next, 
-                    prefix: "ECF-SCH-", 
+                    prefix: "CAF-SCH-", 
                     last_updated: FieldValue.serverTimestamp() 
                 }, { merge: true });
                 return next;
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
             nextValue = await incrementCounterREST(userIdToken);
         }
 
-        const registryId = `ECF-SCH-${String(nextValue).padStart(4, "0")}`;
+        const registryId = `CAF-SCH-${String(nextValue).padStart(4, "0")}`;
         const now = new Date().toISOString();
 
         const bOrganic = Number(formData.get("baselineWasteOrganic")) || 0;

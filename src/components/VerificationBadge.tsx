@@ -17,8 +17,8 @@ const badgeConfig: Record<
         label: "VERIFIED",
         sublabel: "Carbon Credit Eligible",
         bg: "bg-blue-50",
-        border: "border-blue-200",
-        text: "text-blue-700",
+        border: "border-[#b0f0d6]",
+        text: "text-[#003527]",
         icon: (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
@@ -30,7 +30,7 @@ const badgeConfig: Record<
         sublabel: "Awaiting Review",
         bg: "bg-yellow-50",
         border: "border-yellow-200",
-        text: "text-yellow-700",
+        text: "text-[#112000]",
         icon: (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
@@ -54,7 +54,7 @@ const badgeConfig: Record<
         sublabel: "Awaiting Review",
         bg: "bg-yellow-50",
         border: "border-yellow-200",
-        text: "text-yellow-700",
+        text: "text-[#112000]",
         icon: (
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
@@ -70,7 +70,7 @@ export default function VerificationBadge({ status }: VerificationBadgeProps) {
         <div
             className={`
         inline-flex items-center gap-3 px-6 py-4
-        rounded-2xl border-2
+        rounded-lg border-2
         ${config.bg} ${config.border}
       `}
         >

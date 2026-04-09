@@ -26,7 +26,7 @@ export default function Modal({
             onClick={onClose}
         >
             <div
-                className={`bg-white rounded-[2rem] w-full ${maxWidth} shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 duration-300 scale-100 relative max-h-[90vh] flex flex-col`}
+                className={`bg-white rounded-lg[2rem] w-full ${maxWidth} shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 duration-300 scale-100 relative max-h-[90vh] flex flex-col`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-gray-100 shrink-0">
@@ -35,7 +35,7 @@ export default function Modal({
                     </h2>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl hover:bg-gray-50 transition-colors text-gray-300 hover:text-gray-500 cursor-pointer"
+                        className="p-2 rounded-lg hover:bg-gray-50 transition-colors text-gray-300 hover:text-gray-500 cursor-pointer"
                     >
                         <CloseButtonIcon />
                     </button>

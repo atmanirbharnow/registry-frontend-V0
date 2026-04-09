@@ -25,8 +25,8 @@ export default function ImpactSummaryStep({
         : "Individual Action — Impact Summary";
 
     const subheading = isSchool
-        ? "Review your school's submitted data and understand the benefits of registering on the Earth Carbon Registry."
-        : "Review your submitted data and understand the benefits of registering on the Earth Carbon Registry.";
+        ? "Review your school's submitted data and understand the benefits of registering on the Climate Asset Registry."
+        : "Review your submitted data and understand the benefits of registering on the Climate Asset Registry.";
 
     // Calculate Impact
     let impactData = { tCO2e: 0, atmanirbhar: 0, circularity: 0, carbonIntensity: 0, actionSavings: 0 };
@@ -42,17 +42,18 @@ export default function ImpactSummaryStep({
                 baselineWasteOrganic: Number(formValues.baselineWasteOrganic) || 0,
                 baselineWasteInorganic: Number(formValues.baselineWasteInorganic) || 0,
                 baselineWasteHazardous: Number(formValues.baselineWasteHazardous) || 0,
-                waste_diverted_kg: Number(formValues.waste_diverted_kg) || 0,
                 students_count: Number(formValues.students_count) || 1,
-                actionType: formValues.action_type || "",
-                actionQuantity: Number(formValues.actionQuantity || formValues.electricity_kWh_year) || 0,
+                actions: (formValues.actionTypes || []).map((type: string) => ({
+                    actionType: type,
+                    quantity: Number(formValues.actionDetails?.[type]?.quantity) || 0,
+                }))
             });
             impactData = { 
                 tCO2e: res.tco2e_annual, 
                 atmanirbhar: res.atmanirbhar_pct, 
                 circularity: res.circularity_pct,
                 carbonIntensity: res.carbon_intensity,
-                actionSavings: res.tco2e_annual // Schools use reduction as main metric
+                actionSavings: res.tco2e_annual
             };
         } catch (e) {
             console.error(e);
@@ -101,14 +102,14 @@ export default function ImpactSummaryStep({
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
-            <div className="bg-[rgb(32,38,130)] text-white p-5 rounded-xl">
+            <div className="bg-[#003527] text-white p-5 rounded-lg">
                 <div className="flex items-center gap-3 mb-2">
                     <span className="p-2 bg-white/15 rounded-lg">
                         <SummaryIcon />
                     </span>
-                    <h2 className="text-lg font-bold">{heading}</h2>
+                    <h2 className="text-base font-bold uppercase tracking-widest">{heading}</h2>
                 </div>
-                <p className="text-sm text-blue-200 leading-relaxed">{subheading}</p>
+                <p className="text-[10px] text-[#a8f928]/80 leading-relaxed uppercase tracking-tight">{subheading}</p>
             </div>
 
 
@@ -116,9 +117,9 @@ export default function ImpactSummaryStep({
             {/* Sections Grid - Stacked Vertically */}
             <div className="flex flex-col gap-6">
                 {/* Personal Details */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                     <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Personal Details</h3>
+                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Personal Details</h3>
                     </div>
                     <div className="p-5">
                         <PersonalDetailsGrid userProfile={userProfile} />
@@ -126,9 +127,9 @@ export default function ImpactSummaryStep({
                 </div>
 
                 {/* Submitted Details */}
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                     <div className="px-5 py-3 bg-gray-50 border-b border-gray-200">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                        <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
                             {isSchool ? "School Details" : "Action Details"}
                         </h3>
                     </div>
@@ -139,9 +140,9 @@ export default function ImpactSummaryStep({
             </div>
 
             {/* What You Will Receive */}
-            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm">
                 <div className="px-5 py-3 bg-gray-50/50 border-b border-gray-100">
-                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Benefits of Registration</h3>
+                    <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Benefits of Registration</h3>
                 </div>
                 <div className="p-4 sm:p-6">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
@@ -149,8 +150,8 @@ export default function ImpactSummaryStep({
                             icon={<CertificateIcon />}
                             title="Digital Certificate"
                             description="Tamper-proof certificate with unique QR code."
-                            bgColor="bg-blue-50"
-                            iconColor="text-blue-600"
+                            bgColor="bg-[#eff7f2]"
+                            iconColor="text-[#003527]"
                         />
                         <BenefitCard
                             icon={<CO2Icon />}
@@ -170,15 +171,15 @@ export default function ImpactSummaryStep({
                             icon={<CircularityIcon />}
                             title="Circularity Score"
                             description="Percentage of waste diverted from landfill."
-                            bgColor="bg-indigo-50"
-                            iconColor="text-indigo-600"
+                            bgColor="bg-teal-50"
+                            iconColor="text-teal-600"
                         />
                         <BenefitCard
                             icon={<SignatureIcon />}
                             title="Secure Signature"
                             description="Cryptographic hash for data integrity."
-                            bgColor="bg-violet-50"
-                            iconColor="text-violet-600"
+                            bgColor="bg-emerald-50"
+                            iconColor="text-emerald-700"
                         />
                         <BenefitCard
                             icon={<ShareIcon />}
@@ -192,8 +193,8 @@ export default function ImpactSummaryStep({
             </div>
 
             {/* Impact Message */}
-            <div className="bg-blue-50/50 rounded-2xl p-5 border border-blue-100">
-                <p className="text-sm text-blue-700 font-medium leading-relaxed">
+            <div className="bg-[#eff7f2]/50 rounded-lg p-5 border border-[#b0f0d6]">
+                <p className="text-[10px] text-[#003527] font-bold uppercase tracking-tight leading-relaxed">
                     By registering, you join a transparent record of climate-positive activities in India. 
                     Your {isSchool ? "school's" : "individual"} action helps build a national baseline for grassroots environmental impact, 
                     verified using standardized methodologies.
@@ -201,14 +202,14 @@ export default function ImpactSummaryStep({
             </div>
 
             {/* Agreement Checkbox */}
-            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+            <div className="bg-white border border-gray-100 rounded-lg p-5 shadow-sm">
                 <label className="flex items-start gap-4 cursor-pointer group">
                     <div className="mt-0.5 relative flex-shrink-0">
                         <input
                             type="checkbox"
                             checked={agreed}
                             onChange={(e) => onAgreeChange(e.target.checked)}
-                            className="peer appearance-none w-6 h-6 border-2 border-gray-200 rounded-lg checked:border-[rgb(32,38,130)] checked:bg-[rgb(32,38,130)] transition-all cursor-pointer"
+                            className="peer appearance-none w-6 h-6 border-2 border-gray-200 rounded-lg checked:border-[#003527] checked:bg-[#003527] transition-all cursor-pointer"
                         />
                         <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                     </div>
@@ -265,7 +266,7 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
             </div>
 
             <div className="pt-4 border-t border-gray-100">
-                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Actions Registered</span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Actions Registered</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {actionTypes.length > 0 ? (
                         actionTypes.map((type: string, idx: number) => {
@@ -276,13 +277,13 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
                             const unit = details?.unit || values.unit || "";
                             
                             return (
-                                <div key={idx} className="flex flex-col p-3 bg-slate-50 rounded-xl border border-slate-100 transition-all hover:border-[rgb(32,38,130)]/30 group">
+                                <div key={idx} className="flex flex-col p-3 bg-slate-50 rounded-lg border border-slate-100 transition-all hover:border-[#003527]/30 group">
                                     <div className="flex justify-between items-start mb-1">
-                                        <span className="text-xs font-black text-slate-800 uppercase tracking-tight group-hover:text-[rgb(32,38,130)] transition-colors">
+                                        <span className="text-xs font-black text-slate-800 uppercase tracking-tight group-hover:text-[#003527] transition-colors">
                                             {label}
                                         </span>
                                         {quantity && (
-                                            <span className="text-[10px] font-bold text-[rgb(32,38,130)] bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                                            <span className="text-[10px] font-bold text-[#003527] bg-white px-2 py-0.5 rounded-lg border border-slate-200">
                                                 {quantity} {unit}
                                             </span>
                                         )}
@@ -306,8 +307,8 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
 function DetailRow({ label, value }: { label: string; value: string }) {
     return (
         <div className="flex flex-col py-1 border-b border-gray-50 last:border-0 sm:last:border-b">
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{label}</span>
-            <span className="text-sm font-black text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">{label}</span>
+            <span className="text-xs font-semibold text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
         </div>
     );
 }
@@ -317,8 +318,8 @@ function DetailTable({ rows }: { rows: [string, string][] }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4">
             {rows.map(([label, value], i) => (
                 <div key={i} className="flex flex-col py-1 border-b border-gray-50 last:border-0 sm:last:border-b">
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">{label}</span>
-                    <span className="text-sm font-black text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">{label}</span>
+                    <span className="text-xs font-semibold text-gray-800 break-all sm:break-normal" title={value}>{value}</span>
                 </div>
             ))}
         </div>
@@ -327,13 +328,13 @@ function DetailTable({ rows }: { rows: [string, string][] }) {
 
 function BenefitCard({ icon, title, description, bgColor, iconColor }: { icon: React.ReactNode; title: string; description: string; bgColor: string; iconColor: string }) {
     return (
-        <div className={`flex flex-col gap-2 p-4 rounded-2xl ${bgColor} transition-transform hover:scale-[1.02] border border-white shadow-sm`}>
-            <div className={`w-10 h-10 rounded-xl bg-white flex items-center justify-center ${iconColor} shadow-sm`}>
+        <div className={`flex flex-col gap-2 p-4 rounded-lg ${bgColor} transition-transform hover:scale-[1.02] border border-white shadow-sm`}>
+            <div className={`w-10 h-10 rounded-lg bg-white flex items-center justify-center ${iconColor} shadow-sm`}>
                 {icon}
             </div>
             <div>
-                <h4 className="text-xs font-black text-gray-800 mb-1 uppercase tracking-tight">{title}</h4>
-                <p className="text-[10px] text-gray-500 font-bold leading-tight line-clamp-2">{description}</p>
+                <h4 className="text-xs font-bold text-gray-800 mb-1 uppercase tracking-tight">{title}</h4>
+                <p className="text-[10px] text-gray-600 font-medium leading-tight line-clamp-2">{description}</p>
             </div>
         </div>
     );

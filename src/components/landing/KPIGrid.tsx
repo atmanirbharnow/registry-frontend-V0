@@ -20,84 +20,75 @@ export default function KPIGrid() {
   const displayedOrgs = useCountUp(isInView ? totalOrganizations : 0);
 
   const stats = [
-    {
-      label: "Total Registered Action",
-      value: displayedRegistered,
-      suffix: "",
-      sub: "Across all sectors",
-      accent: "from-blue-600 to-indigo-600",
-      icon: "📋"
+    { 
+      label: "Total Registered Actions", 
+      value: displayedRegistered, 
+      suffix: "", 
+      sub: "Across all sectors" 
     },
-    {
-      label: "Total Verified Action",
-      value: displayedVerified,
-      suffix: "",
-      sub: "Independently audited",
-      accent: "from-emerald-600 to-teal-600",
-      icon: "✅"
+    { 
+      label: "Total Verified Actions", 
+      value: displayedVerified, 
+      suffix: "", 
+      sub: "Independently audited" 
     },
-    {
-      label: "tCO₂e Reduced",
-      value: displayedCO2,
-      suffix: "t",
-      sub: "Verified carbon reduction",
-      accent: "from-cyan-600 to-blue-600",
-      icon: "🌱"
+    { 
+      label: "tCO₂e Reduced", 
+      value: displayedCO2, 
+      suffix: "t", 
+      sub: "Verified carbon reduction" 
     },
-    {
-      label: "Registered Organizations",
-      value: displayedOrgs,
-      suffix: "+",
-      sub: "Climate action leaders",
-      accent: "from-purple-600 to-indigo-600",
-      icon: "🏢"
-    }
+    { 
+      label: "Registered Organizations", 
+      value: displayedOrgs, 
+      suffix: "+", 
+      sub: "Climate action leaders" 
+    },
   ];
 
   return (
-    <section id="stats" className="py-24 bg-[#f8fafc] px-4 md:px-8">
-      <div className="max-w-7xl mx-auto" ref={ref}>
-        <div className="mb-16 flex flex-col items-center text-center">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#414942] mb-4">
-            Live Dashboard
-          </span>
-          <h2 className="text-3xl md:text-5xl font-black text-[rgb(32,38,130)]">
-            Registry at a Glance
-          </h2>
-        </div>
+    <section id="stats" className="w-full bg-white px-4 md:px-8 lg:px-16 py-12 md:py-16 border-b border-slate-100">
+      {/* Section Header */}
+      <div className="max-w-7xl mx-auto mb-10 flex flex-col items-center text-center">
+        <h2
+          className="text-xl md:text-2xl font-black text-[#003527] mb-3"
+          style={{ fontFamily: "Manrope, sans-serif" }}
+        >
+          Built on High-Trust Logic
+        </h2>
+        <p className="text-xs md:text-sm text-[#414942] max-w-xl leading-relaxed opacity-70">
+          Every gram of carbon registered is backed by a verifiable chain of
+          custody and rigorous environmental math.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-          {stats.map((stat, idx) => (
-            <div 
-              key={idx}
-              className={`relative bg-white rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(32,38,130,0.05)] border border-slate-100 flex flex-col items-center text-center group hover:-translate-y-2 transition-all duration-500 overflow-hidden ${
-                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-              }`}
-              style={{ transitionDelay: `${idx * 100}ms` }}
-            >
-              <div className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${stat.accent}`} />
-              
-              <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
-                {stat.icon}
+      {/* Stats Grid — 4 columns on desktop with high-trust gaps */}
+      <div
+        ref={ref}
+        className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+      >
+        {stats.map((stat, idx) => (
+          <div
+            key={idx}
+            className="bg-[#003527] p-8 flex flex-col justify-between min-h-[180px] border border-white/5 rounded-lg shadow-xl hover:shadow-[#003527]/10 transition-all duration-300"
+            style={{ transitionDelay: `${idx * 100}ms` }}
+          >
+            <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-6 leading-tight">
+              {stat.label}
+            </p>
+            <div className="flex flex-col flex-grow justify-end">
+              <div className="flex items-baseline gap-1 flex-wrap">
+                <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white leading-none tracking-tight">
+                  {loading ? "—" : stat.value}
+                </span>
+                <span className="text-lg md:text-xl font-black text-[#a8f928] leading-none">
+                  {loading ? "" : stat.suffix}
+                </span>
               </div>
-
-              <span className="text-4xl md:text-5xl font-black text-[rgb(32,38,130)] mb-1">
-                {loading ? "..." : <>{stat.value}{stat.suffix}</>}
-              </span>
-              
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#414942] mb-3">
-                {stat.label}
-              </span>
-
-              <p className="text-xs font-medium text-slate-400">
-                {stat.sub}
-              </p>
-
-              {/* Decorative Glow */}
-              <div className={`absolute -bottom-12 -right-12 w-24 h-24 bg-gradient-to-br ${stat.accent} opacity-0 group-hover:opacity-10 rounded-full blur-2xl transition-opacity`} />
+              <p className="text-[10px] text-white/30 mt-4 font-bold uppercase tracking-widest leading-tight">{stat.sub}</p>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </section>
   );

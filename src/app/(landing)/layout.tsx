@@ -4,13 +4,13 @@ import LandingFooter from "@/components/landing/LandingFooter";
 import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
-  title: "Earth Carbon Registry | Verified Low-Carbon Action Registry",
-  description: "Register and verify low-carbon actions across India. Track CO₂e reduction, Atmanirbhar %, and Circularity Score. Indias transparent climate action registry.",
+  title: "Climate Asset Registry | Verified Low-Carbon Action Registry",
+  description: "Register and verify low-carbon actions across India. Track CO₂e reduction and sustainability. Global transparent climate action registry.",
   openGraph: {
-    title: "Earth Carbon Registry | Verified Low-Carbon Action Registry",
-    description: "Register and verify low-carbon actions across India. Track CO₂e reduction, Atmanirbhar %, and Circularity Score.",
+    title: "Climate Asset Registry | Verified Low-Carbon Action Registry",
+    description: "Register and verify low-carbon actions across India. Track CO₂e reduction and impact.",
     url: "https://climateassetregistry.org",
-    siteName: "Earth Carbon Registry",
+    siteName: "Climate Asset Registry",
     images: [
       {
         url: "/og-image.png", // Ensure this exists or fallback
@@ -37,7 +37,8 @@ export default function LandingLayout({
         </main>
         <LandingFooter />
 
-        <style dangerouslySetInnerHTML={{ __html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           html {
             scroll-behavior: smooth;
           }
