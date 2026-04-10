@@ -27,22 +27,24 @@ export default function MediaModal({ isOpen, onClose, item }: MediaModalProps) {
   if (item.moreDetailsPhoto) images.push({ url: item.moreDetailsPhoto, label: "More Details" });
   if (item.siteOverviewPhoto) images.push({ url: item.siteOverviewPhoto, label: "Site Overview" });
 
-  if (!isSchool) {
-    const action = item as Action;
-    if (action.sitePhoto) images.push({ url: action.sitePhoto, label: "Site Photo" });
-    if (action.meterPhotos && Array.isArray(action.meterPhotos)) {
-        action.meterPhotos.forEach((url, i) => {
-            images.push({ url, label: `Meter Photo ${i + 1}` });
-        });
-    }
-    
-    // Check for dynamic keys (action types)
-    Object.keys(ACTION_PHOTO_LABELS).forEach(key => {
-        if ((action as any)[key] && typeof (action as any)[key] === "string" && (action as any)[key].startsWith("http")) {
-            images.push({ url: (action as any)[key], label: ACTION_PHOTO_LABELS[key] || key });
-        }
+  // Action specific photos (Dynamic keys)
+  // Both Individual Actions and Schools now use these dynamic slots
+  const itemAsAny = item as any;
+  if (itemAsAny.sitePhoto) images.push({ url: itemAsAny.sitePhoto, label: "Site Photo" });
+  
+  if (itemAsAny.meterPhotos && Array.isArray(itemAsAny.meterPhotos)) {
+    itemAsAny.meterPhotos.forEach((url: string, i: number) => {
+      images.push({ url, label: `Meter Photo ${i + 1}` });
     });
   }
+
+  // Check for dynamic keys (action types) defined in ACTION_PHOTO_LABELS
+  Object.keys(ACTION_PHOTO_LABELS).forEach(key => {
+    const val = itemAsAny[key];
+    if (val && typeof val === "string" && val.startsWith("http")) {
+      images.push({ url: val, label: ACTION_PHOTO_LABELS[key] || key });
+    }
+  });
 
   return (
     <>

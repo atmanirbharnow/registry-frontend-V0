@@ -11,7 +11,11 @@ export const useSignIn = () => {
   useEffect(() => {
     // Only redirect if we have a user AND the auth loading state is false (cookie-set complete)
     if (user && !loading) {
-      router.replace("/profile");
+      // Final guard: ensure the session cookie is visible to the browser 
+      // before triggering navigation that middleware will intercept.
+      if (document.cookie.includes("session=")) {
+        router.replace("/profile");
+      }
     }
   }, [user, loading, router]);
 

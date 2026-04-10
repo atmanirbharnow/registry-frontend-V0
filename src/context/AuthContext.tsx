@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               return;
             }
 
-            // If no timestamp, this is the first time we see the user in this session
+            // If no timestamp, this is the first time we see the user in this session (fresh login)
             if (!issuedAt) {
               localStorage.setItem("auth_issued_at", now.toString());
             }
@@ -89,6 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = async () => {
     try {
+      // Clear any stale session timer before starting a new login session
+      localStorage.removeItem("auth_issued_at");
       await signInWithPopup(auth, googleProvider);
       toast.success("Successfully logged in with Google!");
     } catch (error: unknown) {
