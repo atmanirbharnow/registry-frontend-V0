@@ -19,7 +19,7 @@ export interface CalculationInput {
     unit?: string;
     actions?: Array<{ actionType: string, quantity: number, unit?: string }>;
 
-    // Baseline Usage (Monthly Average - Step 1)
+    // Baseline Usage (Yearly Average - Step 1)
     baselineEnergyGrid?: number;
     baselineEnergyDiesel?: number;
     baselineEnergySolar?: number;
@@ -30,7 +30,7 @@ export interface CalculationInput {
     baselineWasteInorganic?: number;
     baselineWasteHazardous?: number;
     baselineWasteDiverted?: number;
-    
+
     beneficiariesCount?: number;
 }
 
@@ -54,11 +54,11 @@ export interface CalculationResult {
  */
 export function calculateImpactPhase2(input: CalculationInput): CalculationResult {
     const { beneficiariesCount = 1 } = input;
-    
+
     // 1. Calculate Baseline Emissions (Annualized)
     const baselineCO2eKg = calculateBaselineCO2e(input);
     const actionImpactKg = calculateCO2ePhase2(input);
-    
+
     // 2. Scores
     const atmanirbharScore = calculateAtmanirbharPhase2(input);
     const circularityScore = calculateCircularityScore(input);
@@ -142,9 +142,9 @@ function calculateBaselineCO2e(input: CalculationInput): number {
     } = input;
 
     // Energy: Grid (0.82), Diesel (2.68), Solar Credit (-0.82)
-    const energyCo2eMonthly = 
-        (baselineEnergyGrid * 0.82) + 
-        (baselineEnergyDiesel * 2.68) - 
+    const energyCo2eMonthly =
+        (baselineEnergyGrid * 0.82) +
+        (baselineEnergyDiesel * 2.68) -
         (baselineEnergySolar * 0.82);
 
     // Water: Municipal (0.5 kg/m3 = 0.0005 kg/L)
@@ -181,7 +181,7 @@ function calculateCO2ePhase2(input: CalculationInput): number {
                 break;
             }
             case 'rainwater_harvesting': {
-                co2eKg = qty * 47.4; 
+                co2eKg = qty * 47.4;
                 break;
             }
             case 'biogas_cooking': {
@@ -262,7 +262,7 @@ function calculateAtmanirbharPhase2(input: CalculationInput): number {
         } else if (type.includes("wastewater")) {
             actionLocalWater += qty * 30000;
         } else if (type.includes("led") || type.includes("efficiency")) {
-            actionLocalEnergy += baselineEnergyGrid * 0.2; 
+            actionLocalEnergy += baselineEnergyGrid * 0.2;
         }
     }
 

@@ -59,7 +59,6 @@ const validationSchema = [
     // Step 4: Finalization & Payment
     Yup.object({
         consentGiven: Yup.boolean().oneOf([true], "Consent required").required(),
-        disclaimerAccepted: Yup.boolean().oneOf([true], "Acceptance required").required(),
     })
 ];
 
@@ -220,7 +219,6 @@ export default function RegisterActionForm() {
             photo_file: null as File | null,
 
             consentGiven: false,
-            disclaimerAccepted: false,
             summaryAgreed: false,
 
             // Photos
@@ -233,6 +231,12 @@ export default function RegisterActionForm() {
         onSubmit: async (values) => {
             if (!user) {
                 toast.error("You must be signed in.");
+                return;
+            }
+
+            // Step 4 Verification: Ensure consent is checked
+            if (!values.consentGiven) {
+                toast.error("Please verify the data and authorize Climate Asset to proceed.");
                 return;
             }
 
@@ -321,7 +325,7 @@ export default function RegisterActionForm() {
             ],
             2: ["actionTypes", "pincode", "address", "photo_file"],
             3: ["summaryAgreed"],
-            4: ["consentGiven", "disclaimerAccepted"]
+            4: ["consentGiven"]
         };
 
         const currentStepFields = stepFields[currentStep as keyof typeof stepFields] || [];
@@ -332,7 +336,13 @@ export default function RegisterActionForm() {
         } else {
             const touched = currentStepFields.reduce((acc, field) => ({ ...acc, [field]: true }), {});
             formik.setTouched({ ...formik.touched, ...touched });
-            toast.warning("Please fill required fields to proceed");
+            
+            // Provide specific feedback for step 3 agreement
+            if (currentStep === 3 && errors.summaryAgreed) {
+                toast.error("Please review and agree to the details before moving to payment.");
+            } else {
+                toast.warning("Please fill required fields to proceed");
+            }
         }
     };
 
@@ -624,23 +634,7 @@ export default function RegisterActionForm() {
                                         <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                                     </div>
                                     <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
-                                        I verify that the data provided above is correct to the best of my knowledge.
-                                    </span>
-                                </label>
-
-                                <label className="flex items-start gap-4 cursor-pointer group">
-                                    <div className="mt-1 relative">
-                                        <input
-                                            type="checkbox"
-                                            name="disclaimerAccepted"
-                                            checked={formik.values.disclaimerAccepted}
-                                            onChange={formik.handleChange}
-                                            className="peer appearance-none w-6 h-6 border-2 border-gray-300 rounded-lg checked:border-[#003527] checked:bg-[#003527] transition-all cursor-pointer"
-                                        />
-                                        <svg className="absolute top-1 left-1 opacity-0 peer-checked:opacity-100 text-white w-4 h-4 pointer-events-none transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                                    </div>
-                                    <span className="text-sm font-bold text-gray-500 group-hover:text-gray-800 transition-colors leading-relaxed">
-                                        I accept that impact metrics are estimates based on standard methodologies.
+                                        I verify that the data provided above is correct. I authorize Climate Asset to process this information for registry verification.
                                     </span>
                                 </label>
                             </div>
@@ -653,6 +647,11 @@ export default function RegisterActionForm() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
+                                    onClick={() => {
+                                        if (!formik.values.consentGiven) {
+                                            toast.error("Please verify the data and authorize Climate Asset to proceed.");
+                                        }
+                                    }}
                                     className="w-full sm:w-auto px-12 py-5 bg-[#003527] text-white rounded-lg font-black shadow-2xl shadow-emerald-900/30 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
                                 >
                                     {submitting ? "Processing..." : "Pay & Complete"}

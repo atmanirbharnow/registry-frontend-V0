@@ -194,7 +194,12 @@ export default function SchoolRegistrationForm() {
         },
         validationSchema: validationSchema[currentStep - 1],
         onSubmit: async (values) => {
-            // Final Step Submission
+            // Final Step Submission: Ensure authorization is checked
+            if (!values.consent_confirmed) {
+                toast.error("Please verify the data and authorize Climate Asset to proceed.");
+                return;
+            }
+
             setSubmitting(true);
             try {
                 // Feature 2: Final Duplicate Check
@@ -390,9 +395,14 @@ export default function SchoolRegistrationForm() {
         if (Object.keys(errors).length === 0) {
             setCurrentStep(currentStep + 1);
         } else {
-            if (currentStep === 2 && !formik.values.energyBillCopy && !formik.values.meterPhoto && !formik.values.moreDetailsPhoto && !formik.values.siteOverviewPhoto) {
+            if (currentStep === 3 && errors.summaryAgreed) {
+                toast.error("Please confirm you have reviewed the school details to proceed.");
+            } else if (currentStep === 2 && !formik.values.energyBillCopy && !formik.values.meterPhoto && !formik.values.moreDetailsPhoto && !formik.values.siteOverviewPhoto) {
                 toast.error("Please upload at least one proof photo to proceed.", { position: "top-center" });
+            } else {
+                toast.warning("Please fill required fields to proceed");
             }
+
             formik.setTouched(
                 Object.keys(errors).reduce((acc, key) => ({ ...acc, [key]: true }), {})
             );
@@ -449,7 +459,7 @@ export default function SchoolRegistrationForm() {
                     </div>
                 )}
                 {currentStep === 1 && (
-                    <StepWrapper title="Baseline Usage (Monthly Average)" icon={<EnergyIcon />}>
+                    <StepWrapper title="Baseline Usage (Yearly Average)" icon={<EnergyIcon />}>
                         <p className="text-[10px] text-[#003527] bg-[#eff7f2] p-3 rounded-lg font-medium border border-[#b0f0d6] mb-6">
                             Note: Baseline Usage represents your EXISTING usage BEFORE the new low-carbon action.
                         </p>
@@ -678,6 +688,11 @@ export default function SchoolRegistrationForm() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
+                                    onClick={() => {
+                                        if (!formik.values.consent_confirmed) {
+                                            toast.error("Please verify the data and authorize Climate Asset to proceed.");
+                                        }
+                                    }}
                                     className="w-full md:w-auto px-12 py-5 bg-[#003527] text-white rounded-lg font-black shadow-2xl shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98] disabled:opacity-50"
                                 >
                                     {submitting ? "Processing..." : "Pay & Register School"}

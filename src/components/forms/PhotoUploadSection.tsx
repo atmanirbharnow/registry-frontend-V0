@@ -42,9 +42,14 @@ export default function PhotoUploadSection({
 }: PhotoUploadSectionProps) {
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [localPreviewUrls, setLocalPreviewUrls] = useState<Record<string, string>>({});
     const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
     const handleUpload = async (key: string, file: File) => {
+        // Create local preview immediately
+        const localUrl = URL.createObjectURL(file);
+        setLocalPreviewUrls(prev => ({ ...prev, [key]: localUrl }));
+
         setUploading((prev) => ({ ...prev, [key]: true }));
         try {
             const path = `actions/${userId}/${key}-${Date.now()}-${file.name}`;
@@ -58,11 +63,26 @@ export default function PhotoUploadSection({
     };
 
     const clearPhoto = (key: string) => {
+        if (localPreviewUrls[key]) {
+            URL.revokeObjectURL(localPreviewUrls[key]);
+            setLocalPreviewUrls(prev => {
+                const next = { ...prev };
+                delete next[key];
+                return next;
+            });
+        }
         onPhotoChange(key, null);
         if (fileRefs.current[key]) {
             fileRefs.current[key]!.value = "";
         }
     };
+
+    // Cleanup local URLs on unmount
+    React.useEffect(() => {
+        return () => {
+            Object.values(localPreviewUrls).forEach(url => URL.revokeObjectURL(url));
+        };
+    }, []);
 
     return (
         <>
@@ -85,10 +105,10 @@ export default function PhotoUploadSection({
                                 ) : photos[slot.key] ? (
                                     <>
                                         <img
-                                            src={photos[slot.key]!}
+                                            src={localPreviewUrls[slot.key] || photos[slot.key] || ""}
                                             alt={slot.label}
                                             className="w-full h-full object-cover cursor-pointer"
-                                            onClick={() => setPreviewUrl(photos[slot.key]!)}
+                                            onClick={() => setPreviewUrl(localPreviewUrls[slot.key] || photos[slot.key])}
                                         />
                                         <button
                                             type="button"
