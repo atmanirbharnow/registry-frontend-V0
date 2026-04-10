@@ -354,6 +354,6 @@ export function getAvailableActionTypes(): Array<{ value: string; label: string;
         { value: 'waterless_urinals', label: 'Waterless Urinals', unit: 'units' },
         { value: 'composting', label: 'Waste Composting', unit: 'Kg' },
         { value: 'wastewater_recycling', label: 'Waste Water Recycled', unit: 'm3' },
-        { value: 'led_retrofit', label: 'LED Retrofit', unit: 'fixtures' },
+        { value: 'led_retrofit', label: 'Energy Efficiency', unit: 'fixtures' },
     ];
 }

@@ -94,7 +94,7 @@ export function calculateSchoolImpact(input: SchoolImpactInput): SchoolImpactRes
             actionLocalEnergy += quantity * 30; // approx m3 to kWh equivalent
             reductionKg += (quantity / 2) * 1.2 * 1000 / 12;
         } else if (type === "led_retrofit") {
-            // Efficiency / LED Retrofit saves energy
+            // Efficiency / Energy Efficiency saves energy
             const savings = quantity * 5; 
             actionLocalEnergy += savings;
             reductionKg += savings * SCHOOL_EMISSION_FACTORS.ELECTRICITY;

@@ -6,7 +6,7 @@ export const ACTION_TYPES = [
   { value: "waterless_urinals", label: "Waterless Urinals", unit: "units", photoLabel: "Waterless urinal installation photo" },
   { value: "composting", label: "Waste Composting", unit: "Kg", photoLabel: "Composting unit or organic waste area photo" },
   { value: "wastewater_recycling", label: "Waste Water Recycled", unit: "m3", photoLabel: "Greywater treatment or reuse system photo" },
-  { value: "led_retrofit", label: "LED Retrofit", unit: "fixtures", photoLabel: "LED bulb installation photo" },
+  { value: "led_retrofit", label: "Energy Efficiency", unit: "fixtures", photoLabel: "Energy efficiency installation photo" },
 ];
 
 export const ACTION_PHOTO_LABELS: Record<string, string> = ACTION_TYPES.reduce(
@@ -67,7 +67,7 @@ export const PIPELINE_STATUS_OPTIONS = [
 ] as const;
 
 export const ACTION_PILLAR_MAP: Record<string, "energy" | "water" | "waste" | "other"> = {
-  // Energy
+  // Energy / Efficiency
   solar_rooftop: "energy",
   solar_water_heater: "energy",
   led_retrofit: "energy",

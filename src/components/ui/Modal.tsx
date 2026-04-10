@@ -9,6 +9,7 @@ interface ModalProps {
     title: string;
     children: React.ReactNode;
     maxWidth?: string;
+    zIndex?: string;
 }
 
 export default function Modal({
@@ -17,12 +18,13 @@ export default function Modal({
     title,
     children,
     maxWidth = "max-w-lg",
+    zIndex = "z-[1000]",
 }: ModalProps) {
     if (!isOpen) return null;
 
     return (
         <div
-            className="fixed inset-0 bg-gray-900/10 backdrop-blur-sm flex justify-center items-center z-[1000] p-4 transition-all duration-300"
+            className={`fixed inset-0 bg-gray-900/10 backdrop-blur-sm flex justify-center items-center ${zIndex} p-4 transition-all duration-300`}
             onClick={onClose}
         >
             <div

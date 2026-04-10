@@ -9,7 +9,7 @@ const PILLARS = [
     actions: [
       "Rooftop Solar (kW)",
       "Solar Water Heating",
-      "LED Retrofit",
+      "Energy Efficiency",
       "Biogas (cooking)",
     ],
   },

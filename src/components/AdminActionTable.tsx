@@ -20,6 +20,8 @@ import { calculateSchoolImpact } from "@/lib/schoolCalculationEngine";
 import { calculateImpactPhase2 } from "@/lib/calculationEngine";
 import { SCHOOL_STATUS_OPTIONS } from "@/lib/constants/schoolConstants";
 import { getAllUsers } from "@/lib/firestoreService";
+import MediaModal from "./MediaModal";
+
 
 type UnifiedItem = {
     id: string;
@@ -99,6 +101,15 @@ export default function AdminActionTable() {
     });
 
     const [verifySubmitting, setVerifySubmitting] = useState(false);
+
+    const [mediaModalOpen, setMediaModalOpen] = useState(false);
+    const [selectedMediaItem, setSelectedMediaItem] = useState<Action | School | null>(null);
+
+    const openMediaModal = (item: Action | School) => {
+        setSelectedMediaItem(item);
+        setMediaModalOpen(true);
+    };
+
 
     useEffect(() => {
         const unsubscribeActions = getAllActionsRealtime((fetchedActions) => {
@@ -621,7 +632,9 @@ export default function AdminActionTable() {
                                 <col style={{ width: '110px' }} />
                                 <col style={{ width: '130px' }} />
                                 <col style={{ width: '150px' }} />
+                                <col style={{ width: '100px' }} />
                             </colgroup>
+
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100/50">
                                     <th className="py-5 px-6 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Registry ID</th>
@@ -632,8 +645,10 @@ export default function AdminActionTable() {
                                     <th className="py-5 px-6 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Email</th>
                                     <th className="py-5 px-6 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
                                     <th className="py-5 px-6 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                                    <th className="py-5 px-6 text-center text-xs font-bold text-gray-400 uppercase tracking-wider">Media</th>
                                     <th className="py-5 px-6 text-right text-xs font-bold text-gray-400 uppercase tracking-wider">Action</th>
                                 </tr>
+
                             </thead>
                             <tbody className="divide-y divide-gray-50">
                                 {unifiedItems.map((item) => (
@@ -675,7 +690,21 @@ export default function AdminActionTable() {
                                         <td className="py-4 px-6">
                                             <StatusBadge status={item.status as any} />
                                         </td>
+                                        <td className="py-4 px-6 text-center">
+                                            <button
+                                                onClick={() => openMediaModal(item.originalData)}
+                                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-[#003527] inline-flex items-center justify-center"
+                                                title="View Media/Documents"
+                                            >
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                                    <polyline points="21 15 16 10 5 21" />
+                                                </svg>
+                                            </button>
+                                        </td>
                                         <td className="px-4 py-3 align-middle">
+
                                             {item.status === "pending" || item.status === "pledged" ? (
                                                 <button
                                                     onClick={() => item.entityType === 'school' ? openVerifySchoolModal(item.originalData as School) : openVerifyModal(item.originalData as Action)}
@@ -901,6 +930,17 @@ export default function AdminActionTable() {
                                         <div className="flex gap-4 pt-2">
                                             <button
                                                 type="button"
+                                                onClick={() => openMediaModal(selectedAction)}
+                                                className="flex-1 px-4 py-4 rounded-lg border-2 border-[#b0f0d6] bg-[#eff7f2] text-xs font-black text-[#003527] hover:bg-[#b0f0d6] transition-all uppercase tracking-widest flex items-center justify-center gap-2"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                Check Documents
+                                            </button>
+                                        </div>
+
+                                        <div className="flex gap-4 pt-2">
+                                            <button
+                                                type="button"
                                                 onClick={() => setVerifyModalOpen(false)}
                                                 className="flex-1 px-6 py-4 rounded-lg border-2 border-gray-100 bg-white text-sm font-black text-gray-400 hover:bg-gray-50 transition-all uppercase tracking-widest"
                                             >
@@ -914,6 +954,7 @@ export default function AdminActionTable() {
                                                 {verifySubmitting ? "Syncing..." : "Submit Verification"}
                                             </button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -1104,6 +1145,17 @@ export default function AdminActionTable() {
                                         <div className="flex gap-4 pt-2">
                                             <button
                                                 type="button"
+                                                onClick={() => openMediaModal(selectedSchool)}
+                                                className="flex-1 px-4 py-4 rounded-lg border-2 border-orange-200 bg-orange-50 text-xs font-black text-orange-700 hover:bg-orange-100 transition-all uppercase tracking-widest flex items-center justify-center gap-2"
+                                            >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                                Check Documents
+                                            </button>
+                                        </div>
+
+                                        <div className="flex gap-4 pt-2">
+                                            <button
+                                                type="button"
                                                 onClick={() => setVerifySchoolModalOpen(false)}
                                                 className="flex-1 px-6 py-4 rounded-lg border-2 border-gray-100 bg-white text-sm font-black text-gray-400 hover:bg-gray-50 transition-all uppercase tracking-widest"
                                             >
@@ -1117,6 +1169,7 @@ export default function AdminActionTable() {
                                                 {verifySubmitting ? "Syncing..." : "Submit Verification"}
                                             </button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -1124,6 +1177,13 @@ export default function AdminActionTable() {
                     </div>
                 </div>
             )}
+
+            <MediaModal 
+                isOpen={mediaModalOpen}
+                onClose={() => setMediaModalOpen(false)}
+                item={selectedMediaItem}
+            />
         </div>
+
     );
 }
