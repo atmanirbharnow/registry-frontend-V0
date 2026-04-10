@@ -37,6 +37,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           setUser(firebaseUser);
           if (firebaseUser) {
+            // Absolute session timeout enforcement (1 hour)
+            const issuedAt = localStorage.getItem("auth_issued_at");
+            const now = Date.now();
+            const ONE_HOUR = 3600000;
+
+            if (issuedAt && (now - parseInt(issuedAt) > ONE_HOUR)) {
+              // Session really expired
+              await logout();
+              return;
+            }
+
+            // If no timestamp, this is the first time we see the user in this session
+            if (!issuedAt) {
+              localStorage.setItem("auth_issued_at", now.toString());
+            }
+
             let role = "user";
             const profile = await getUserProfile(firebaseUser.uid);
             if (profile?.role) {
@@ -47,11 +63,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               uid: firebaseUser.uid,
               email: firebaseUser.email,
               role,
-              isRegistered
+              isRegistered,
+              issuedAt: parseInt(issuedAt || now.toString())
             });
-            document.cookie = `session=${encodeURIComponent(sessionData)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+            // Set cookie for middleware (1 hour)
+            document.cookie = `session=${encodeURIComponent(sessionData)}; path=/; max-age=3600`;
           } else {
             document.cookie = "session=; path=/; max-age=0";
+            localStorage.removeItem("auth_issued_at");
           }
         } catch (err) {
           console.error("Auth callback error:", err);
@@ -86,6 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       document.cookie = "session=; path=/; max-age=0";
       await signOut(auth);
+      // Redirect to landing page after logout
+      window.location.href = "/";
     } catch (error: unknown) {
       console.error("Logout failed:", error);
       const message = error instanceof Error ? error.message : "Failed to log out";

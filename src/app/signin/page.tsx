@@ -28,6 +28,12 @@ export default function SignInPage() {
     );
   }
 
+  // Prevent flash of sign-in page if already authenticated.
+  // The redirection is handled by the useSignIn hook's useEffect.
+  if (authUser) {
+    return null;
+  }
+
   return (
     <PublicShell>
       <div className='min-h-[calc(100vh-120px)] flex items-center justify-center bg-transparent py-4'>

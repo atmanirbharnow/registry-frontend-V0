@@ -12,7 +12,12 @@ export default function Navbar() {
   const { profile } = useUserProfile();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isAdmin = profile?.role === "admin";
 
@@ -62,180 +67,182 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-4">
-          {loading ? (
-            <div className="flex items-center gap-2 text-gray-200">
-              <div className="w-4 h-4 border-2 border-gray-400 border-t-white rounded-lg animate-spin"></div>
-              <span className="text-sm font-bold uppercase tracking-widest">
-                Loading
-              </span>
-            </div>
-          ) : user ? (
-            <>
-              <Link
-                href="/profile/my-actions"
-                className="hidden md:inline-flex px-4 py-2 bg-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-white/20 transition-colors no-underline flex items-center gap-2"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
-                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
-                </svg>
-                VIEW ACTIONS
-              </Link>
-
-              {isAdmin && (
+          {mounted && (
+            loading ? (
+              <div className="flex items-center gap-2 text-gray-200">
+                <div className="w-4 h-4 border-2 border-gray-400 border-t-white rounded-lg animate-spin"></div>
+                <span className="text-sm font-bold uppercase tracking-widest">
+                  Loading
+                </span>
+              </div>
+            ) : user ? (
+              <>
                 <Link
-                  href="/admin"
-                  className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-[#a8f928]/20 text-[#a8f928] text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-[#a8f928]/30 transition-colors no-underline"
+                  href="/profile/my-actions"
+                  className="hidden md:inline-flex px-4 py-2 bg-white/10 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-white/20 transition-colors no-underline flex items-center gap-2"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
                   </svg>
-                  Admin Panel
+                  VIEW ACTIONS
                 </Link>
-              )}
 
-              {/* Desktop Profile Dropdown */}
-              <div
-                className="hidden md:flex items-center gap-4 relative cursor-pointer"
-                ref={dropdownRef}
-              >
-                <div
-                  className="flex flex-col items-end"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-black text-white leading-none max-w-[160px] truncate">
-                      {user.displayName || "User Account"}
-                    </span>
-                    {isAdmin && (
-                      <span className="px-1.5 py-0.5 bg-[#a8f928] text-[#112000] text-[9px] font-bold uppercase tracking-wider rounded-lg">
-                        Admin
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[11px] font-bold text-gray-200 tracking-wider mt-1 max-w-[200px] truncate">
-                    {user.email}
-                  </span>
-                </div>
-
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="relative group focus:outline-none cursor-pointer"
-                >
-                  <div
-                    className={`absolute inset-0 bg-[#a8f928]/20 blur-lg rounded-lg transition-opacity duration-300 ${isDropdownOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
-                  ></div>
-                  <div
-                    className={`relative w-11 h-11 rounded-lg bg-gradient-to-br from-[#003527] to-[#064e3b] border-2 shadow-md overflow-hidden transition-all duration-300 flex items-center justify-center ${isDropdownOpen ? "border-[#a8f928] scale-95" : "border-white"}`}
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-[#a8f928]/20 text-[#a8f928] text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-[#a8f928]/30 transition-colors no-underline"
                   >
-                    {user.photoURL ? (
-                      <Image
-                        src={user.photoURL}
-                        alt="Profile"
-                        width={44}
-                        height={44}
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <span className="text-white font-black text-sm">
-                        {(user.displayName || user.email || "U")
-                          .charAt(0)
-                          .toUpperCase()}
-                      </span>
-                    )}
-                  </div>
-                </button>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    Admin Panel
+                  </Link>
+                )}
 
-                {isDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-4 w-64 bg-white rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-50 p-3 transform transition-all animate-in fade-in slide-in-from-top-4 duration-300 origin-top-right overflow-hidden">
-                    <div className="px-5 py-4 border-b border-gray-50 mb-2">
-                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">
-                        Signed in as
-                      </p>
-                      <p className="text-sm font-bold text-gray-900 truncate">
-                        {user.email}
-                      </p>
+                {/* Desktop Profile Dropdown */}
+                <div
+                  className="hidden md:flex items-center gap-4 relative cursor-pointer"
+                  ref={dropdownRef}
+                >
+                  <div
+                    className="flex flex-col items-end"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-black text-white leading-none max-w-[160px] truncate">
+                        {user.displayName || "User Account"}
+                      </span>
                       {isAdmin && (
-                        <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-[#b0f0d6] text-[#003527] text-[10px] font-bold rounded-lg">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                          </svg>
-                          Administrator
+                        <span className="px-1.5 py-0.5 bg-[#a8f928] text-[#112000] text-[9px] font-bold uppercase tracking-wider rounded-lg">
+                          Admin
                         </span>
                       )}
                     </div>
+                    <span className="text-[11px] font-bold text-gray-200 tracking-wider mt-1 max-w-[200px] truncate">
+                      {user.email}
+                    </span>
+                  </div>
 
-                    <Link
-                      href="/profile"
-                      className="w-full flex items-center gap-3 px-5 py-3 rounded-lg text-gray-700 font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors no-underline"
-                      onClick={() => setIsDropdownOpen(false)}
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="relative group focus:outline-none cursor-pointer"
+                  >
+                    <div
+                      className={`absolute inset-0 bg-[#a8f928]/20 blur-lg rounded-lg transition-opacity duration-300 ${isDropdownOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                    ></div>
+                    <div
+                      className={`relative w-11 h-11 rounded-lg bg-gradient-to-br from-[#003527] to-[#064e3b] border-2 shadow-md overflow-hidden transition-all duration-300 flex items-center justify-center ${isDropdownOpen ? "border-[#a8f928] scale-95" : "border-white"}`}
                     >
-                      DASHBOARD
-                    </Link>
+                      {user.photoURL ? (
+                        <Image
+                          src={user.photoURL}
+                          alt="Profile"
+                          width={44}
+                          height={44}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <span className="text-white font-black text-sm">
+                          {(user.displayName || user.email || "U")
+                            .charAt(0)
+                            .toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                  </button>
 
-                    <Link
-                      href="/profile/my-actions"
-                      className="w-full flex items-center gap-3 px-5 py-3 rounded-lg text-gray-700 font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors no-underline"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      VIEW ACTIONS
-                    </Link>
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 top-full mt-4 w-64 bg-white rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-50 p-3 transform transition-all animate-in fade-in slide-in-from-top-4 duration-300 origin-top-right overflow-hidden">
+                      <div className="px-5 py-4 border-b border-gray-50 mb-2">
+                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">
+                          Signed in as
+                        </p>
+                        <p className="text-sm font-bold text-gray-900 truncate">
+                          {user.email}
+                        </p>
+                        {isAdmin && (
+                          <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-[#b0f0d6] text-[#003527] text-[10px] font-bold rounded-lg">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                            Administrator
+                          </span>
+                        )}
+                      </div>
 
-                    {isAdmin && (
                       <Link
-                        href="/admin"
-                        className="w-full flex items-center gap-3 px-5 py-3 rounded-lg text-[#112000] font-bold text-xs uppercase tracking-widest hover:bg-[#b0f0d6]/20 transition-colors no-underline"
+                        href="/profile"
+                        className="w-full flex items-center gap-3 px-5 py-3 rounded-lg text-gray-700 font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors no-underline"
                         onClick={() => setIsDropdownOpen(false)}
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                        </svg>
-                        Admin Panel
+                        DASHBOARD
                       </Link>
-                    )}
 
-                    <button
-                      onClick={logout}
-                      className="w-full flex items-center gap-3 px-5 py-4 rounded-lg text-red-500 font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-colors duration-200 group/item cursor-pointer mt-2 border-t border-gray-50 pt-3"
-                    >
-                      <div className="p-2 bg-red-100 rounded-lg group-hover/item:bg-red-200 transition-colors">
-                        <SignOutIcon />
-                      </div>
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
+                      <Link
+                        href="/profile/my-actions"
+                        className="w-full flex items-center gap-3 px-5 py-3 rounded-lg text-gray-700 font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-colors no-underline"
+                        onClick={() => setIsDropdownOpen(false)}
+                      >
+                        VIEW ACTIONS
+                      </Link>
 
-              {/* Mobile Hamburger Button */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
-                aria-label="Open mobile menu"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  {isMobileMenuOpen ? (
-                    <>
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </>
-                  ) : (
-                    <>
-                      <line x1="3" y1="6" x2="21" y2="6" />
-                      <line x1="3" y1="12" x2="21" y2="12" />
-                      <line x1="3" y1="18" x2="21" y2="18" />
-                    </>
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="w-full flex items-center gap-3 px-5 py-3 rounded-lg text-[#112000] font-bold text-xs uppercase tracking-widest hover:bg-[#b0f0d6]/20 transition-colors no-underline"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                          </svg>
+                          Admin Panel
+                        </Link>
+                      )}
+
+                      <button
+                        onClick={logout}
+                        className="w-full flex items-center gap-3 px-5 py-4 rounded-lg text-red-500 font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-colors duration-200 group/item cursor-pointer mt-2 border-t border-gray-50 pt-3"
+                      >
+                        <div className="p-2 bg-red-100 rounded-lg group-hover/item:bg-red-200 transition-colors">
+                          <SignOutIcon />
+                        </div>
+                        Sign Out
+                      </button>
+                    </div>
                   )}
-                </svg>
-              </button>
-            </>
-          ) : (
-            <Link
-              href="/signin"
-              className="px-7 py-3 bg-[#a8f928] text-[#112000] font-black text-xs uppercase tracking-widest rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-300"
-            >
-              Sign In
-            </Link>
+                </div>
+
+                {/* Mobile Hamburger Button */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
+                  aria-label="Open mobile menu"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    {isMobileMenuOpen ? (
+                      <>
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </>
+                    ) : (
+                      <>
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                      </>
+                    )}
+                  </svg>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/signin"
+                className="px-7 py-3 bg-[#a8f928] text-[#112000] font-black text-xs uppercase tracking-widest rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-300"
+              >
+                Sign In
+              </Link>
+            )
           )}
         </div>
       </nav>
