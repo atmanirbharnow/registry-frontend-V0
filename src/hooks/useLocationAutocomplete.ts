@@ -154,7 +154,9 @@ export const useLocationAutocomplete = ({
     const newValue = e.target.value;
     setInputValue(newValue);
 
-    if (!isLoaded && loadError) {
+    // Trigger fallback search if SDK failed to load OR if it loaded but is non-functional (e.g. InvalidKeyMapError)
+    const isSDKFunctional = isLoaded && !!window.google?.maps?.places;
+    if (loadError || !isSDKFunctional) {
       fetchSuggestions(newValue);
     }
 

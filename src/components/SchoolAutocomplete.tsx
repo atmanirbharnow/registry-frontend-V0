@@ -45,9 +45,12 @@ const SchoolAutocomplete = ({
           {...props}
         />
         
-        {/* Fallback Suggestions Dropdown */}
-        {loadError && suggestions.length > 0 && (
+        {/* Fallback Suggestions Dropdown - Show if SDK failed OR if we are getting server suggestions */}
+        {(loadError || suggestions.length > 0) && (
           <div className="absolute top-full left-0 right-0 z-[1001] mt-1 bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden max-h-60 overflow-y-auto">
+            {isSearchingFallback && suggestions.length === 0 && (
+              <div className="px-3 py-2 text-[10px] text-slate-400 animate-pulse">Searching securely...</div>
+            )}
             {suggestions.map((s, i) => (
               <button
                 key={i}
@@ -59,6 +62,11 @@ const SchoolAutocomplete = ({
                 <div className="text-[10px] text-slate-500 truncate">{s.description}</div>
               </button>
             ))}
+            {suggestions.length > 0 && !isLoaded && (
+              <div className="px-3 py-1 bg-slate-50 text-[9px] text-slate-400 text-center uppercase tracking-tighter">
+                Secure Server-Side Search
+              </div>
+            )}
           </div>
         )}
       </div>

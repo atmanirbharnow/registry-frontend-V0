@@ -59,7 +59,14 @@ export default function LocationPickerSection({
                     });
                 }
             },
-            () => { }
+            (error) => {
+                console.error("GPS Error:", error);
+                let msg = "Could not get your location.";
+                if (error.code === error.PERMISSION_DENIED) msg = "Location permission denied.";
+                else if (error.code === error.TIMEOUT) msg = "Location request timed out.";
+                alert(msg);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
     }, [onCoordsChange, onPlaceSelect]);
 

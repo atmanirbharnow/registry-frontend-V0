@@ -77,11 +77,25 @@ export default function UnifiedAddressSection({
                 }
             },
             (error) => {
-                console.error("GPS Error:", error);
-                alert("Could not get your location. Please check permissions.");
+                console.error("GPS Error Details:", {
+                    code: error.code,
+                    message: error.message,
+                    PERMISSION_DENIED: error.PERMISSION_DENIED,
+                    POSITION_UNAVAILABLE: error.POSITION_UNAVAILABLE,
+                    TIMEOUT: error.TIMEOUT
+                });
+                
+                let errorMsg = "Could not get your location.";
+                if (error.code === error.PERMISSION_DENIED) {
+                    errorMsg = "Location permission denied. Please allow location access in your browser settings.";
+                } else if (error.code === error.TIMEOUT) {
+                    errorMsg = "Location request timed out. Please try again or enter your address manually.";
+                }
+                
+                alert(errorMsg);
                 setLoadingGPS(false);
             },
-            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
     }, [onChange, onLocationSelect]);
 
