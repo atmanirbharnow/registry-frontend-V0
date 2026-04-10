@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
-import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Climate Asset Registry | Verified Low-Carbon Action Registry",
@@ -29,21 +28,19 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AuthProvider>
-      <div className="flex flex-col min-h-screen">
-        <LandingNavbar />
-        <main className="flex-grow pt-20">
-          {children}
-        </main>
-        <LandingFooter />
+    <div className="flex flex-col min-h-screen">
+      <LandingNavbar />
+      <main className="flex-grow pt-20">
+        {children}
+      </main>
+      <LandingFooter />
 
-        <style dangerouslySetInnerHTML={{
-          __html: `
-          html {
-            scroll-behavior: smooth;
-          }
-        ` }} />
-      </div>
-    </AuthProvider>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        html {
+          scroll-behavior: smooth;
+        }
+      ` }} />
+    </div>
   );
 }

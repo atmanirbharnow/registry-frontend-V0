@@ -16,18 +16,25 @@ import ContactModal from "@/components/landing/ContactModal";
 export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = React.useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = React.useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
-    if (user && !loading) {
+    if (mounted && user && !loading) {
       router.replace("/profile");
     }
-  }, [user, loading, router]);
+  }, [user, loading, router, mounted]);
 
-  if (loading || user) {
-     return <div className="min-h-screen bg-[#f9faf5] flex items-center justify-center">
-       <div className="w-10 h-10 border-2 border-[#144227] border-t-transparent rounded-full animate-spin" />
-     </div>
+  if (loading || !mounted) {
+     return (
+       <div className="min-h-screen bg-[#f9faf5] flex items-center justify-center">
+         <div className="w-10 h-10 border-2 border-[#144227] border-t-transparent rounded-full animate-spin" />
+       </div>
+     );
   }
 
   return (
