@@ -50,7 +50,7 @@ export default function VerifyPage() {
                     return;
                 }
 
-                // 2. Try School if not found or if ID contains 'SCH'
+                // 2. Try School if not found
                 const schoolData = await getSchoolByRegistryId(registryId);
                 if (schoolData) {
                     setSchool(schoolData);

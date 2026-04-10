@@ -194,5 +194,5 @@ export async function getNextRegistryId(): Promise<string> {
         return next;
     });
 
-    return `ECF-${String(newCount).padStart(4, "0")}`;
+    return `CAF-${String(newCount).padStart(4, "0")}`;
 }
