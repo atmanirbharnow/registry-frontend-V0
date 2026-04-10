@@ -1,17 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
 export default function CTABannerSection() {
-  const [email, setEmail] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      window.location.href = `/signin?email=${encodeURIComponent(email)}`;
-    }
-  };
-
   return (
     <section className="w-full bg-[#f9faf5] px-4 md:px-8 lg:px-16 py-16 md:py-24">
       <div className="max-w-7xl mx-auto relative w-full border border-white/5 rounded-lg overflow-hidden shadow-2xl bg-zinc-900">
@@ -39,23 +30,18 @@ export default function CTABannerSection() {
             Secure your digital certificate today.
           </p>
 
-          {/* Email input + CTA */}
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-0 max-w-lg mx-auto shadow-2xl">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your business email"
-              className="flex-1 px-6 py-4 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/40 text-sm font-bold outline-none focus:bg-white/20 focus:border-[#a8f928] transition-all"
-            />
-            <button 
-              type="submit"
-              className="px-10 py-4 bg-[#a8f928] border border-[#a8f928] text-[#003527] font-black text-xs uppercase tracking-widest rounded-lg hover:bg-[#96e020] transition-all whitespace-nowrap"
+          <div className="flex justify-center">
+            <Link 
+              href="/signin"
+              className="px-12 py-5 bg-[#a8f928] border border-[#a8f928] text-[#003527] font-black text-xs md:text-sm uppercase tracking-[0.2em] rounded-lg hover:bg-[#96e020] transition-all shadow-xl hover:shadow-[#a8f928]/20 flex items-center gap-3 group"
             >
-              Request Access
-            </button>
-          </form>
+              Get Started Now
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </Link>
+          </div>
         </div>
       </div>
     </section>

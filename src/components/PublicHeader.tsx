@@ -3,15 +3,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 export default function PublicHeader() {
   const { user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const isSignInPage = pathname === "/signin";
+  const showAuthUI = mounted && !isSignInPage;
 
   return (
     <header className='w-full bg-[#003527] text-white relative z-50'>
@@ -33,21 +39,23 @@ export default function PublicHeader() {
 
         {/* Desktop Navigation */}
         <nav className='hidden md:flex items-center gap-6'>
-          {user ? (
-            <Link
-              href='/profile'
-              className='px-5 py-2 bg-[#a8f928] text-[#112000] text-sm font-black rounded-lg shadow-sm hover:bg-[#96e020] transition whitespace-nowrap'
-            >
-              Go To Dashboard
-            </Link>
-          ) : (
-            !isSignInPage && (
+          {mounted && (
+            user ? (
               <Link
-                href='/signin'
-                className='px-5 py-2 bg-[#a8f928] text-[#112000] text-sm font-bold rounded-lg shadow-sm hover:bg-[#96e020] transition whitespace-nowrap'
+                href='/profile'
+                className='px-5 py-2 bg-[#a8f928] text-[#112000] text-sm font-black rounded-lg shadow-sm hover:bg-[#96e020] transition whitespace-nowrap'
               >
-                Sign In
+                Go To Dashboard
               </Link>
+            ) : (
+              !isSignInPage && (
+                <Link
+                  href='/signin'
+                  className='px-5 py-2 bg-[#a8f928] text-[#112000] text-sm font-bold rounded-lg shadow-sm hover:bg-[#96e020] transition whitespace-nowrap'
+                >
+                  Sign In
+                </Link>
+              )
             )
           )}
         </nav>
@@ -79,23 +87,25 @@ export default function PublicHeader() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-[#003527] border-t border-white/10 shadow-xl pb-6 px-4 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
           <div className="pt-4">
-            {user ? (
-              <Link
-                href='/profile'
-                onClick={() => setIsMobileMenuOpen(false)}
-                className='block w-full text-center px-4 py-3 bg-[#a8f928] text-[#112000] text-base font-bold rounded-lg shadow-lg transition'
-              >
-                Go To Dashboard
-              </Link>
-            ) : (
-              !isSignInPage && (
+            {mounted && (
+              user ? (
                 <Link
-                  href='/signin'
+                  href='/profile'
                   onClick={() => setIsMobileMenuOpen(false)}
                   className='block w-full text-center px-4 py-3 bg-[#a8f928] text-[#112000] text-base font-bold rounded-lg shadow-lg transition'
                 >
-                  Sign In
+                  Go To Dashboard
                 </Link>
+              ) : (
+                !isSignInPage && (
+                  <Link
+                    href='/signin'
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className='block w-full text-center px-4 py-3 bg-[#a8f928] text-[#112000] text-base font-bold rounded-lg shadow-lg transition'
+                  >
+                    Sign In
+                  </Link>
+                )
               )
             )}
           </div>

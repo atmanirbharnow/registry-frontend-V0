@@ -34,7 +34,7 @@ export function middleware(request: NextRequest) {
 
   if (isProtected) {
     if (!isValidSession) {
-      return NextResponse.redirect(new URL("/signin", request.url));
+      return NextResponse.redirect(new URL("/", request.url));
     }
 
     if (isAdminRoute && userRole !== "admin") {

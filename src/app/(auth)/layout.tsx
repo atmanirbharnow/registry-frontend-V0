@@ -16,7 +16,7 @@ export default function AuthLayout({
 
     useEffect(() => {
         if (!loading && !user) {
-            router.replace("/signin");
+            router.replace("/");
         }
     }, [user, loading, router]);
 
