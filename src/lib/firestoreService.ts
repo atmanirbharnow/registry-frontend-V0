@@ -196,3 +196,26 @@ export async function getNextRegistryId(): Promise<string> {
 
     return `CAF-${String(newCount).padStart(4, "0")}`;
 }
+
+export interface PaymentSettings {
+    individualPrice: number;
+    schoolPrice: number;
+    updatedAt?: Date;
+}
+
+export async function getPaymentSettings(): Promise<PaymentSettings> {
+    const docRef = doc(db, COLLECTIONS.META, "paymentSettings");
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) {
+        return { individualPrice: 1, schoolPrice: 1 };
+    }
+    return snap.data() as PaymentSettings;
+}
+
+export async function updatePaymentSettings(data: PaymentSettings): Promise<void> {
+    const docRef = doc(db, COLLECTIONS.META, "paymentSettings");
+    await setDoc(docRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+    }, { merge: true });
+}

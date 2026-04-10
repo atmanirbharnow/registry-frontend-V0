@@ -8,7 +8,7 @@ import {
     BASELINE_SOURCE_OPTIONS,
     REPORTING_YEAR_OPTIONS,
 } from "@/lib/constants/schoolConstants";
-import { ACTION_TYPES, PAYMENT_AMOUNT_PAISE, PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS, ACTION_LABELS } from "@/lib/constants";
+import { ACTION_TYPES, ACTION_UNITS, ACTION_LABELS } from "@/lib/constants";
 import { toast } from "react-toastify";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,7 @@ import Card from "./ui/Card";
 import PhotoUploadSection from "./forms/PhotoUploadSection";
 import LocationPickerSection from "./forms/LocationPickerSection";
 import UnifiedAddressSection from "./forms/UnifiedAddressSection";
+import { usePaymentSettings } from "@/hooks/usePaymentSettings";
 
 declare global {
     interface Window {
@@ -72,6 +73,7 @@ const DRAFT_KEY = "school_onboarding_draft";
 
 export default function SchoolRegistrationForm() {
     const { profile } = useUserProfile();
+    const { schoolPrice } = usePaymentSettings();
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
     const [isSimulationMode, setIsSimulationMode] = useState(false);
@@ -210,7 +212,12 @@ export default function SchoolRegistrationForm() {
                     return;
                 }
 
-                const orderRes = await fetch("/api/school/payment/create", { method: "POST" });
+                const idToken = await auth.currentUser?.getIdToken();
+                const orderRes = await fetch("/api/school/payment/create", { 
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idToken })
+                });
                 const orderData = await orderRes.json();
                 if (orderData.error) throw new Error(orderData.error);
 
@@ -239,10 +246,10 @@ export default function SchoolRegistrationForm() {
 
                 const options = {
                     key: orderData.key,
-                    amount: PAYMENT_AMOUNT_PAISE, // Rs. 199 in paise
+                    amount: Math.round(schoolPrice * 100),
                     currency: "INR",
                     name: "Climate Asset Registry",
-                    description: "School Onboarding - Rs.1",
+                    description: `School Onboarding - ₹${schoolPrice}`,
                     order_id: orderData.orderId,
                     handler: async (response: any) => {
                         // Pre-fill profile data before verification
@@ -459,40 +466,40 @@ export default function SchoolRegistrationForm() {
                     </div>
                 )}
 
-            {/* Navigation Buttons (Top) */}
-            <div className="flex items-center justify-between gap-4 py-4 px-2 bg-white/50 backdrop-blur-sm sticky top-0 z-30 mb-2 -mx-2">
-                <div className="flex-1">
-                    {currentStep > 1 && (
-                        <button
-                            type="button"
-                            onClick={handlePrev}
-                            className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-[0.98] shadow-sm transform"
-                        >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:-translate-x-1">
-                                <path d="M19 12H5M12 19l-7-7 7-7" />
-                            </svg>
-                            Back
-                        </button>
-                    )}
+                {/* Navigation Buttons (Top) */}
+                <div className="flex items-center justify-between gap-4 py-4 px-2 bg-white/50 backdrop-blur-sm sticky top-0 z-30 mb-2 -mx-2">
+                    <div className="flex-1">
+                        {currentStep > 1 && (
+                            <button
+                                type="button"
+                                onClick={handlePrev}
+                                className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-[0.98] shadow-sm transform"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:-translate-x-1">
+                                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                                </svg>
+                                Back
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="flex-1 flex justify-end">
+                        {currentStep < totalSteps && (
+                            <button
+                                type="button"
+                                onClick={handleNext}
+                                className="group flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#003527] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-900/10 hover:shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                            >
+                                Next Step
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex-1 flex justify-end">
-                    {currentStep < totalSteps && (
-                        <button
-                            type="button"
-                            onClick={handleNext}
-                            className="group flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#003527] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-900/10 hover:shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
-                        >
-                            Next Step
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {currentStep === 1 && (
+                {currentStep === 1 && (
                     <StepWrapper title="Baseline Usage (Yearly Average)" icon={<EnergyIcon />}>
                         <p className="text-[10px] text-[#003527] bg-[#eff7f2] p-3 rounded-lg font-medium border border-[#b0f0d6] mb-6">
                             Note: Baseline Usage represents your EXISTING usage BEFORE the new low-carbon action.
@@ -717,7 +724,7 @@ export default function SchoolRegistrationForm() {
                             <div className="flex flex-col md:flex-row items-center justify-between gap-8 p-8 bg-gradient-to-br from-white to-[#eff7f2]/50 rounded-lg border-2 border-[#b0f0d6] shadow-xl">
                                 <div>
                                     <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">Registration Fee</p>
-                                    <p className="text-4xl font-black text-[#003527]">₹1</p>
+                                    <p className="text-4xl font-black text-[#003527]">₹{schoolPrice}</p>
                                 </div>
                                 <button
                                     type="submit"

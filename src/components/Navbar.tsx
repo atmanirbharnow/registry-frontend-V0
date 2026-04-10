@@ -200,6 +200,20 @@ export default function Navbar() {
                         </Link>
                       )}
 
+                      {isAdmin && (
+                        <Link
+                          href="/admin/payment-settings"
+                          className="w-full flex items-center gap-3 px-5 py-3 rounded-lg text-[#112000] font-bold text-xs uppercase tracking-widest hover:bg-[#b0f0d6]/20 transition-colors no-underline"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23" />
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                          </svg>
+                          Payment Settings
+                        </Link>
+                      )}
+
                       <button
                         onClick={logout}
                         className="w-full flex items-center gap-3 px-5 py-4 rounded-lg text-red-500 font-black text-xs uppercase tracking-widest hover:bg-red-50 transition-colors duration-200 group/item cursor-pointer mt-2 border-t border-gray-50 pt-3"
@@ -323,6 +337,20 @@ export default function Navbar() {
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
                   Admin Panel
+                </Link>
+              )}
+
+              {isAdmin && (
+                <Link
+                  href="/admin/payment-settings"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3.5 rounded-lg text-[#003527] font-semibold text-sm hover:bg-[#b0f0d6]/20 transition-colors no-underline"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#a8f928]">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                  Payment Settings
                 </Link>
               )}
 

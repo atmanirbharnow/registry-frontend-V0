@@ -1,29 +1,47 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createRazorpayOrder } from "@/lib/razorpay";
-import { PAYMENT_AMOUNT_PAISE } from "@/lib/constants";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
     const isSimulation = process.env.RAZORPAY_SIMULATION_MODE === "true";
 
     try {
+        const body = await request.json().catch(() => ({}));
+        const { idToken } = body;
+
+        let schoolPrice = 1;
+
+        if (idToken) {
+            try {
+                const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+                const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/asia-pacific/documents/meta/paymentSettings`;
+                const res = await fetch(url, {
+                    headers: { Authorization: `Bearer ${idToken}` },
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    const fields = data.fields || {};
+                    schoolPrice = fields.schoolPrice?.doubleValue || fields.schoolPrice?.integerValue || 1;
+                }
+            } catch (err) {
+                console.error("Authenticated price fetch failed:", err);
+            }
+        }
+
+        const amountPaise = Math.round(Number(schoolPrice) * 100);
+
         if (isSimulation) {
             return NextResponse.json({
                 orderId: `order_SCH_SIM_${Date.now()}`,
-                amount: PAYMENT_AMOUNT_PAISE,
+                amount: amountPaise,
                 currency: "INR",
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                 simulated: true,
             });
         }
 
-        const order = await createRazorpayOrder(PAYMENT_AMOUNT_PAISE);
+        const order = await createRazorpayOrder(amountPaise);
 
-        // Note: The createRazorpayOrder function in razorpay.ts doesn't support notes in its current signature.
-        // However, the spec says "Add notes to the Razorpay order body: { type: 'school_onboarding' }".
-        // Since I must NOT modify razorpay.ts, I will rely on the fact that createRazorpayOrder returns the order.
-        // If I needed to pass notes, I would have had to modify razorpay.ts, but the spec says "reuse without modification".
-        // Wait, let me check razorpay.ts again.
-        
         return NextResponse.json({
             orderId: order.id,
             amount: order.amount,

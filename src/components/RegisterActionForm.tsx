@@ -17,11 +17,12 @@ import CustomDropdown from "./ui/CustomDropdown";
 import MultiSelectDropdown from "./ui/MultiSelectDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { PAYMENT_AMOUNT_DISPLAY, ACTION_UNITS, ACTION_TYPES, ACTION_PHOTO_LABELS, ACTION_LABELS } from "@/lib/constants";
+import { ACTION_UNITS, ACTION_TYPES, ACTION_PHOTO_LABELS, ACTION_LABELS } from "@/lib/constants";
 import { getUserActions } from "@/lib/firestoreService";
 import { usePincodeLookup } from "@/hooks/usePincodeLookup";
 import LocationAutocomplete from "./LocationAutocomplete";
 import Spinner from "./ui/Spinner";
+import { usePaymentSettings } from "@/hooks/usePaymentSettings";
 
 
 declare global {
@@ -65,6 +66,7 @@ const validationSchema = [
 export default function RegisterActionForm() {
     const { user } = useAuth();
     const { profile } = useUserProfile();
+    const { individualPrice } = usePaymentSettings();
     const router = useRouter();
     const [submitting, setSubmitting] = useState(false);
     const [isSimulationMode, setIsSimulationMode] = useState(false);
@@ -243,9 +245,11 @@ export default function RegisterActionForm() {
             setSubmitting(true);
 
             try {
+                const idToken = await user?.getIdToken();
                 const orderRes = await fetch("/api/payment/create", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idToken })
                 });
 
                 if (!orderRes.ok) {
@@ -336,7 +340,7 @@ export default function RegisterActionForm() {
         } else {
             const touched = currentStepFields.reduce((acc, field) => ({ ...acc, [field]: true }), {});
             formik.setTouched({ ...formik.touched, ...touched });
-            
+
             // Provide specific feedback for step 3 agreement
             if (currentStep === 3 && errors.summaryAgreed) {
                 toast.error("Please review and agree to the details before moving to payment.");
@@ -426,40 +430,40 @@ export default function RegisterActionForm() {
                     </div>
                 )}
 
-            {/* Navigation Buttons (Top) */}
-            <div className="flex items-center justify-between gap-4 py-4 px-2 bg-white/50 backdrop-blur-sm sticky top-0 z-30 mb-2 -mx-2">
-                <div className="flex-1">
-                    {currentStep > 1 && (
-                        <button
-                            type="button"
-                            onClick={handlePrev}
-                            className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-[0.98] shadow-sm transform"
-                        >
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:-translate-x-1">
-                                <path d="M19 12H5M12 19l-7-7 7-7" />
-                            </svg>
-                            Back
-                        </button>
-                    )}
+                {/* Navigation Buttons (Top) */}
+                <div className="flex items-center justify-between gap-4 py-4 px-2 bg-white/50 backdrop-blur-sm sticky top-0 z-30 mb-2 -mx-2">
+                    <div className="flex-1">
+                        {currentStep > 1 && (
+                            <button
+                                type="button"
+                                onClick={handlePrev}
+                                className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-[0.98] shadow-sm transform"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:-translate-x-1">
+                                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                                </svg>
+                                Back
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="flex-1 flex justify-end">
+                        {currentStep < totalSteps && (
+                            <button
+                                type="button"
+                                onClick={handleNext}
+                                className="group flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#003527] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-900/10 hover:shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                            >
+                                Next Step
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex-1 flex justify-end">
-                    {currentStep < totalSteps && (
-                        <button
-                            type="button"
-                            onClick={handleNext}
-                            className="group flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#003527] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-900/10 hover:shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
-                        >
-                            Next Step
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
-                                <path d="M5 12h14M12 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {currentStep === 1 && (
+                {currentStep === 1 && (
                     <StepWrapper title="Step 1: Baseline Usage" icon={<EnergyIcon />}>
                         <div className="space-y-6">
                             <p className="text-[10px] text-[#003527] bg-[#eff7f2] p-3 rounded-lg font-medium border border-[#b0f0d6]">
@@ -675,7 +679,7 @@ export default function RegisterActionForm() {
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-8 p-6 bg-gradient-to-br from-white to-[#eff7f2] rounded-lg border border-gray-100 shadow-xl">
                                 <div>
                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Registration Fee</p>
-                                    <p className="text-4xl font-black text-[#003527]">{PAYMENT_AMOUNT_DISPLAY}</p>
+                                    <p className="text-4xl font-black text-[#003527]">₹{individualPrice}</p>
                                 </div>
                                 <button
                                     type="submit"
