@@ -54,9 +54,16 @@ export async function getSchoolByRegistryId(registryId: string): Promise<School 
     if (snap.empty) return null;
     const schoolDoc = snap.docs[0];
     
-    // Fetch baseline data too
-    const baselineSnap = await getDoc(doc(db, BASELINE_COLLECTION, schoolDoc.id));
-    const baselineData = baselineSnap.exists() ? baselineSnap.data() : {};
+    // Fetch baseline data too gracefully
+    let baselineData = {};
+    try {
+        const baselineSnap = await getDoc(doc(db, BASELINE_COLLECTION, schoolDoc.id));
+        if (baselineSnap.exists()) {
+            baselineData = baselineSnap.data();
+        }
+    } catch (error) {
+        console.error("Baseline fetch permitted or failed:", error);
+    }
     
     return { id: schoolDoc.id, ...schoolDoc.data(), ...baselineData } as School;
 }
