@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
 import Spinner from "@/components/ui/Spinner";
@@ -12,13 +11,12 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     const { user, loading } = useAuth();
-    const router = useRouter();
 
     useEffect(() => {
         if (!loading && !user) {
-            router.replace("/");
+            window.location.href = "/";
         }
-    }, [user, loading, router]);
+    }, [user, loading]);
 
     if (loading) {
         return (

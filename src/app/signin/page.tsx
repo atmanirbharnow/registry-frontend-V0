@@ -28,10 +28,18 @@ export default function SignInPage() {
     );
   }
 
-  // Prevent flash of sign-in page if already authenticated.
-  // The redirection is handled by the useSignIn hook's useEffect.
+  // Show loading state while redirect is in progress (prevents white screen)
   if (authUser) {
-    return null;
+    return (
+      <div className='flex justify-center items-center min-h-screen bg-[#f9faf5]'>
+        <div className='flex flex-col items-center gap-4'>
+          <div className='w-12 h-12 border-2 border-[#003527] border-t-transparent rounded-none animate-spin'></div>
+          <div className='text-[10px] font-black uppercase tracking-[0.3em] text-[#003527]/40'>
+            Redirecting to Dashboard...
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

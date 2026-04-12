@@ -430,38 +430,7 @@ export default function RegisterActionForm() {
                     </div>
                 )}
 
-                {/* Navigation Buttons (Top) */}
-                <div className="flex items-center justify-between gap-4 py-4 px-2 bg-white/50 backdrop-blur-sm sticky top-0 z-30 mb-2 -mx-2">
-                    <div className="flex-1">
-                        {currentStep > 1 && (
-                            <button
-                                type="button"
-                                onClick={handlePrev}
-                                className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-[0.98] shadow-sm transform"
-                            >
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:-translate-x-1">
-                                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                                </svg>
-                                Back
-                            </button>
-                        )}
-                    </div>
 
-                    <div className="flex-1 flex justify-end">
-                        {currentStep < totalSteps && (
-                            <button
-                                type="button"
-                                onClick={handleNext}
-                                className="group flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#003527] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-900/10 hover:shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
-                            >
-                                Next Step
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-                </div>
 
                 {currentStep === 1 && (
                     <StepWrapper title="Step 1: Baseline Usage" icon={<EnergyIcon />}>
@@ -697,6 +666,39 @@ export default function RegisterActionForm() {
                         </div>
                     </StepWrapper>
                 )}
+
+                {/* Navigation Buttons (Bottom) */}
+                <div className="flex items-center justify-between gap-4 pt-8 pb-4 px-2 mt-4">
+                    <div className="flex-1">
+                        {currentStep > 1 && (
+                            <button
+                                type="button"
+                                onClick={handlePrev}
+                                className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border-2 border-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-[0.98] shadow-sm transform"
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:-translate-x-1">
+                                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                                </svg>
+                                Back
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="flex-1 flex justify-end">
+                        {currentStep < totalSteps && (
+                            <button
+                                type="button"
+                                onClick={handleNext}
+                                className="group flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#003527] text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-900/10 hover:shadow-emerald-900/20 hover:scale-[1.02] transition-all active:scale-[0.98]"
+                            >
+                                Next Step
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="transition-transform group-hover:translate-x-1">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
+                </div>
             </form>
         </div>
     );
