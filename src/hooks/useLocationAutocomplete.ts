@@ -139,14 +139,48 @@ export const useLocationAutocomplete = ({
     try {
       // In fallback mode, we need to geocode the selected address to get coordinates
       const res = await fetch(`/api/google/geocode?address=${encodeURIComponent(prediction.description)}`);
-      // Update: use our new geocode proxy or handle it
-      // Actually, my geocode proxy only takes lat/lng right now. I should update it to take address too.
+      
+      if (!res.ok) {
+        throw new Error("Geocoding failed");
+      }
+      
+      const data = await res.json();
+      
+      let lat: number | undefined;
+      let lng: number | undefined;
+      let city = "";
+      let country = "";
+
+      if (data.results && data.results[0]) {
+        const result = data.results[0];
+        lat = result.geometry?.location?.lat;
+        lng = result.geometry?.location?.lng;
+        
+        result.address_components?.forEach((component: any) => {
+          if (component.types.includes("locality")) city = component.long_name;
+          if (component.types.includes("country")) country = component.long_name;
+        });
+      }
+
       onPlaceSelectRef.current?.({
         address: prediction.description,
-        // We might not have coords immediately without extra geocoding
+        lat,
+        lng,
+        city,
+        country,
+        place_id: prediction.place_id
       });
-    } catch {
-      onPlaceSelectRef.current?.({ address: prediction.description });
+      
+      setIsValidSelection(true);
+      setLastValidValue(prediction.description);
+    } catch (err) {
+      console.error("Fallback geocode error:", err);
+      onPlaceSelectRef.current?.({ 
+        address: prediction.description,
+        place_id: prediction.place_id
+      });
+      setIsValidSelection(true);
+      setLastValidValue(prediction.description);
     }
   }, []);
 

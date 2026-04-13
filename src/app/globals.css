@@ -106,3 +106,21 @@ body {
 .pac-matched {
     color: #3b82f6 !important;
 }
+
+/* Google Maps Autocomplete Dropdown Fix */
+.pac-container {
+    z-index: 9999 !important;
+    border-radius: 8px;
+    margin-top: 4px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+}
+
+.pac-item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.pac-item:hover {
+    background-color: #f8fafc;
+}
