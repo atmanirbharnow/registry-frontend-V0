@@ -226,6 +226,7 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
                 <DetailRow label={isSchool ? "School / Org" : "Contact Person"} value={values.schoolName || values.actorName || userProfile?.displayName || "—"} />
                 <DetailRow label="Location" value={values.address || userProfile?.address || "—"} />
                 <DetailRow label={beneficiaryLabel} value={beneficiaryValue} />
+                <DetailRow label="Reporting Year" value={String(values.reportingYear || values.reporting_year || "—")} />
                 <DetailRow label="Reporting Duration" value={installationDate} />
                 <DetailRow label="Baseline Categories Provided" value={categories.length > 0 ? categories.join(", ") : "No Baseline Data provided"} />
             </div>

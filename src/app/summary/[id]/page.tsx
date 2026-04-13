@@ -96,7 +96,8 @@ export default function PublicSummaryPage() {
                 unit: action.unit || (action as any).actions?.[0]?.unit || "units",
                 commissioningDate: action.commissioningDate || (action as any).commissioning_date || (action as any).dateOfInstallation || (action as any).actions?.[0]?.commissioningDate || (action as any).actions?.[0]?.commissioning_date || "—"
             }
-        }
+        },
+        reportingYear: action.reportingYear || (action as any).reporting_year || ""
     } : {
         ...school,
         // School mapping
@@ -127,7 +128,7 @@ export default function PublicSummaryPage() {
                 <div className="mb-8 flex justify-between items-center">
                     <div>
                         <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tighter">
-                            Calculation View
+                            Summary Page
                         </h1>
                         <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">
                             Project Details & Impact Verifier

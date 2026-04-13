@@ -62,6 +62,8 @@ export interface Action {
     baselineWasteHazardous?: number | null;
     studentsCount?: number | null;
     beneficiariesCount?: number | null;
+    reportingYear?: string | null;
+    actions?: any[];
     createdAt: Timestamp;
     updatedAt?: Timestamp;
 }

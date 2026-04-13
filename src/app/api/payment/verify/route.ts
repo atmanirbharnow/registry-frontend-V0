@@ -282,6 +282,7 @@ export async function POST(request: NextRequest) {
             baselineWasteInorganic: bInorganic,
             baselineWasteHazardous: bHazardous,
             beneficiariesCount: Number(formData.beneficiariesCount) || null,
+            reportingYear: formData.reportingYear || null,
             // Verification Photos (Updated mapping)
             energyBillCopy: formData.energyBillCopy || null,
             meterPhoto: formData.meterPhoto || null,
