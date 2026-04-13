@@ -32,14 +32,14 @@ export async function GET(request: NextRequest) {
             headers: {
                 "Referer": "https://climateassetregistry.org"
             },
-            next: { revalidate: 300 } // Cache for 5 min (short to avoid caching errors)
+            next: { revalidate: 3600 } // Cache for 1 hour to reduce API costs
         });
 
         const data = await res.json();
 
-        if (!res.ok || data.status === "REQUEST_DENIED" || data.status === "INVALID_REQUEST") {
+        if (!res.ok || data.status !== "OK") {
             const googleError = data.error_message || data.status || "Unknown Google API error";
-            console.error("Google Geocode API Error:", googleError, "Full Status:", data.status);
+            console.error("Google Geocode API Error:", googleError, "Full Status:", data.status, "URL:", url.replace(apiKey, "HIDDEN_KEY"));
             return NextResponse.json(
                 { error: "Google API Error", details: googleError, googleStatus: data.status },
                 { status: res.status === 200 ? 400 : res.status }

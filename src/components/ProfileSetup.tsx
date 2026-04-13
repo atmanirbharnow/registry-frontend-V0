@@ -371,6 +371,9 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                                                             handleChange("address", loc.address);
                                                             if (loc.lat) handleChange("lat", loc.lat);
                                                             if (loc.lng) handleChange("lng", loc.lng);
+                                                            if (loc.city) handleChange("city", loc.city);
+                                                            if (loc.state) handleChange("state", loc.state);
+                                                            if (loc.pincode) handleChange("pincode", loc.pincode);
                                                         }}
                                                         placeholder={formData.institutionType === 'Individual' ? "Enter your full address..." : "Search for your full building/street address..."}
                                                         className="w-full"

@@ -9,6 +9,9 @@ interface LocationData {
     address: string;
     lat?: number;
     lng?: number;
+    city?: string;
+    state?: string;
+    pincode?: string;
 }
 
 interface UnifiedAddressSectionProps {
@@ -54,12 +57,35 @@ export default function UnifiedAddressSection({
                         `/api/google/geocode?lat=${gpsLat}&lng=${gpsLng}`
                     );
                     const data = await response.json();
-                    if (data.results?.[0]?.formatted_address) {
-                        const address = data.results[0].formatted_address;
+                    if (data.results?.[0]) {
+                        const result = data.results[0];
+                        const address = result.formatted_address;
+                        
+                        // Parse address components
+                        let city = "";
+                        let state = "";
+                        let pincode = "";
+                        
+                        result.address_components?.forEach((component: any) => {
+                            const types = component.types || [];
+                            if (types.includes("locality") || types.includes("administrative_area_level_2")) {
+                                city = component.long_name;
+                            }
+                            if (types.includes("administrative_area_level_1")) {
+                                state = component.long_name;
+                            }
+                            if (types.includes("postal_code")) {
+                                pincode = component.long_name;
+                            }
+                        });
+
                         onLocationSelect({
                             address,
                             lat: gpsLat,
                             lng: gpsLng,
+                            city,
+                            state,
+                            pincode
                         });
                         onChange(address);
                     }

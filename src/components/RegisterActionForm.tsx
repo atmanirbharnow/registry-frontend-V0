@@ -20,7 +20,7 @@ import { useUserProfile } from "@/hooks/useUserProfile";
 import { ACTION_UNITS, ACTION_TYPES, ACTION_PHOTO_LABELS, ACTION_LABELS } from "@/lib/constants";
 import { getUserActions } from "@/lib/firestoreService";
 import { usePincodeLookup } from "@/hooks/usePincodeLookup";
-import LocationAutocomplete from "./LocationAutocomplete";
+import UnifiedAddressSection from "./forms/UnifiedAddressSection";
 import Spinner from "./ui/Spinner";
 import { usePaymentSettings } from "@/hooks/usePaymentSettings";
 
@@ -567,22 +567,23 @@ export default function RegisterActionForm() {
                                     <InputField label="City/District" name="city" type="text" formik={formik} placeholder="Auto-filled from pincode" disabled className="bg-slate-100/80 !border-slate-200" />
 
                                     <div className="md:col-span-2 space-y-2">
-                                        <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">
-                                            Full Address {profile?.institutionType !== 'Individual' && '/ Location (Google Search)'}
-                                        </label>
-                                        <LocationAutocomplete
-                                            disableValidation={profile?.institutionType === 'Individual'}
+                                        <UnifiedAddressSection
+                                            label={`Full Address ${profile?.institutionType !== 'Individual' ? '/ Location (Google Search)' : ''}`}
+                                            isIndividual={profile?.institutionType === 'Individual'}
                                             value={formik.values.address}
-                                            onChange={formik.handleChange("address")}
-                                            onPlaceSelect={(loc) => {
+                                            onChange={(val) => formik.setFieldValue("address", val)}
+                                            onLocationSelect={(loc) => {
                                                 formik.setFieldValue("address", loc.address);
                                                 if (loc.city) formik.setFieldValue("city", loc.city);
                                                 if (loc.state) formik.setFieldValue("state", loc.state);
+                                                if (loc.pincode) formik.setFieldValue("pincode", loc.pincode);
                                                 if (loc.lat) formik.setFieldValue("lat", loc.lat);
                                                 if (loc.lng) formik.setFieldValue("lng", loc.lng);
                                             }}
                                             placeholder={profile?.institutionType === 'Individual' ? "Enter your full address..." : "Search for your building/street address..."}
-                                            className="!py-2 !rounded-lg !border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#003527]/20 focus:border-[#003527] transition-all"
+                                            className="w-full"
+                                            touched={formik.touched.address}
+                                            error={formik.errors.address as string}
                                         />
                                     </div>
                                 </div>

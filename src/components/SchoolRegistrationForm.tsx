@@ -633,6 +633,9 @@ export default function SchoolRegistrationForm() {
                                                     formik.setFieldValue("address", loc.address);
                                                     if (loc.lat) formik.setFieldValue("lat", loc.lat);
                                                     if (loc.lng) formik.setFieldValue("lng", loc.lng);
+                                                    if (loc.city) formik.setFieldValue("city", loc.city);
+                                                    if (loc.state) formik.setFieldValue("state", loc.state);
+                                                    if (loc.pincode) formik.setFieldValue("pincode", loc.pincode);
                                                 }}
                                                 error={formik.touched.address ? (formik.errors.address as string) : undefined}
                                                 touched={formik.touched.address}
