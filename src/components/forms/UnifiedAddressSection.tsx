@@ -174,6 +174,7 @@ export default function UnifiedAddressSection({
                 {mode === "search" ? (
                     <div className="space-y-3">
                             <LocationAutocomplete
+                                key={isIndividual ? "individual-addr" : "school-addr"}
                                 value={value}
                                 onChange={(e) => onChange(e.target.value)}
                                 onPlaceSelect={onLocationSelect}
@@ -181,6 +182,7 @@ export default function UnifiedAddressSection({
                                 disableValidation={isIndividual}
                                 className="!py-2 !rounded-lg !border-slate-200 focus:!border-[#003527] shadow-sm"
                             />
+                            {/* 
                             <button
                                 type="button"
                                 onClick={handleUseGPS}
@@ -196,7 +198,8 @@ export default function UnifiedAddressSection({
                                 </svg>
                             )}
                             {loadingGPS ? "Detecting..." : "Detect my precise location"}
-                        </button>
+                            </button> 
+                            */}
                     </div>
                 ) : (
                     <textarea
