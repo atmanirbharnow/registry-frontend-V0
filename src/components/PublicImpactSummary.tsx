@@ -229,7 +229,7 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
                 <DetailRow label="Reporting Year" value={String(values.reportingYear || values.reporting_year || "—")} />
                 <DetailRow label="Baseline Categories Provided" value={categories.length > 0 ? categories.join(", ") : "No Baseline Data provided"} />
             </div>
-
+//
             <div className="pt-4 border-t border-gray-100">
                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Actions Registered</span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
