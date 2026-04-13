@@ -11,8 +11,8 @@ export async function POST(request: NextRequest) {
 
     // 1. Fetch Registered Actions (Individual + School)
     const actionsSnap = await adminDb.collection("actions").get();
-    const schoolActionsSnap = await adminDb.collection("schoolActions").get();
-    const totalRegisteredActions = actionsSnap.size + schoolActionsSnap.size;
+    const schoolsSnap = await adminDb.collection("schools").get();
+    const totalRegisteredActions = actionsSnap.size + schoolsSnap.size;
 
     // 2. Fetch Verified Actions and Sum CO2e
     let totalVerifiedActions = 0;
@@ -26,11 +26,13 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    schoolActionsSnap.forEach(doc => {
+    schoolsSnap.forEach(doc => {
       const data = doc.data();
       if ((data.status === "verified" || data.status === "Verified")) {
         totalVerifiedActions++;
-        totalCO2eKg += data.co2eKg || (data.actionImpactTCO2e * 1000) || 0;
+        // Schools store impact in tCO2e (tco2e_annual), so we convert to Kg
+        const schoolCo2Kg = data.co2eKg || (data.tco2e_annual ? data.tco2e_annual * 1000 : 0) || (data.actionImpactTCO2e * 1000) || 0;
+        totalCO2eKg += schoolCo2Kg;
       }
     });
 

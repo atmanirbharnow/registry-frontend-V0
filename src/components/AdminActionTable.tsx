@@ -215,7 +215,13 @@ export default function AdminActionTable() {
             }
 
             toast.success(`Status updated to ${newStatus}`);
-            if (user?.uid) syncPlatformStats(user.uid).catch(console.error);
+            if (user?.uid) {
+                user.getIdToken().then(token => fetch("/api/admin/sync-stats", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ adminUid: user.uid, adminIdToken: token }),
+                })).catch(console.error);
+            }
         } catch {
             toast.error("Failed to update status.");
             const allActions = await getAllActions();
@@ -291,7 +297,13 @@ export default function AdminActionTable() {
 
             toast.success(`School ${verifySchoolForm.status === "verified" ? "verified" : "rejected"} successfully!`);
             setVerifySchoolModalOpen(false);
-            if (user?.uid) syncPlatformStats(user.uid).catch(console.error);
+            if (user?.uid) {
+                user.getIdToken().then(token => fetch("/api/admin/sync-stats", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ adminUid: user.uid, adminIdToken: token }),
+                })).catch(console.error);
+            }
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Verification failed");
         } finally {
@@ -437,7 +449,13 @@ export default function AdminActionTable() {
             setVerifyModalOpen(false);
 
             // Auto-sync stats in background after verification
-            if (user?.uid) syncPlatformStats(user.uid).catch(console.error);
+            if (user?.uid) {
+                user.getIdToken().then(token => fetch("/api/admin/sync-stats", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ adminUid: user.uid, adminIdToken: token }),
+                })).catch(console.error);
+            }
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Verification failed");
         } finally {
@@ -582,8 +600,20 @@ export default function AdminActionTable() {
                             if (!user?.uid) return;
                             const t = toast.loading("Syncing platform stats...");
                             try {
-                                await syncPlatformStats(user.uid);
+                                const idToken = await user.getIdToken();
+                                const res = await fetch("/api/admin/sync-stats", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ 
+                                        adminUid: user.uid,
+                                        adminIdToken: idToken // Optional, but good for future auth
+                                    }),
+                                });
+                                
+                                if (!res.ok) throw new Error("Sync failed");
+                                
                                 toast.update(t, { render: "Stats synced successfully!", type: "success", isLoading: false, autoClose: 3000 });
+                                // Optionally refresh the page or stats local state if needed
                             } catch (err) {
                                 toast.update(t, { render: "Sync failed", type: "error", isLoading: false, autoClose: 3000 });
                             }
