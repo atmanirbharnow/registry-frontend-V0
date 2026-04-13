@@ -623,16 +623,16 @@ export default function AdminActionTable() {
                     <div className="w-full overflow-x-auto rounded-lg">
                         <table className="min-w-[1000px] w-full">
                             <colgroup>
-                                <col style={{ width: '110px' }} />
+                                <col style={{ width: '120px' }} />
                                 <col style={{ width: '100px' }} />
                                 <col style={{ width: '160px' }} />
-                                <col style={{ width: '140px' }} />
-                                <col style={{ width: '100px' }} />
+                                <col style={{ width: '160px' }} />
+                                <col style={{ width: '110px' }} />
                                 <col style={{ width: '180px' }} />
                                 <col style={{ width: '110px' }} />
                                 <col style={{ width: '130px' }} />
-                                <col style={{ width: '150px' }} />
                                 <col style={{ width: '100px' }} />
+                                <col style={{ width: '120px' }} />
                             </colgroup>
 
                             <thead>
@@ -672,17 +672,23 @@ export default function AdminActionTable() {
                                                 {item.entityType}
                                             </span>
                                         </td>
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-700">
-                                            {item.actionType}
+                                        <td className="py-4 px-6 text-sm font-medium text-gray-700 max-w-[160px]">
+                                            <span className="truncate block" title={item.actionType}>
+                                                {item.actionType}
+                                            </span>
                                         </td>
-                                        <td className="py-4 px-6 text-sm text-gray-500">
-                                            {item.actorName}
+                                        <td className="py-4 px-6 text-sm text-gray-500 max-w-[160px]">
+                                            <span className="truncate block font-semibold text-gray-700" title={item.actorName}>
+                                                {item.actorName}
+                                            </span>
                                         </td>
                                         <td className="py-4 px-6 text-sm font-medium">
                                             <span className="text-gray-600">{item.co2eKg.toFixed(2)}</span>
                                         </td>
-                                        <td className="py-4 px-6 text-sm text-gray-400">
-                                            {item.email}
+                                        <td className="py-4 px-6 text-sm text-gray-400 max-w-[180px]">
+                                            <span className="truncate block" title={item.email}>
+                                                {item.email}
+                                            </span>
                                         </td>
                                         <td className="py-4 px-6 text-sm text-gray-400 whitespace-nowrap">
                                             {formatDate(item.createdAt)}

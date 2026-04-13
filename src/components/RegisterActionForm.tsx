@@ -588,6 +588,18 @@ export default function RegisterActionForm() {
                                 </div>
                             </div>
 
+                            <div className="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start gap-3">
+                                <div className="mt-0.5 text-blue-500">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M12 16v-4M12 8h.01" />
+                                    </svg>
+                                </div>
+                                <p className="text-xs text-blue-700 leading-relaxed">
+                                    <strong>Helpful Tip:</strong> Please upload clear photos of your installation. We automatically optimize your images, so you don't need to worry about the file size!
+                                </p>
+                            </div>
+
                             <div className="pt-6 border-t border-gray-100">
                                 <h3 className="text-sm font-black uppercase tracking-widest text-[#003527] mb-6">
                                     Verification Photos (System Photos)

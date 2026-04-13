@@ -44,9 +44,9 @@ export default function PublicImpactSummary({
                     quantity: Number(formValues.actionDetails?.[type]?.quantity || formValues.actionQuantity || formValues.quantity) || 0,
                 }))
             });
-            impactData = { 
-                tCO2e: res.tco2e_annual, 
-                atmanirbhar: res.atmanirbhar_pct, 
+            impactData = {
+                tCO2e: res.tco2e_annual,
+                atmanirbhar: res.atmanirbhar_pct,
                 circularity: res.circularity_pct,
                 carbonIntensity: res.carbon_intensity,
                 actionSavings: res.tco2e_annual
@@ -72,9 +72,9 @@ export default function PublicImpactSummary({
             baselineWasteDiverted: Number(formValues.baselineWasteDiverted || formValues.baseline_waste_diverted) || 0,
             beneficiariesCount: Number(formValues.beneficiariesCount || formValues.beneficiaries_count) || 1,
         });
-        impactData = { 
-            tCO2e: res.tCO2e, 
-            atmanirbhar: res.atmanirbharScore, 
+        impactData = {
+            tCO2e: res.tCO2e,
+            atmanirbhar: res.atmanirbharScore,
             circularity: res.circularityScore,
             carbonIntensity: res.carbonIntensity,
             actionSavings: res.actionImpactTCO2e
@@ -175,8 +175,8 @@ export default function PublicImpactSummary({
             {/* Impact Message */}
             <div className="bg-[#eff7f2]/50 rounded-lg p-5 border border-[#b0f0d6]">
                 <p className="text-[10px] text-[#003527] font-bold uppercase tracking-tight leading-relaxed">
-                    By registering, you join a transparent record of climate-positive activities in India. 
-                    Your {isSchool ? "school's" : "individual"} action helps build a national baseline for grassroots environmental impact, 
+                    By registering, you join a transparent record of climate-positive activities in India.
+                    Your {isSchool ? "school's" : "individual"} action helps build a national baseline for grassroots environmental impact,
                     verified using standardized methodologies.
                 </p>
             </div>
@@ -215,7 +215,7 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
 
     // Actions List
     const actionTypes = values.actionTypes || (values.action_type || values.actionType ? [values.action_type || values.actionType] : []);
-    
+
     // Reporting Duration should match installation date as requested
     const firstActionType = actionTypes[0];
     const installationDate = values.actionDetails?.[firstActionType]?.commissioningDate || values.commissioningDate || values.commissioning_date || (values.reporting_year || values.reportingYear ? `Year ${values.reporting_year || values.reportingYear}` : "—");
@@ -227,7 +227,6 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
                 <DetailRow label="Location" value={values.address || userProfile?.address || "—"} />
                 <DetailRow label={beneficiaryLabel} value={beneficiaryValue} />
                 <DetailRow label="Reporting Year" value={String(values.reportingYear || values.reporting_year || "—")} />
-                <DetailRow label="Reporting Duration" value={installationDate} />
                 <DetailRow label="Baseline Categories Provided" value={categories.length > 0 ? categories.join(", ") : "No Baseline Data provided"} />
             </div>
 
@@ -241,7 +240,7 @@ function UnifiedDetailsGrid({ isSchool, values, userProfile }: { isSchool: boole
                             const date = details?.commissioningDate || values.commissioningDate || values.commissioning_date || "—";
                             const quantity = details?.quantity || values.actionQuantity || values.quantity || "";
                             const unit = details?.unit || values.unit || "";
-                            
+
                             return (
                                 <div key={idx} className="flex flex-col p-3 bg-slate-50 rounded-lg border border-slate-100 transition-all hover:border-[#003527]/30 group">
                                     <div className="flex justify-between items-start mb-1">

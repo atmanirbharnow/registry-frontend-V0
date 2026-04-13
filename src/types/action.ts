@@ -66,6 +66,8 @@ export interface Action {
     actions?: any[];
     createdAt: Timestamp;
     updatedAt?: Timestamp;
+    photo_url?: string | null;
+    [key: string]: any;
 }
 
 export interface ActionFormData {

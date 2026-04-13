@@ -2,6 +2,7 @@
 
 import React, { useRef, useState } from "react";
 import Spinner from "../ui/Spinner";
+import { compressImage } from "@/lib/imageCompression";
 
 export interface PhotoSlot {
     key: string;
@@ -52,11 +53,14 @@ export default function PhotoUploadSection({
 
         setUploading((prev) => ({ ...prev, [key]: true }));
         try {
+            // Compress image before upload
+            const processedFile = await compressImage(file);
+            
             const path = `actions/${userId}/${key}-${Date.now()}-${file.name}`;
-            const url = await uploadViaProxy(file, path);
+            const url = await uploadViaProxy(processedFile, path);
             onPhotoChange(key, url);
-        } catch {
-            // upload failed silently
+        } catch (error) {
+            console.error("Upload failed", error);
         } finally {
             setUploading((prev) => ({ ...prev, [key]: false }));
         }
@@ -87,9 +91,21 @@ export default function PhotoUploadSection({
     return (
         <>
             <div className="space-y-4">
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">
-                    Verification Photos
-                </label>
+                <div className="flex items-center justify-between">
+                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider ml-1">
+                        Verification Photos
+                    </label>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#eff7f2] rounded-full border border-[#b0f0d6]">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#003527" strokeWidth="3">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" />
+                            <path d="M12 16V12" />
+                            <circle cx="12" cy="8" r="1" />
+                        </svg>
+                        <span className="text-[10px] font-bold text-[#003527] uppercase tracking-tight">
+                            Images are automatically optimized for fast processing
+                        </span>
+                    </div>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {slots.map((slot) => (

@@ -122,7 +122,7 @@ async function commitBatchREST(
 }
 
 function sanitizeLargeData(data: Record<string, any>): Record<string, any> {
-    const MAX_VAL_SIZE = 100 * 1024; // 100KB safeguard
+    const MAX_VAL_SIZE = 500 * 1024; // 500KB safeguard (increased for photos)
     const result = { ...data };
     for (const [key, value] of Object.entries(result)) {
         if (typeof value === "string" && value.length > MAX_VAL_SIZE) {
@@ -287,6 +287,15 @@ export async function POST(request: NextRequest) {
             meterPhoto: formData.get("meterPhoto") || null,
             moreDetailsPhoto: formData.get("moreDetailsPhoto") || null,
             siteOverviewPhoto: formData.get("siteOverviewPhoto") || null,
+            // Dynamic Photofields
+            solar_rooftop: formData.get("solar_rooftop") || null,
+            solar_water_heater: formData.get("solar_water_heater") || null,
+            rainwater_harvesting: formData.get("rainwater_harvesting") || null,
+            biogas_cooking: formData.get("biogas_cooking") || null,
+            waterless_urinals: formData.get("waterless_urinals") || null,
+            composting: formData.get("composting") || null,
+            wastewater_recycling: formData.get("wastewater_recycling") || null,
+            led_retrofit: formData.get("led_retrofit") || null,
         };
 
         const sanitizedSchool = sanitizeLargeData(schoolDocData);
@@ -350,6 +359,15 @@ export async function POST(request: NextRequest) {
             meterPhoto: formData.get("meterPhoto") || null,
             moreDetailsPhoto: formData.get("moreDetailsPhoto") || null,
             siteOverviewPhoto: formData.get("siteOverviewPhoto") || null,
+            // Dynamic Photofields
+            solar_rooftop: formData.get("solar_rooftop") || null,
+            solar_water_heater: formData.get("solar_water_heater") || null,
+            rainwater_harvesting: formData.get("rainwater_harvesting") || null,
+            biogas_cooking: formData.get("biogas_cooking") || null,
+            waterless_urinals: formData.get("waterless_urinals") || null,
+            composting: formData.get("composting") || null,
+            wastewater_recycling: formData.get("wastewater_recycling") || null,
+            led_retrofit: formData.get("led_retrofit") || null,
             createdAt: now,
             userId, // Include userId for security rules
         };

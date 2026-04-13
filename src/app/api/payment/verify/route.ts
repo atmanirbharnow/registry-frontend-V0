@@ -130,7 +130,7 @@ async function createActionDoc(data: Record<string, unknown>, bearerToken?: stri
 }
 
 function sanitizeLargeData(data: Record<string, unknown>): Record<string, unknown> {
-    const MAX_VAL_SIZE = 100 * 1024; // 100KB safeguard
+    const MAX_VAL_SIZE = 500 * 1024; // 500KB safeguard (increased for photos)
     const result = { ...data };
     for (const [key, value] of Object.entries(result)) {
         if (typeof value === "string" && value.length > MAX_VAL_SIZE) {
@@ -194,6 +194,17 @@ export async function POST(request: NextRequest) {
             }
         }
 
+        let authId = formData.userId || "anonymous";
+        if (hasAdminCredentials && userIdToken) {
+            try {
+                const { adminAuth } = await import("@/lib/firebaseAdmin");
+                const decodedToken = await adminAuth.verifyIdToken(userIdToken);
+                authId = decodedToken.uid;
+            } catch (error) {
+                console.error("[verify] Token verification failed:", error);
+            }
+        }
+
         const counterNext = await incrementCounter(userIdToken);
         const registryId = `CAF-${String(counterNext).padStart(4, "0")}`;
         const now = new Date().toISOString();
@@ -236,7 +247,7 @@ export async function POST(request: NextRequest) {
             quantity: primaryAction.quantity,
             unit: primaryAction.unit,
             address: formData.address,
-            userId: formData.userId,
+            userId: authId,
             createdAt: now,
         });
 
@@ -250,7 +261,6 @@ export async function POST(request: NextRequest) {
             address: formData.address,
             lat: formData.lat || null,
             lng: formData.lng || null,
-            userId: formData.userId,
             userEmail: formData.userEmail,
             actorType: formData.actorType,
             actorName: formData.actorName,
@@ -300,9 +310,21 @@ export async function POST(request: NextRequest) {
             capacityM3: formData.capacityM3 || null,
             razorpayOrderId: razorpay_order_id,
             razorpayPaymentId: razorpay_payment_id,
+
+            // Capture all action-specific photo fields dynamically
+            solar_rooftop: formData.solar_rooftop || null,
+            solar_water_heater: formData.solar_water_heater || null,
+            rainwater_harvesting: formData.rainwater_harvesting || null,
+            biogas_cooking: formData.biogas_cooking || null,
+            waterless_urinals: formData.waterless_urinals || null,
+            composting: formData.composting || null,
+            wastewater_recycling: formData.wastewater_recycling || null,
+            led_retrofit: formData.led_retrofit || null,
+
             calculationVersion: impact.calculationVersion,
             calculationMethodology: impact.methodology,
             emissionFactorUsed: impact.emissionFactorUsed || null,
+            userId: authId, // Explicitly add userId
             createdAt: now,
         };
 

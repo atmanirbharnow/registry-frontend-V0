@@ -28,10 +28,15 @@ export async function POST(request: NextRequest) {
         }
 
         if (!hasAdminCredentials) {
-            // Return a small mock URL for simulation to keep document size under 1MB
-            // High-resolution Base64 would exceed Firestore's 1MB limit for multi-photo actions
+            // Fallback: return the actual image as a local Data URL for simulation
+            // WARNING: For very large images, this may approach Firestore's 1MB document limit.
+            const bytes = await file.arrayBuffer();
+            const buffer = Buffer.from(bytes);
+            const base64 = buffer.toString("base64");
+            const dataUrl = `data:${file.type};base64,${base64}`;
+            
             return NextResponse.json({ 
-                url: "https://placehold.co/400x400/202682/ffffff?text=Simulated+Upload", 
+                url: dataUrl, 
                 simulated: true 
             });
         }

@@ -18,31 +18,50 @@ export default function MediaModal({ isOpen, onClose, item }: MediaModalProps) {
   if (!item) return null;
 
   const isSchool = "schoolName" in item;
-  
   const images: { url: string; label: string }[] = [];
-
-  // Common fields
-  if (item.energyBillCopy) images.push({ url: item.energyBillCopy, label: "Energy Bill Copy" });
-  if (item.meterPhoto) images.push({ url: item.meterPhoto, label: "Meter Photo" });
-  if (item.moreDetailsPhoto) images.push({ url: item.moreDetailsPhoto, label: "More Details" });
-  if (item.siteOverviewPhoto) images.push({ url: item.siteOverviewPhoto, label: "Site Overview" });
-
-  // Action specific photos (Dynamic keys)
-  // Both Individual Actions and Schools now use these dynamic slots
   const itemAsAny = item as any;
-  if (itemAsAny.sitePhoto) images.push({ url: itemAsAny.sitePhoto, label: "Site Photo" });
-  
-  if (itemAsAny.meterPhotos && Array.isArray(itemAsAny.meterPhotos)) {
-    itemAsAny.meterPhotos.forEach((url: string, i: number) => {
-      images.push({ url, label: `Meter Photo ${i + 1}` });
-    });
+  const processedUrls = new Set<string>();
+
+  const addImage = (url: string, label: string) => {
+    if (url && typeof url === "string" && (url.startsWith("http") || url.startsWith("data:image")) && !processedUrls.has(url)) {
+      images.push({ url, label: label || "Uploaded Document" });
+      processedUrls.add(url);
+    }
+  };
+
+  // 1. Explicit priority fields with known labels
+  const priorityFields: Record<string, string> = {
+    energyBillCopy: "Energy Bill Copy",
+    meterPhoto: "Meter Photo",
+    moreDetailsPhoto: "More Details",
+    siteOverviewPhoto: "Site Overview",
+    verificationPhoto: "Verification Photo",
+    photo_url: "Proof Photo",
+    photoUrl: "Proof Photo",
+    sitePhoto: "Site Photo",
+    ...ACTION_PHOTO_LABELS
+  };
+
+  Object.entries(priorityFields).forEach(([key, label]) => {
+    addImage(itemAsAny[key], label);
+  });
+
+  // 2. Handle known arrays
+  if (Array.isArray(itemAsAny.meterPhotos)) {
+    itemAsAny.meterPhotos.forEach((url: string, i: number) => addImage(url, `Meter Photo ${i + 1}`));
   }
 
-  // Check for dynamic keys (action types) defined in ACTION_PHOTO_LABELS
-  Object.keys(ACTION_PHOTO_LABELS).forEach(key => {
+  // 3. AGGRESSIVE SCAVENGER: Scan all keys for anything that looks like a URL
+  // This catches any inconsistently named fields or new fields added in the future
+  Object.keys(itemAsAny).forEach(key => {
     const val = itemAsAny[key];
-    if (val && typeof val === "string" && val.startsWith("http")) {
-      images.push({ url: val, label: ACTION_PHOTO_LABELS[key] || key });
+    if (typeof val === "string" && (val.startsWith("http") || val.startsWith("data:image"))) {
+      if (!processedUrls.has(val)) {
+        // Find a readable label for the scavenged field
+        let displayLabel = key.replace(/([A-Z])/g, " $1").replace(/_/g, " ").trim();
+        displayLabel = displayLabel.charAt(0).toUpperCase() + displayLabel.slice(1);
+        addImage(val, displayLabel);
+      }
     }
   });
 
