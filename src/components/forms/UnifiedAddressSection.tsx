@@ -4,6 +4,7 @@ import React, { useState, useCallback } from "react";
 import { Pencil } from "lucide-react";
 import LocationAutocomplete from "../LocationAutocomplete";
 import Spinner from "../ui/Spinner";
+import { toast } from "react-toastify";
 
 interface LocationData {
     address: string;
@@ -56,7 +57,14 @@ export default function UnifiedAddressSection({
                     const response = await fetch(
                         `/api/google/geocode?lat=${gpsLat}&lng=${gpsLng}`
                     );
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.details || "API Error");
+                    }
+                    
                     const data = await response.json();
+                    
                     if (data.results?.[0]) {
                         const result = data.results[0];
                         const address = result.formatted_address;
@@ -88,9 +96,13 @@ export default function UnifiedAddressSection({
                             pincode
                         });
                         onChange(address);
+                        toast.success("Location detected!");
+                    } else {
+                        throw new Error("No address found for these coordinates.");
                     }
-                } catch (err) {
+                } catch (err: any) {
                     console.error("GPS Geocoding error:", err);
+                    toast.error(`Geocoding failed: ${err.message}`);
                     const fallbackAddress = `${gpsLat.toFixed(6)}, ${gpsLng.toFixed(6)}`;
                     onLocationSelect({
                         address: fallbackAddress,
@@ -118,7 +130,7 @@ export default function UnifiedAddressSection({
                     errorMsg = "Location request timed out. Please try again or enter your address manually.";
                 }
                 
-                alert(errorMsg);
+                toast.error(errorMsg);
                 setLoadingGPS(false);
             },
             { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }

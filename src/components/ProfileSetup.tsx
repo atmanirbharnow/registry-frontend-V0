@@ -265,7 +265,7 @@ export default function ProfileSetup({ uid, profile, onComplete }: ProfileSetupP
                 </div>
 
                 {/* Main Form Card */}
-                <Card className="!p-6 sm:!p-10 md:!p-12 shadow-2xl border-2 border-slate-100 bg-white overflow-hidden rounded-lg">
+                <Card className="!p-6 sm:!p-10 md:!p-12 shadow-2xl border-2 border-slate-100 bg-white rounded-lg">
                     <div className="space-y-8 sm:space-y-10">
                         <div className="flex justify-between items-center border-b border-slate-100 pb-6">
                             <h2 className="text-2xl font-black text-slate-800 uppercase tracking-wider">
