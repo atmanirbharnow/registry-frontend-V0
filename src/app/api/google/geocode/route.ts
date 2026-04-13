@@ -29,6 +29,9 @@ export async function GET(request: NextRequest) {
         const url = `https://maps.googleapis.com/maps/api/geocode/json?${googleQuery.toString()}`;
         
         const res = await fetch(url, {
+            headers: {
+                "Referer": "https://climateassetregistry.org"
+            },
             next: { revalidate: 300 } // Cache for 5 min (short to avoid caching errors)
         });
 
