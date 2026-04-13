@@ -248,7 +248,7 @@ export default function SchoolRegistrationForm() {
                     key: orderData.key,
                     amount: Math.round(schoolPrice * 100),
                     currency: "INR",
-                    name: "Climate Asset Registry",
+                    name: "Earth Carbon Foundation",
                     description: `School Onboarding - ₹${schoolPrice}`,
                     order_id: orderData.orderId,
                     handler: async (response: any) => {
@@ -266,7 +266,7 @@ export default function SchoolRegistrationForm() {
                     },
                     prefill: {
                         name: profile?.displayName || auth.currentUser?.displayName || values.schoolName,
-                        email: profile?.email || auth.currentUser?.email || "",
+                        email: "info@earthcarbonfoundation.org",
                         contact: profile?.phone || "",
                     },
                     theme: { color: "#003527" },

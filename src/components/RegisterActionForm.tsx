@@ -275,7 +275,7 @@ export default function RegisterActionForm() {
                     key: orderData.key,
                     amount: orderData.amount,
                     currency: orderData.currency,
-                    name: "Climate Asset Registry",
+                    name: "Earth Carbon Foundation",
                     description: "Action Registration Fee",
                     order_id: orderData.orderId,
                     handler: async (response: {
@@ -287,7 +287,7 @@ export default function RegisterActionForm() {
                     },
                     prefill: {
                         name: profile?.displayName || user?.displayName || "",
-                        email: profile?.email || user?.email || "",
+                        email: "info@earthcarbonfoundation.org",
                         contact: profile?.phone || "",
                     },
                     theme: { color: "#003527" },
