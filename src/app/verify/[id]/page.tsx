@@ -164,6 +164,7 @@ export default function VerifyPage() {
     };
 
     const verifyUrl = `${APP_URL}/verify/${displayData.registryId}`;
+    const summaryUrl = `${APP_URL}/summary/${displayData.registryId}`;
 
     return (
         <PublicShell>
@@ -187,6 +188,7 @@ export default function VerifyPage() {
                     methodology={displayData.methodology}
                     emissionFactors="MoEF&CC Guidelines / Custom Registry Factors"
                     verifyUrl={verifyUrl}
+                    summaryUrl={summaryUrl}
                     sha256Hash={displayData.sha256Hash}
                     qrCodeType={displayData.qrCodeType}
                 />

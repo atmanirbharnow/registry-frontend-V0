@@ -30,6 +30,7 @@ export interface ImpactCertificateProps {
     methodology: string;
     emissionFactors: string;
     verifyUrl: string;
+    summaryUrl?: string;
     sha256Hash?: string;
     qrCodeType?: "action" | "school";
     shareText?: string;
@@ -49,6 +50,7 @@ export default function ImpactCertificate({
     methodology,
     emissionFactors,
     verifyUrl,
+    summaryUrl,
     sha256Hash,
     qrCodeType = "action",
     shareText = "Check out my climate action on the Climate Asset Registry!"
@@ -241,7 +243,7 @@ export default function ImpactCertificate({
                         </div>
                         <div className="text-xs space-y-1 text-gray-600">
                             <div className="font-bold text-gray-900 uppercase">Public Badge</div>
-                            <div>Verify Online: <span className="text-[#003527] break-all">{verifyUrl}</span></div>
+                            <div>Verify Online: <span className="text-[#003527] break-all">{summaryUrl || verifyUrl}</span></div>
                             <div>Contact: info@climateassetregistry.org</div>
                         </div>
                     </div>
