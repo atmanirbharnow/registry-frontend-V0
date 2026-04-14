@@ -172,8 +172,14 @@ export default function ImpactCertificate({
                             <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl"></div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">tCO₂e REDUCED</h3>
                             <div className="flex items-baseline gap-1 relative z-10">
-                                <span className="text-3xl font-black">{tco2e}</span>
-                                <span className="text-xs font-bold opacity-80">t</span>
+                                {verificationStatus === 'verified' ? (
+                                    <>
+                                        <span className="text-3xl font-black">{tco2e}</span>
+                                        <span className="text-xs font-bold opacity-80">t</span>
+                                    </>
+                                ) : (
+                                    <span className="text-lg font-black tracking-tight uppercase">Pending by Admin</span>
+                                )}
                             </div>
                             <div className="mt-2 pt-2 border-t border-white/20 text-[10px] font-bold text-emerald-100 relative z-10">
                                 {verificationStatus === 'verified' ? '▼ vs Baseline' : 'Estimated Offset'}
@@ -184,8 +190,14 @@ export default function ImpactCertificate({
                             <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl"></div>
                             <h3 className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-2">ATMANIRBHAR % SCORE</h3>
                             <div className="flex items-baseline gap-1 relative z-10">
-                                <span className="text-3xl font-black">{atmanirbhar}</span>
-                                <span className="text-xs font-bold opacity-80">%</span>
+                                {verificationStatus === 'verified' ? (
+                                    <>
+                                        <span className="text-3xl font-black">{atmanirbhar}</span>
+                                        <span className="text-xs font-bold opacity-80">%</span>
+                                    </>
+                                ) : (
+                                    <span className="text-lg font-black tracking-tight uppercase">Pending by Admin</span>
+                                )}
                             </div>
                             <div className="mt-2 pt-2 border-t border-white/20 text-[10px] font-bold text-emerald-100 relative z-10">
                                 {verificationStatus === 'verified' ? '▲ Local Impact' : 'Self-Sustaining Rate'}
@@ -196,8 +208,14 @@ export default function ImpactCertificate({
                             <div className="absolute -right-4 -bottom-4 opacity-10 text-8xl"></div>
                             <h3 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">CIRCULARITY SCORE</h3>
                             <div className="flex items-baseline gap-1 relative z-10">
-                                <span className="text-3xl font-black">{circularity}</span>
-                                <span className="text-xs font-bold opacity-80">%</span>
+                                {verificationStatus === 'verified' ? (
+                                    <>
+                                        <span className="text-3xl font-black">{circularity}</span>
+                                        <span className="text-xs font-bold opacity-80">%</span>
+                                    </>
+                                ) : (
+                                    <span className="text-lg font-black tracking-tight uppercase">Pending by Admin</span>
+                                )}
                             </div>
                             <div className="mt-2 pt-2 border-t border-white/20 text-[10px] font-bold text-sky-100 relative z-10">
                                 {verificationStatus === 'verified' ? '▲ Diverted Waste' : 'Resource Re-use Rate'}
